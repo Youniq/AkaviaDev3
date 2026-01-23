@@ -1,37 +1,28 @@
 /**
- * @description       : 
- * @author            : Malin Nilsson (Stretch Customer AB)
- * @group             : 
- * @last modified on  : 2026-01-16
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
-**/
-trigger ContentDocumentLinkTrigger on ContentDocumentLink ( after insert ) {
+ * Trigger: ContentDocumentLink (after insert)
+ * Purpose:
+ *  1) Run existing org handler to launch flow etc.
+ *  2) If a File is linked to an EmailMessage, also link the same File to the related Case
+ *     so it appears in Case Files / File Explorer.
+ */
+trigger ContentDocumentLinkTrigger on ContentDocumentLink (after insert) {
 
-    if ( Trigger.isAfter && Trigger.isInsert ) {
-        // Call existing handler if it exists (may be from managed package)
-        try {
-            ContentDocumentLinkTriggerHandler handler = new ContentDocumentLinkTriggerHandler();
-            handler.handleAfterInsert( Trigger.new, Trigger.newMap );
-        } catch (Exception e) {
-            // Handler may not exist, continue with our logic
-            System.debug(LoggingLevel.WARN, 'ContentDocumentLinkTriggerHandler not found: ' + e.getMessage());
-        }
-        
-        // Control if CDLs are linked to EmailMessages
-        List<ContentDocumentLink> emailMessageCdlList = new List<ContentDocumentLink>();
-        for (ContentDocumentLink cdl : Trigger.new) {
-            if (cdl.LinkedEntityId != null) {
-                String objectType = String.valueOf(cdl.LinkedEntityId.getSObjectType());
-                if (objectType == 'EmailMessage') {
-                    System.debug(LoggingLevel.INFO, 'ContentDocumentLinkTrigger: CDL is linked to EmailMessage: ' + cdl.LinkedEntityId);
-                    emailMessageCdlList.add(cdl);
-                }
-            }
-        }
-        if (!emailMessageCdlList.isEmpty()) {
-            // Link email attachment files to their related Cases
-            EmailAttachmentLinkHandler.linkEmailFilesToCases(emailMessageCdlList);
+    // (Optional) Keep this if you actually use this handler in your org.
+    // Note: No try/catch needed — if the class didn't exist, this trigger wouldn't compile.
+    new ContentDocumentLinkTriggerHandler().handleAfterInsert(Trigger.new, Trigger.newMap);
+
+    // Only process CDLs linked to EmailMessage
+    List<ContentDocumentLink> emailMessageCdls = new List<ContentDocumentLink>();
+    for (ContentDocumentLink cdl : Trigger.new) {
+        if (cdl.LinkedEntityId == null) continue;
+
+        // Avoid string compares where possible
+        if (cdl.LinkedEntityId.getSObjectType() == EmailMessage.SObjectType) {
+            emailMessageCdls.add(cdl);
         }
     }
 
+    if (!emailMessageCdls.isEmpty()) {
+        EmailAttachmentLinkHandler.linkEmailFilesToCases(emailMessageCdls);
+    }
 }
