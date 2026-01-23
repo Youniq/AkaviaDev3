@@ -58,6 +58,10 @@ private class EmailAttachmentLinkHandlerTest {
 
     @isTest
     static void test_NoCaseParent_doesNotLink() {
+        // Kontroll-case som INTE ska få filen
+        Case control = new Case(Subject='Control', Status='New', Origin='Phone');
+        insert control;
+
         Account a = new Account(Name='A');
         insert a;
 
@@ -82,13 +86,15 @@ private class EmailAttachmentLinkHandlerTest {
         );
         Test.stopTest();
 
-        List<ContentDocumentLink> caseLinks = [
+        // Verifiera att ingen länk skapats till vårt kontroll-case
+        List<ContentDocumentLink> linksToControlCase = [
             SELECT Id
             FROM ContentDocumentLink
             WHERE ContentDocumentId = :docId
-            AND LinkedEntityId LIKE '500%'
+            AND LinkedEntityId = :control.Id
         ];
-        System.assertEquals(0, caseLinks.size(), 'Should not link to Case when email is not related to Case');
+        System.assertEquals(0, linksToControlCase.size(),
+            'Should not link to Case when email is not related to Case');
     }
 
     @isTest

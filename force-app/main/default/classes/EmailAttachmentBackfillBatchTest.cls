@@ -1,5 +1,5 @@
 @isTest
-private class EmailFileToCaseBackfillBatchTest {
+private class EmailAttachmentBackfillBatchTest {
 
     private static ContentVersion createFile(String name) {
         ContentVersion cv = new ContentVersion(
@@ -17,9 +17,24 @@ private class EmailFileToCaseBackfillBatchTest {
             .ContentDocumentId;
     }
 
-    private static EmailMessage createEmail(Id parentId) {
+    // Case-only helper (ParentId must be Case)
+    private static EmailMessage createEmailForCase(Id caseId) {
         EmailMessage em = new EmailMessage(
-            ParentId = parentId,
+            ParentId = caseId,
+            Subject = 'Test',
+            TextBody = 'Body',
+            FromAddress = 'a@test.com',
+            ToAddress = 'b@test.com',
+            Status = '3'
+        );
+        insert em;
+        return em;
+    }
+
+    // Non-case helper (use RelatedToId)
+    private static EmailMessage createEmailRelatedTo(Id relatedToId) {
+        EmailMessage em = new EmailMessage(
+            RelatedToId = relatedToId,
             Subject = 'Test',
             TextBody = 'Body',
             FromAddress = 'a@test.com',
@@ -31,11 +46,11 @@ private class EmailFileToCaseBackfillBatchTest {
     }
 
     @isTest
-    static void test_FileLinkedToEmail_createsLinkToCase() {
+    static void test_Backfill_createsLinkToCase() {
         Case c = new Case(Subject='Test', Status='New', Origin='Phone');
         insert c;
 
-        EmailMessage em = createEmail(c.Id);
+        EmailMessage em = createEmailForCase(c.Id);
         Id docId = getDocId(createFile('F1').Id);
 
         insert new ContentDocumentLink(
@@ -46,7 +61,7 @@ private class EmailFileToCaseBackfillBatchTest {
         );
 
         Test.startTest();
-        Database.executeBatch(new EmailFileToCaseBackfillBatch(), 200);
+        Database.executeBatch(new EmailAttachmentBackfillBatch(), 200);
         Test.stopTest();
 
         List<ContentDocumentLink> links = [
@@ -55,15 +70,21 @@ private class EmailFileToCaseBackfillBatchTest {
             WHERE ContentDocumentId = :docId
             AND LinkedEntityId = :c.Id
         ];
-        System.assertEquals(1, links.size(), 'File should be linked to Case');
+        System.assertEquals(1, links.size(), 'File should be linked to Case by batch');
     }
 
     @isTest
-    static void test_FileLinkedToEmailWithoutCase_doesNothing() {
+    static void test_Backfill_doesNotLink_whenNoCaseParent() {
+        // Control Case (must not get the link)
+        Case controlCase = new Case(Subject='Control', Status='New', Origin='Phone');
+        insert controlCase;
+
         Account a = new Account(Name='A');
         insert a;
 
-        EmailMessage em = createEmail(a.Id);
+        // EmailMessage NOT related to Case
+        EmailMessage em = createEmailRelatedTo(a.Id);
+
         Id docId = getDocId(createFile('F2').Id);
 
         insert new ContentDocumentLink(
@@ -74,15 +95,16 @@ private class EmailFileToCaseBackfillBatchTest {
         );
 
         Test.startTest();
-        Database.executeBatch(new EmailFileToCaseBackfillBatch(), 200);
+        Database.executeBatch(new EmailAttachmentBackfillBatch(), 200);
         Test.stopTest();
 
+        // Ensure no link was created to the control Case
         List<ContentDocumentLink> links = [
             SELECT Id
             FROM ContentDocumentLink
             WHERE ContentDocumentId = :docId
-            AND LinkedEntityId LIKE '500%'
+            AND LinkedEntityId = :controlCase.Id
         ];
-        System.assertEquals(0, links.size(), 'File should not be linked to Case');
+        System.assertEquals(0, links.size(), 'File should not be linked to Case when EmailMessage is not on a Case');
     }
 }

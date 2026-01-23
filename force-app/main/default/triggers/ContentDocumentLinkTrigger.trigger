@@ -7,7 +7,7 @@
  */
 trigger ContentDocumentLinkTrigger on ContentDocumentLink (after insert) {
 
-    // (Optional) Keep this if you actually use this handler in your org.
+    // Keep this if you actually use this handler in your org.
     // Note: No try/catch needed — if the class didn't exist, this trigger wouldn't compile.
     new ContentDocumentLinkTriggerHandler().handleAfterInsert(Trigger.new, Trigger.newMap);
 
