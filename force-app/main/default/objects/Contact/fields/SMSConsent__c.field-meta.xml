@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SMSConsent__c</fullName>
+    <description>Används i marketing cloud för att indikera att medlemmen vill ha sms kommunikation</description>
+    <formula>AND(
+NOT(
+ISBLANK(MobilePhone)), SMSOptIn__c = TRUE)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>SMS Medgivande</label>
+    <type>Checkbox</type>
+</CustomField>

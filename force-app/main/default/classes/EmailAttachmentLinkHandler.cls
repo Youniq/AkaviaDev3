@@ -5,7 +5,7 @@
 public with sharing class EmailAttachmentLinkHandler {
     
     // Static flag to prevent recursive trigger calls
-    private static Boolean isProcessing = false;
+   // private static Boolean isProcessing = false;
     
     /**
      * Inner class without sharing to ensure DML operations succeed regardless of sharing rules
@@ -105,6 +105,151 @@ public with sharing class EmailAttachmentLinkHandler {
             return attachmentToContentDocumentMap;
         }
     }
+
+    /**
+     * Checks if the provided Id is a Case Id.
+     */
+    private static Boolean isCaseId(Id caseId) {
+        if (caseId == null) {
+            return false;
+        }
+        String caseIdStr = String.valueOf(caseId);
+        return caseIdStr.startsWith('500') && String.valueOf(caseId.getSObjectType()) == 'Case';
+    }
+
+    /**
+     * Queries EmailMessages and returns a map of EmailMessageId -> CaseId.
+     * @param emailMessageIds EmailMessage Ids to query
+     * @param logDetails If true, logs Parent/RelatedTo information and warnings
+     */
+    private static Map<Id, Id> queryEmailMessageToCaseMap(Set<Id> emailMessageIds, Boolean logDetails) {
+        Map<Id, Id> emailMessageToCaseMap = new Map<Id, Id>();
+        if (emailMessageIds == null || emailMessageIds.isEmpty()) {
+            return emailMessageToCaseMap;
+        }
+
+        for (EmailMessage em : [
+            SELECT Id, ParentId, RelatedToId
+            FROM EmailMessage
+            WHERE Id IN :emailMessageIds
+            AND (ParentId != null OR RelatedToId != null)
+        ]) {
+            Id caseId = em.ParentId != null ? em.ParentId : em.RelatedToId;
+
+            if (logDetails) {
+                String parentType = em.ParentId != null ? String.valueOf(em.ParentId.getSObjectType()) : 'null';
+                String relatedToType = em.RelatedToId != null ? String.valueOf(em.RelatedToId.getSObjectType()) : 'null';
+
+                System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: EmailMessage ' + em.Id +
+                    ' - ParentId: ' + em.ParentId + ' (Type: ' + parentType + ')' +
+                    ', RelatedToId: ' + em.RelatedToId + ' (Type: ' + relatedToType + ')');
+            }
+
+            if (isCaseId(caseId)) {
+                emailMessageToCaseMap.put(em.Id, caseId);
+                if (logDetails) {
+                    System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: EmailMessage ' + em.Id +
+                        ' belongs to Case: ' + caseId + ' - Will link files from this email to this Case');
+                }
+            } else if (logDetails) {
+                System.debug(LoggingLevel.WARN, 'EmailAttachmentLinkHandler: EmailMessage ' + em.Id +
+                    ' does not have a Case parent. CaseId: ' + caseId +
+                    ' (Type: ' + (caseId != null ? String.valueOf(caseId.getSObjectType()) : 'null') +
+                    ', Prefix: ' + (caseId != null ? String.valueOf(caseId).substring(0, 3) : 'null') + ') - Cannot link files');
+            }
+        }
+        return emailMessageToCaseMap;
+    }
+
+    /**
+     * Filters a provided EmailMessage->Case map to only include valid Case Ids.
+     * @param emailMessageIds EmailMessage Ids to include
+     * @param emailMessageToCaseMap Map to filter
+     */
+    private static Map<Id, Id> filterEmailMessageToCaseMap(Set<Id> emailMessageIds, Map<Id, Id> emailMessageToCaseMap) {
+        Map<Id, Id> filteredMap = new Map<Id, Id>();
+        if (emailMessageIds == null || emailMessageIds.isEmpty() || emailMessageToCaseMap == null) {
+            return filteredMap;
+        }
+        for (Id emailMessageId : emailMessageIds) {
+            if (emailMessageToCaseMap.containsKey(emailMessageId)) {
+                Id caseId = emailMessageToCaseMap.get(emailMessageId);
+                if (isCaseId(caseId)) {
+                    filteredMap.put(emailMessageId, caseId);
+                } else {
+                    System.debug(LoggingLevel.WARN, 'EmailAttachmentLinkHandler: Invalid Case ID in provided map - ' +
+                        'EmailMessage: ' + emailMessageId + ', CaseId: ' + caseId +
+                        ' (does not start with 500, skipping)');
+                }
+            }
+        }
+        return filteredMap;
+    }
+
+    /**
+     * Creates a ContentDocumentLink with default ShareType and Visibility.
+     * @param contentDocumentId ContentDocument Id
+     * @param linkedEntityId Id to link the document to
+     */
+    private static ContentDocumentLink buildContentDocumentLink(Id contentDocumentId, Id linkedEntityId) {
+        ContentDocumentLink link = new ContentDocumentLink();
+        link.ContentDocumentId = contentDocumentId;
+        link.LinkedEntityId = linkedEntityId;
+        link.ShareType = 'V';
+        link.Visibility = 'AllUsers';
+        return link;
+    }
+
+    /**
+     * Loads existing ContentDocumentLink keys for the provided content documents and linked entities.
+     */
+    private static Set<String> getExistingLinkKeys(Set<Id> contentDocumentIds, Set<Id> linkedEntityIds) {
+        Set<String> existingLinks = new Set<String>();
+        if (contentDocumentIds == null || contentDocumentIds.isEmpty() ||
+            linkedEntityIds == null || linkedEntityIds.isEmpty()) {
+            return existingLinks;
+        }
+        for (ContentDocumentLink existing : [
+            SELECT ContentDocumentId, LinkedEntityId
+            FROM ContentDocumentLink
+            WHERE ContentDocumentId IN :contentDocumentIds
+            AND LinkedEntityId IN :linkedEntityIds
+        ]) {
+            existingLinks.add(existing.ContentDocumentId + '_' + existing.LinkedEntityId);
+        }
+        return existingLinks;
+    }
+
+    /**
+     * Logs results from ContentDocumentLink insert operations.
+     */
+    private static void logInsertResults(
+        List<ContentDocumentLink> links,
+        Database.SaveResult[] results,
+        String successPrefix,
+        String failurePrefix,
+        String summaryPrefix
+    ) {
+        Integer successCount = 0;
+        Integer failureCount = 0;
+        for (Integer i = 0; i < results.size(); i++) {
+            Database.SaveResult result = results[i];
+            if (result.isSuccess()) {
+                successCount++;
+                System.debug(LoggingLevel.INFO, successPrefix +
+                    links[i].ContentDocumentId + ' -> ' + links[i].LinkedEntityId);
+            } else {
+                failureCount++;
+                String errorMsg = failurePrefix +
+                    links[i].ContentDocumentId + ' -> ' + links[i].LinkedEntityId;
+                for (Database.Error err : result.getErrors()) {
+                    errorMsg += ' - Error: ' + err.getMessage() + ' (' + err.getStatusCode() + ')';
+                }
+                System.debug(LoggingLevel.ERROR, errorMsg);
+            }
+        }
+        System.debug(LoggingLevel.INFO, summaryPrefix + successCount + ', Failures: ' + failureCount);
+    }
     
     /**
      * Links FILES (ContentDocuments) attached to EmailMessage records to their related Case records
@@ -114,13 +259,14 @@ public with sharing class EmailAttachmentLinkHandler {
      * @param contentDocumentLinks List of ContentDocumentLink records to process
      */
     public static void linkEmailFilesToCases(List<ContentDocumentLink> contentDocumentLinks) {
-        // Prevent recursive calls
-        if (isProcessing) {
-            System.debug(LoggingLevel.DEBUG, 'EmailAttachmentLinkHandler: Skipping recursive call');
-            return;
-        }
+        // Prevent recursive calls being processed for 
+        // if (isProcessing) {
+        //     System.debug(LoggingLevel.DEBUG, 'EmailAttachmentLinkHandler: Skipping recursive call');
+        //     return;
+        // }
         
-        isProcessing = true;
+        // isProcessing = true;
+
         // Step 1: Find files (ContentDocuments) that are attached to EmailMessages
         // We're looking for ContentDocumentLinks where LinkedEntityId = EmailMessage
         // This means: File (ContentDocument) is linked to EmailMessage
@@ -134,6 +280,7 @@ public with sharing class EmailAttachmentLinkHandler {
             if (cdl.LinkedEntityId != null) {
                 String objectType = String.valueOf(cdl.LinkedEntityId.getSObjectType());
                 if (objectType == 'EmailMessage') {
+
                     // This ContentDocumentLink represents a FILE attached to an EmailMessage
                     emailMessageIds.add(cdl.LinkedEntityId);
                     fileToEmailMessageMap.put(cdl.ContentDocumentId, cdl.LinkedEntityId);
@@ -145,47 +292,16 @@ public with sharing class EmailAttachmentLinkHandler {
         }
         
         if (emailMessageIds.isEmpty()) {
+           //isProcessing = false;
             return;
         }
         
         // Step 2: Find which Case each EmailMessage belongs to
         // We need to know the Case so we can link the FILES to it
-        Map<Id, Id> emailMessageToCaseMap = new Map<Id, Id>(); // Maps: EmailMessageId -> CaseId
-        for (EmailMessage em : [
-            SELECT Id, ParentId, RelatedToId
-            FROM EmailMessage
-            WHERE Id IN :emailMessageIds
-            AND (ParentId != null OR RelatedToId != null)
-        ]) {
-            // EmailMessage.ParentId typically links to Case
-            Id caseId = em.ParentId != null ? em.ParentId : em.RelatedToId;
-            String parentType = em.ParentId != null ? String.valueOf(em.ParentId.getSObjectType()) : 'null';
-            String relatedToType = em.RelatedToId != null ? String.valueOf(em.RelatedToId.getSObjectType()) : 'null';
-            
-            System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: EmailMessage ' + em.Id + 
-                ' - ParentId: ' + em.ParentId + ' (Type: ' + parentType + ')' +
-                ', RelatedToId: ' + em.RelatedToId + ' (Type: ' + relatedToType + ')');
-            
-            // Validate that it's a Case: check ID prefix first (faster), then object type
-            Boolean isCase = false;
-            if (caseId != null) {
-                String caseIdStr = String.valueOf(caseId);
-                isCase = caseIdStr.startsWith('500') && String.valueOf(caseId.getSObjectType()) == 'Case';
-            }
-            
-            if (isCase) {
-                emailMessageToCaseMap.put(em.Id, caseId);
-                System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: EmailMessage ' + em.Id + 
-                    ' belongs to Case: ' + caseId + ' - Will link files from this email to this Case');
-            } else {
-                System.debug(LoggingLevel.WARN, 'EmailAttachmentLinkHandler: EmailMessage ' + em.Id + 
-                    ' does not have a Case parent. CaseId: ' + caseId + 
-                    ' (Type: ' + (caseId != null ? String.valueOf(caseId.getSObjectType()) : 'null') + 
-                    ', Prefix: ' + (caseId != null ? String.valueOf(caseId).substring(0, 3) : 'null') + ') - Cannot link files');
-            }
-        }
+        Map<Id, Id> emailMessageToCaseMap = queryEmailMessageToCaseMap(emailMessageIds, true); // Maps: EmailMessageId -> CaseId
         
         if (emailMessageToCaseMap.isEmpty()) {
+            //isProcessing = false;
             return;
         }
         
@@ -193,17 +309,7 @@ public with sharing class EmailAttachmentLinkHandler {
         Set<Id> contentDocumentIds = fileToEmailMessageMap.keySet();
         Set<Id> caseIds = new Set<Id>(emailMessageToCaseMap.values());
         
-        Set<String> existingLinks = new Set<String>();
-        for (ContentDocumentLink existing : [
-            SELECT ContentDocumentId, LinkedEntityId
-            FROM ContentDocumentLink
-            WHERE ContentDocumentId IN :contentDocumentIds
-            AND LinkedEntityId IN :caseIds
-        ]) {
-            // linked entity id is the case id
-            // content document id is the file id
-            existingLinks.add(existing.ContentDocumentId + '_' + existing.LinkedEntityId);
-        }
+        Set<String> existingLinks = getExistingLinkKeys(contentDocumentIds, caseIds);
         
         // Step 3: Create ContentDocumentLinks to link the FILES to Cases
         // We're linking the same files (ContentDocuments) that are attached to EmailMessages
@@ -225,12 +331,7 @@ public with sharing class EmailAttachmentLinkHandler {
                         // Check if we've already processed this file-to-case combination in this batch
                         if (!processedLinks.contains(linkKey) && !existingLinks.contains(linkKey)) {
                             // Create a new link: File (ContentDocument) -> Case
-                            ContentDocumentLink newLink = new ContentDocumentLink();
-                            newLink.ContentDocumentId = contentDocId; // The FILE
-                            newLink.LinkedEntityId = caseId; // Link to the CASE (not EmailMessage)
-                            newLink.ShareType = 'V'; // Viewer permission
-                            newLink.Visibility = 'AllUsers'; // Make visible to all users
-                            linksToCreate.add(newLink);
+                            linksToCreate.add(buildContentDocumentLink(contentDocId, caseId));
                             processedLinks.add(linkKey); // Mark as processed
                             
                             System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [NEW LINK] Creating ContentDocumentLink to link existing File to Case - ' +
@@ -262,37 +363,23 @@ public with sharing class EmailAttachmentLinkHandler {
                 LinkCreator linkCreator = new LinkCreator();
                 Database.SaveResult[] results = linkCreator.createLinks(linksToCreate);
                 
-                Integer successCount = 0;
-                Integer failureCount = 0;
-                for (Integer i = 0; i < results.size(); i++) {
-                    Database.SaveResult result = results[i];
-                    if (result.isSuccess()) {
-                        successCount++;
-                        System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [SUCCESS] Created ContentDocumentLink - ' +
-                            'File: ' + linksToCreate[i].ContentDocumentId + ' -> Case: ' + linksToCreate[i].LinkedEntityId);
-                    } else {
-                        failureCount++;
-                        String errorMsg = 'EmailAttachmentLinkHandler: Failed to create ContentDocumentLink - ' +
-                            'File: ' + linksToCreate[i].ContentDocumentId + ' -> Case: ' + linksToCreate[i].LinkedEntityId;
-                        for (Database.Error err : result.getErrors()) {
-                            errorMsg += ' - Error: ' + err.getMessage() + ' (' + err.getStatusCode() + ')';
-                        }
-                        System.debug(LoggingLevel.ERROR, errorMsg);
-                    }
-                }
-                
-                System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: Insert complete - Success: ' + 
-                    successCount + ', Failures: ' + failureCount);
+                logInsertResults(
+                    linksToCreate,
+                    results,
+                    'EmailAttachmentLinkHandler: [SUCCESS] Created ContentDocumentLink - File: ',
+                    'EmailAttachmentLinkHandler: Failed to create ContentDocumentLink - File: ',
+                    'EmailAttachmentLinkHandler: Insert complete - Success: '
+                );
             } catch (Exception e) {
                 // Log error but don't fail the transaction
                 System.debug(LoggingLevel.ERROR, 'EmailAttachmentLinkHandler: Unexpected error linking files to Cases: ' + 
                     e.getMessage() + ' - Stack trace: ' + e.getStackTraceString());
             } finally {
-                isProcessing = false;
+                //isProcessing = false;
             }
         } else {
             System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [SUMMARY] No new ContentDocumentLinks to create - all Files already linked to their Cases or no Case found');
-            isProcessing = false;
+            //isProcessing = false;
         }
     }
     
@@ -344,40 +431,10 @@ public with sharing class EmailAttachmentLinkHandler {
         // Step 2: Find which Case each EmailMessage belongs to
         // Use provided map if available, otherwise query
         if (emailMessageToCaseMap == null) {
-            emailMessageToCaseMap = new Map<Id, Id>();
-            for (EmailMessage em : [
-                SELECT Id, ParentId, RelatedToId
-                FROM EmailMessage
-                WHERE Id IN :emailMessageIds
-                AND (ParentId != null OR RelatedToId != null)
-            ]) {
-                Id caseId = em.ParentId != null ? em.ParentId : em.RelatedToId;
-                // Validate that it's a Case: check ID prefix first (faster), then object type
-                if (caseId != null) {
-                    String caseIdStr = String.valueOf(caseId);
-                    if (caseIdStr.startsWith('500') && String.valueOf(caseId.getSObjectType()) == 'Case') {
-                        emailMessageToCaseMap.put(em.Id, caseId);
-                    }
-                }
-            }
+            emailMessageToCaseMap = queryEmailMessageToCaseMap(emailMessageIds, false);
         } else {
             // Filter the provided map to only include EmailMessages we're processing
-            // Also validate that Case IDs start with "500" (Case prefix)
-            Map<Id, Id> filteredMap = new Map<Id, Id>();
-            for (Id emailMessageId : emailMessageIds) {
-                if (emailMessageToCaseMap.containsKey(emailMessageId)) {
-                    Id caseId = emailMessageToCaseMap.get(emailMessageId);
-                    // Validate Case ID prefix (500 = Case)
-                    if (caseId != null && String.valueOf(caseId).startsWith('500')) {
-                        filteredMap.put(emailMessageId, caseId);
-                    } else {
-                        System.debug(LoggingLevel.WARN, 'EmailAttachmentLinkHandler: Invalid Case ID in provided map - ' +
-                            'EmailMessage: ' + emailMessageId + ', CaseId: ' + caseId + 
-                            ' (does not start with 500, skipping)');
-                    }
-                }
-            }
-            emailMessageToCaseMap = filteredMap;
+            emailMessageToCaseMap = filterEmailMessageToCaseMap(emailMessageIds, emailMessageToCaseMap);
         }
         
         if (emailMessageToCaseMap.isEmpty()) {
@@ -454,15 +511,10 @@ public with sharing class EmailAttachmentLinkHandler {
         Set<Id> caseIds = new Set<Id>(emailMessageToCaseMap.values());
         
         // Check for existing links to both EmailMessages and Cases
-        Set<String> existingLinks = new Set<String>();
-        for (ContentDocumentLink existing : [
-            SELECT ContentDocumentId, LinkedEntityId
-            FROM ContentDocumentLink
-            WHERE ContentDocumentId IN :contentDocumentIds
-            AND (LinkedEntityId IN :emailMessageIds OR LinkedEntityId IN :caseIds)
-        ]) {
-            existingLinks.add(existing.ContentDocumentId + '_' + existing.LinkedEntityId);
-        }
+        Set<Id> linkedEntityIds = new Set<Id>();
+        linkedEntityIds.addAll(emailMessageIds);
+        linkedEntityIds.addAll(caseIds);
+        Set<String> existingLinks = getExistingLinkKeys(contentDocumentIds, linkedEntityIds);
         
         // Create new links - first link Files back to EmailMessages, then to Cases
         // Process both newly converted Files and existing Files
@@ -479,12 +531,7 @@ public with sharing class EmailAttachmentLinkHandler {
                     // First, ensure File is linked back to the original EmailMessage (preserve original relationship)
                     String emailLinkKey = contentDocId + '_' + emailMessageId;
                     if (!existingLinks.contains(emailLinkKey)) {
-                        ContentDocumentLink emailLink = new ContentDocumentLink();
-                        emailLink.ContentDocumentId = contentDocId;
-                        emailLink.LinkedEntityId = emailMessageId; // Link back to EmailMessage
-                        emailLink.ShareType = 'V';
-                        emailLink.Visibility = 'AllUsers';
-                        linksToCreate.add(emailLink);
+                        linksToCreate.add(buildContentDocumentLink(contentDocId, emailMessageId));
                         
                         System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [NEW LINK] Linking File back to original EmailMessage - ' +
                             'File (ContentDocument): ' + contentDocId + ' -> EmailMessage: ' + emailMessageId + 
@@ -499,12 +546,7 @@ public with sharing class EmailAttachmentLinkHandler {
                     if (caseId != null) {
                         String caseLinkKey = contentDocId + '_' + caseId;
                         if (!existingLinks.contains(caseLinkKey)) {
-                            ContentDocumentLink caseLink = new ContentDocumentLink();
-                            caseLink.ContentDocumentId = contentDocId;
-                            caseLink.LinkedEntityId = caseId;
-                            caseLink.ShareType = 'V';
-                            caseLink.Visibility = 'AllUsers';
-                            linksToCreate.add(caseLink);
+                            linksToCreate.add(buildContentDocumentLink(contentDocId, caseId));
                             
                             System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [NEW LINK] Creating ContentDocumentLink to link File to Case - ' +
                                 'Attachment: ' + att.Id + ' (' + att.Name + ') -> File (ContentDocument): ' + contentDocId + 
@@ -525,26 +567,13 @@ public with sharing class EmailAttachmentLinkHandler {
             System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [INSERT] Inserting ' + linksToCreate.size() + 
                 ' ContentDocumentLink records for converted Attachments');
             Database.SaveResult[] results = converter.createLinks(linksToCreate);
-            Integer successCount = 0;
-            Integer failureCount = 0;
-            for (Integer i = 0; i < results.size(); i++) {
-                Database.SaveResult result = results[i];
-                if (result.isSuccess()) {
-                    successCount++;
-                    System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [SUCCESS] Created ContentDocumentLink for converted Attachment - ' +
-                        'File: ' + linksToCreate[i].ContentDocumentId + ' -> Case: ' + linksToCreate[i].LinkedEntityId);
-                } else {
-                    failureCount++;
-                    String errorMsg = 'EmailAttachmentLinkHandler: [ERROR] Failed to create ContentDocumentLink - ' +
-                        'File: ' + linksToCreate[i].ContentDocumentId + ' -> Case: ' + linksToCreate[i].LinkedEntityId;
-                    for (Database.Error err : result.getErrors()) {
-                        errorMsg += ' - Error: ' + err.getMessage() + ' (' + err.getStatusCode() + ')';
-                    }
-                    System.debug(LoggingLevel.ERROR, errorMsg);
-                }
-            }
-            System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [SUMMARY] Linked converted Attachments to Cases - ' +
-                'Success: ' + successCount + ', Failures: ' + failureCount);
+            logInsertResults(
+                linksToCreate,
+                results,
+                'EmailAttachmentLinkHandler: [SUCCESS] Created ContentDocumentLink for converted Attachment - File: ',
+                'EmailAttachmentLinkHandler: [ERROR] Failed to create ContentDocumentLink - File: ',
+                'EmailAttachmentLinkHandler: [SUMMARY] Linked converted Attachments to Cases - Success: '
+            );
         } else {
             System.debug(LoggingLevel.INFO, 'EmailAttachmentLinkHandler: [SUMMARY] No new ContentDocumentLinks to create - ' +
                 'all converted Attachments already linked to their Cases');

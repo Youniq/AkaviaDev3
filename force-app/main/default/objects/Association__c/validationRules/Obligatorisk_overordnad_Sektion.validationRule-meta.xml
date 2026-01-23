@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Obligatorisk_overordnad_Sektion</fullName>
+    <active>true</active>
+    <description>Sektion kräver förbund</description>
+    <errorConditionFormula>AND(ISPICKVAL(Type__c, &quot;Sektion&quot;),
+    OR(
+       ISBLANK(ParentAssociation__c),
+       NOT(ISPICKVAL(ParentAssociation__r.Type__c , &quot;Förbund&quot;))
+    )
+)</errorConditionFormula>
+    <errorDisplayField>ParentAssociation__c</errorDisplayField>
+    <errorMessage>En sektion kräver ett förbund som överordnad förening</errorMessage>
+</ValidationRule>

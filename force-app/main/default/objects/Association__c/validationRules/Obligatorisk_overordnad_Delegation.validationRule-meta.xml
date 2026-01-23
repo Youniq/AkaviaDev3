@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Obligatorisk_overordnad_Delegation</fullName>
+    <active>true</active>
+    <description>Delegation kräver sektion</description>
+    <errorConditionFormula>AND(ISPICKVAL(Type__c, &quot;Delegation&quot;),
+    OR(
+       ISBLANK(ParentAssociation__c),
+       NOT(ISPICKVAL(ParentAssociation__r.Type__c , &quot;Sektion&quot;))
+    )
+)</errorConditionFormula>
+    <errorDisplayField>ParentAssociation__c</errorDisplayField>
+    <errorMessage>En delegation kräver en sektion som överordnad förening</errorMessage>
+</ValidationRule>

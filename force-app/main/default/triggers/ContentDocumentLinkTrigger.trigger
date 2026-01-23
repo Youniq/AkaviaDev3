@@ -1,3 +1,10 @@
+/**
+ * @description       : 
+ * @author            : Malin Nilsson (Stretch Customer AB)
+ * @group             : 
+ * @last modified on  : 2026-01-16
+ * @last modified by  : Malin Nilsson (Stretch Customer AB)
+**/
 trigger ContentDocumentLinkTrigger on ContentDocumentLink ( after insert ) {
 
     if ( Trigger.isAfter && Trigger.isInsert ) {
@@ -10,8 +17,21 @@ trigger ContentDocumentLinkTrigger on ContentDocumentLink ( after insert ) {
             System.debug(LoggingLevel.WARN, 'ContentDocumentLinkTriggerHandler not found: ' + e.getMessage());
         }
         
-        // Link email attachment files to their related Cases
-        EmailAttachmentLinkHandler.linkEmailFilesToCases(Trigger.new);
+        // Control if CDLs are linked to EmailMessages
+        List<ContentDocumentLink> emailMessageCdlList = new List<ContentDocumentLink>();
+        for (ContentDocumentLink cdl : Trigger.new) {
+            if (cdl.LinkedEntityId != null) {
+                String objectType = String.valueOf(cdl.LinkedEntityId.getSObjectType());
+                if (objectType == 'EmailMessage') {
+                    System.debug(LoggingLevel.INFO, 'ContentDocumentLinkTrigger: CDL is linked to EmailMessage: ' + cdl.LinkedEntityId);
+                    emailMessageCdlList.add(cdl);
+                }
+            }
+        }
+        if (!emailMessageCdlList.isEmpty()) {
+            // Link email attachment files to their related Cases
+            EmailAttachmentLinkHandler.linkEmailFilesToCases(emailMessageCdlList);
+        }
     }
 
 }

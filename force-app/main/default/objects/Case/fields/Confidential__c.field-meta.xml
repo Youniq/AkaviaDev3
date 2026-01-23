@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Confidential__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Gömmer ärenden för alla utom ägaren samt gruppen Sekretess</inlineHelpText>
+    <label>Sekretess</label>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PaymentStatus__c</fullName>
+    <label>Betalningsstatus</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Betald</fullName>
+                <default>false</default>
+                <label>Betald</label>
+            </value>
+            <value>
+                <fullName>Ej betald</fullName>
+                <default>true</default>
+                <label>Ej betald</label>
+            </value>
+            <value>
+                <fullName>Makulerad</fullName>
+                <default>false</default>
+                <label>Makulerad</label>
+            </value>
+            <value>
+                <fullName>Delbetald</fullName>
+                <default>false</default>
+                <label>Delbetald</label>
+            </value>
+            <value>
+                <fullName>Pausad</fullName>
+                <default>false</default>
+                <label>Pausad</label>
+            </value>
+            <value>
+                <fullName>Skapad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Skapad</label>
+            </value>
+            <value>
+                <fullName>Skickad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Skickad</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EmailOptIn__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Används i marketing cloud för att avgöra om medlem ska vill ha e-postutskick eller inte</description>
+    <inlineHelpText>Vänligen kryssa ur ruta om du inte vill få e-post med medlemserbjudanden. Du kan dock inte avsäga dig medlemsinformation.</inlineHelpText>
+    <label>E-post Kommunikation</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsOutOfOffice__c</fullName>
+    <description>Checks settings to know if user is marked as out of office or not.</description>
+    <formula>IF(
+				AND(OutOfOfficeFrom__c &lt;= TODAY(), ISBLANK(OutOfOfficeTo__c))
+				, true, 
+    IF(AND(OutOfOfficeFrom__c &lt;= TODAY(), OutOfOfficeTo__c &gt;= TODAY())
+							, true
+							, false)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Validates users ooo date settings to know if user is currently marked as out of office or not.</inlineHelpText>
+    <label>Is Out Of Office</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

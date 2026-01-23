@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContactAssciationAgreement__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Uppslag mot Förening och Förbund</description>
+    <label>Kontaktförbund</label>
+    <referenceTo>Association__c</referenceTo>
+    <relationshipLabel>Avtal (Kontaktförbund)</relationshipLabel>
+    <relationshipName>ContactAssociationAgreement</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

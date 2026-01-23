@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FeeCatHasPassed4Months__c</fullName>
+    <description>Checks if 4 months has passed since the current fee category started (FeeCategory StartDate__c).</description>
+    <formula>TODAY() &gt; ADDMONTHS(CurrentFeeCategory__r.StartDate__c,4)</formula>
+    <label>Avg.klass har passerat 4 mån</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

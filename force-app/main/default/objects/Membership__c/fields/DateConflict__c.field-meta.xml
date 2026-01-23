@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DateConflict__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Används för att sätta en valideringsregel när ett nytt medlemskap skapas så att det inte kan vara under samma tid som ett annat. Används genom before-save flow.</description>
+    <label>Konflikt</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>getPersonsChanges_view</fullName>
+    <columns>NAME</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>Type__c</columns>
+    <columns>Message__c</columns>
+    <columns>StackTrace__c</columns>
+    <columns>Input__c</columns>
+    <columns>ExtraMessage__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>FunctionName__c</field>
+        <operation>equals</operation>
+        <value>getPersonsChanges</value>
+    </filters>
+    <label>getPersonsChanges view</label>
+</ListView>

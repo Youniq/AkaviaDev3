@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Datakvalitet_samma_start_slutdatum</fullName>
+    <columns>NAME</columns>
+    <columns>ExitReason__c</columns>
+    <columns>EndDate__c</columns>
+    <columns>MigreringsID__c</columns>
+    <columns>Status__c</columns>
+    <columns>StartDate__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>SameStartEndDate__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>notEqual</operation>
+        <value>Makulerad</value>
+    </filters>
+    <label>Datakvalitet - samma start/slutdatum</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

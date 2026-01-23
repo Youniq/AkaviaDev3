@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsLatestEmployment__c</fullName>
+    <description>Systemfält. Används för att kunna avgöra i flow för flytt av anställningar att det enbart flyttas anställningar som är de senaste.</description>
+    <formula>Person__r.LatestEmploymentStartDate__c =  StartDate__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Senaste anställningen</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <description>Vilken typ arbetsmarknadsektorn är</description>
+    <label>Typ</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Församling</fullName>
+                <default>false</default>
+                <label>Församling</label>
+            </value>
+            <value>
+                <fullName>Kommun</fullName>
+                <default>false</default>
+                <label>Kommun</label>
+            </value>
+            <value>
+                <fullName>Privat</fullName>
+                <default>false</default>
+                <label>Privat</label>
+            </value>
+            <value>
+                <fullName>Region</fullName>
+                <default>false</default>
+                <label>Region</label>
+            </value>
+            <value>
+                <fullName>Statlig</fullName>
+                <default>false</default>
+                <label>Statlig</label>
+            </value>
+            <value>
+                <fullName>Okänd</fullName>
+                <default>false</default>
+                <label>Okänd</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

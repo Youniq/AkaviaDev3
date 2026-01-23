@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <label>Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Anmäld</fullName>
+                <default>false</default>
+                <label>Anmäld</label>
+            </value>
+            <value>
+                <fullName>Avanmäld</fullName>
+                <default>false</default>
+                <label>Avanmäld</label>
+            </value>
+            <value>
+                <fullName>Deltog</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Deltog</label>
+            </value>
+            <value>
+                <fullName>Deltog ej</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Deltog ej</label>
+            </value>
+            <value>
+                <fullName>Registrerad</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Registrerad</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

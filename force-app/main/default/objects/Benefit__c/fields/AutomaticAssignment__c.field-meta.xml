@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AutomaticAssignment__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Används om denna förmån ska automatiskt tilldelas medlemmen vid medlemskategoribyte alt. inträde</inlineHelpText>
+    <label>Automatisk tilldelning</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OOOValidation</fullName>
+    <active>true</active>
+    <description>Validates OOO To and From dates</description>
+    <errorConditionFormula>IF( 
+				AND(OutOfOfficeFrom__c &gt; OutOfOfficeTo__c,
+								!ISBLANK(OutOfOfficeTo__c)), true,
+IF(AND(!ISBLANK(OutOfOfficeTo__c), ISBLANK(OutOfOfficeFrom__c)), true, false))</errorConditionFormula>
+    <errorDisplayField>OutOfOfficeFrom__c</errorDisplayField>
+    <errorMessage>Ditt Out Of Office Från-datum måste vara mindre än Till-datumet. OBS! Du behöver inte ha något bestämt Till-datum.</errorMessage>
+</ValidationRule>

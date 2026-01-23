@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Datum_konflikt</fullName>
+    <active>true</active>
+    <errorConditionFormula>DateConflict__c</errorConditionFormula>
+    <errorMessage>Detta medlemskap krockar med ett nuvarande i datum. Se till att datumen löper efter varandra.</errorMessage>
+</ValidationRule>

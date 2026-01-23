@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OutOfOfficeTo__c</fullName>
+    <description>To date on users out of office message.</description>
+    <inlineHelpText>Select your end date of your out of office message</inlineHelpText>
+    <label>Out Of Office To</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

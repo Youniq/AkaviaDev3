@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SMSBody__c</fullName>
+    <description>Used to show the whole SMS that was sent from Marketing Cloud</description>
+    <label>SMS Text</label>
+    <length>800</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Start_Slutdatum</fullName>
+    <active>true</active>
+    <description>Används för fokusgrupper och delegation</description>
+    <errorConditionFormula>AND(
+    OR(
+   ISPICKVAL(Type__c,&quot;Delegation&quot;),
+   ISPICKVAL(Type__c,&quot;Fokusgrupp&quot;)
+    ),
+    OR(
+       ISBLANK( StartDate__c),
+       ISBLANK( EndDate__c)
+       )
+)</errorConditionFormula>
+    <errorMessage>Startdatum och slutdatum är obligatoriskt för typen delegation och fokusgrupp</errorMessage>
+</ValidationRule>

@@ -82,9 +82,19 @@ private class EmailAttachmentLinkHandlerTest {
         Test.startTest();
         insert cdlToEmail; // This will trigger our handler
         // Also call handler directly to ensure it executes without errors
-        EmailAttachmentLinkHandler.linkEmailFilesToCases(new List<ContentDocumentLink>{cdlToEmail});
+       // EmailAttachmentLinkHandler.linkEmailFilesToCases(new List<ContentDocumentLink>{cdlToEmail});
         Test.stopTest();
-        
+
+         // Verify file IS linked to Case
+        List<ContentDocumentLink> caseLinks = [
+            SELECT Id
+            FROM ContentDocumentLink
+            WHERE ContentDocumentId = :contentDocId
+            AND LinkedEntityId = :testCase.Id
+        ];
+
+        System.assertEquals(1, caseLinks.size(), 'File should be linked to Case');
+
         // Verify handler executed without errors
         // Note: Link creation depends on handler implementation and may not work in all test contexts
         System.assert(true, 'Handler should execute without errors');
@@ -307,6 +317,9 @@ private class EmailAttachmentLinkHandlerTest {
         // Create EmailMessages
         EmailMessage emailMsg1 = createEmailMessage(testCases[0].Id, 'Batch Test Email 1');
         EmailMessage emailMsg2 = createEmailMessage(testCases[1].Id, 'Batch Test Email 2');
+
+        List<EmailMessage> emailMessages = [SELECT Id, ParentId, RelatedToId FROM EmailMessage];
+        System.debug('EmailAttachmentLinkHandlerTest: EmailMessages: ' + emailMessages);
         
         // Create files
         ContentVersion cv1 = createTestFile('BatchFile1');
@@ -330,6 +343,10 @@ private class EmailAttachmentLinkHandlerTest {
             )
         };
         insert cdlList;
+
+
+        List<EmailMessage> emailMessages2 = [SELECT Id, ParentId, RelatedToId FROM EmailMessage];
+        System.debug('EmailAttachmentLinkHandlerTest: EmailMessages: ' + emailMessages2);
         
         Test.startTest();
         EmailAttachmentBackfillBatch batch = new EmailAttachmentBackfillBatch();

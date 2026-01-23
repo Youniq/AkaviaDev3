@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>System_ParentAssociation__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Ett systemfält som behövs för att undvika att introducera ett junction object i ändamålet att visa ut Föreningsärenden på överliggande Arbetsgivare. 
+Given komplexitet är att 
+- En lokalförening kan vara kopplad mot en eller flera arbetsgivare. 
+- En lokallokalförening är kopplad mot en lokalförening
+Så förväntan är att det här fältet ska ha en lokalförening medan fältet association__c kan ha vilken typ som helst.</description>
+    <label>System Lokalförening</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Föreningen måste vara av Typ &apos;Lokalförening&apos;</errorMessage>
+        <filterItems>
+            <field>Association__c.TypeName__c</field>
+            <operation>equals</operation>
+            <value>Lokalförening</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Association__c</referenceTo>
+    <relationshipLabel>Cases under Lokalförening</relationshipLabel>
+    <relationshipName>ParentAssociationCases</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

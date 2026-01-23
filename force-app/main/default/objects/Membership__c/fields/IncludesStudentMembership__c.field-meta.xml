@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IncludesStudentMembership__c</fullName>
+    <description>Används för att rulla upp ifall personen varit medlem sedan student eller kommer som första gången som yrkesverksam.</description>
+    <label>Innehåller studentmedlemskap</label>
+    <summaryFilterItems>
+        <field>FeeCategory__c.MembershipCategory__c</field>
+        <operation>equals</operation>
+        <value>Studerande</value>
+    </summaryFilterItems>
+    <summaryForeignKey>FeeCategory__c.Membership__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

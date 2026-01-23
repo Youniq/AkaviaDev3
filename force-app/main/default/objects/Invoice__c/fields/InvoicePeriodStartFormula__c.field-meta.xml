@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>InvoicePeriodStartFormula__c</fullName>
+    <description>Displays the invoiced period start-date. Note that invoices for current month will not have value in InvoicePeriodStart__c, it&apos;s always calculated here. InvoicePeriodStart__c contains date for retroactive invoices.</description>
+    <formula>IF(
+    NOT(ISNULL(InvoicePeriodStart__c)), 
+    InvoicePeriodStart__c,
+    IF(
+        NOT(ISNULL(ExpirationDate__c)),
+        DATE(YEAR(ExpirationDate__c) ,MONTH(ExpirationDate__c),1),
+        null
+    )
+)</formula>
+    <label>Fakturaperiod start</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

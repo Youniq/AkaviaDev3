@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Aktiv</fullName>
+                <default>false</default>
+                <label>Aktiv</label>
+            </value>
+            <value>
+                <fullName>Inskickad</fullName>
+                <default>false</default>
+                <label>Inskickad</label>
+            </value>
+            <value>
+                <fullName>Beställd</fullName>
+                <default>false</default>
+                <label>Beställd</label>
+            </value>
+            <value>
+                <fullName>Avslutad</fullName>
+                <default>false</default>
+                <label>Avslutad av systemet</label>
+            </value>
+            <value>
+                <fullName>Visat intresse</fullName>
+                <default>false</default>
+                <label>Visat intresse</label>
+            </value>
+            <value>
+                <fullName>Skickad till försäkringsbolag</fullName>
+                <default>false</default>
+                <label>Skickad till försäkringsbolag</label>
+            </value>
+            <value>
+                <fullName>Avslutad av medlem</fullName>
+                <default>false</default>
+                <label>Avslutad av medlem</label>
+            </value>
+            <value>
+                <fullName>Aktiverad</fullName>
+                <default>false</default>
+                <label>Aktiverad</label>
+            </value>
+            <value>
+                <fullName>Nyttjad</fullName>
+                <default>false</default>
+                <label>Nyttjad</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

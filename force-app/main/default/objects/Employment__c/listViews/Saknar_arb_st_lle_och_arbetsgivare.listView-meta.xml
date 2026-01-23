@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Saknar_arb_st_lle_och_arbetsgivare</fullName>
+    <columns>NAME</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>Person__c</columns>
+    <columns>Workplace__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Aktiv</value>
+    </filters>
+    <filters>
+        <field>Workplace__c</field>
+        <operation>equals</operation>
+    </filters>
+    <label>Saknar arbetsställe</label>
+</ListView>

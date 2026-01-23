@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Employer__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Medlemmens arbetsgivare. Fylls i med flow för Förhandlings-, Rådgivnings- och Rättshjälpsärenden där fältet Case reason (Kundcaseorsak) är satt till &apos;Medlemsärende&apos;. Kundtjänst ska kunna ändra värdet i fältet. 
+Ska inte användas för arbetsgivarärenden.</description>
+    <inlineHelpText>Medlemmens arbetsgivare. Fylls i automatiskt för Förhandlings-, Rådgivnings- och Rättshjälpsärenden där fältet Case reason (Kundcaseorsak) är satt till &apos;Medlemsärende&apos;.</inlineHelpText>
+    <label>Arbetsgivare</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Account.RecordTypeName__c</field>
+            <operation>equals</operation>
+            <value>Employer</value>
+        </filterItems>
+        <infoMessage>Måste vara en Arbetsgivare</infoMessage>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Anställdas medlemsärenden</relationshipLabel>
+    <relationshipName>MemberCases</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

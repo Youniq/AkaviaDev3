@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(StartDate__c - 1 = EndDate__c, &quot;Makulerad&quot;,
+IF(StartDate__c &gt; TODAY(), &quot;Kommande&quot;,
+IF(EndDate__c &lt; TODAY(), &quot;Avslutad&quot;,
+IF(StartDate__c &lt;= TODAY(), &quot;Aktiv&quot;,
+&quot;Okänd&quot;))))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

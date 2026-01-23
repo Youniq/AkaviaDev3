@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>StangningsorsakRequiredForRattshjalp</fullName>
+    <active>true</active>
+    <description>stängningsorsak ska vara required om case record type är &quot;Rättshjälp&quot;</description>
+    <errorConditionFormula>AND ( RecordType.DeveloperName = &apos;LegalAid&apos; ,  ISPICKVAL(Status, &apos;Avslutad&apos;), ISPICKVAL(CloseReason__c, &apos;&apos;)  )</errorConditionFormula>
+    <errorDisplayField>CloseReason__c</errorDisplayField>
+    <errorMessage>För att stänga ärende av typen Rättshjälp måste du ange Stängningsorsak</errorMessage>
+</ValidationRule>

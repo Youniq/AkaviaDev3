@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CancellationReason__c</fullName>
+    <label>Utträdesorsak</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Bytt bransch</fullName>
+                <default>false</default>
+                <label>Jag har bytt yrke eller bransch</label>
+            </value>
+            <value>
+                <fullName>Chef</fullName>
+                <default>false</default>
+                <label>Jag är eller ska bli chef</label>
+            </value>
+            <value>
+                <fullName>Egenföretagare</fullName>
+                <default>false</default>
+                <label>Jag är eller ska bli egenföretagare</label>
+            </value>
+            <value>
+                <fullName>Föräldraledig</fullName>
+                <default>false</default>
+                <label>Jag är eller ska bli föräldraledig</label>
+            </value>
+            <value>
+                <fullName>Tjänstledig</fullName>
+                <default>false</default>
+                <label>Jag är eller ska bli tjänstledig</label>
+            </value>
+            <value>
+                <fullName>Sjukskriven</fullName>
+                <default>false</default>
+                <label>Jag är eller ska bli sjukskriven</label>
+            </value>
+            <value>
+                <fullName>Arbetslös</fullName>
+                <default>false</default>
+                <label>Jag är eller ska bli arbetslös</label>
+            </value>
+            <value>
+                <fullName>Studera</fullName>
+                <default>false</default>
+                <label>Jag studerar eller ska börja studera</label>
+            </value>
+            <value>
+                <fullName>Pensionär</fullName>
+                <default>false</default>
+                <label>Jag ska gå eller har gått i pension</label>
+            </value>
+            <value>
+                <fullName>Flytt utomlands</fullName>
+                <default>false</default>
+                <label>Jag ska börja jobba utomlands</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund</fullName>
+                <default>false</default>
+                <label>Jag har gått med i ett annat förbund</label>
+            </value>
+            <value>
+                <fullName>Jag klarar mig utan facket</fullName>
+                <default>false</default>
+                <label>Jag använder inte mitt medlemskap</label>
+            </value>
+            <value>
+                <fullName>För dyr medlemsavgift</fullName>
+                <default>false</default>
+                <label>Jag tycker att medlemsavgiften är för dyr</label>
+            </value>
+            <value>
+                <fullName>Annan anledning</fullName>
+                <default>false</default>
+                <label>Annan anledning</label>
+            </value>
+            <value>
+                <fullName>Redan medlem i annat fackförbund</fullName>
+                <default>false</default>
+                <label>Redan medlem i annat fackförbund</label>
+            </value>
+            <value>
+                <fullName>Missnöje med Akavia</fullName>
+                <default>false</default>
+                <label>Missnöje med Akavia</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Akademikerförbundet SSR</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Akademikerförbundet SSR</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Annat Saco-förbund</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Annat Saco-förbund</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Annat TCO/LO-förbund</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Annat TCO/LO-förbund</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Finansförbundet</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Finansförbundet</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Ledarna</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Ledarna</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – ST</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – ST</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Unionen</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Unionen</label>
+            </value>
+            <value>
+                <fullName>Byte av förbund – Vision</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Byte av förbund – Vision</label>
+            </value>
+            <value>
+                <fullName>Jag ska bli chef</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Jag ska bli chef</label>
+            </value>
+            <value>
+                <fullName>Jag ska bli egen företagare</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Jag ska bli egen företagare</label>
+            </value>
+            <value>
+                <fullName>Kan inte vara medlem i Akavia</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Kan inte vara medlem i Akavia</label>
+            </value>
+            <value>
+                <fullName>Missnöje med Akavia centralt</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missnöje med Akavia centralt</label>
+            </value>
+            <value>
+                <fullName>Missnöje med Akavias event</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missnöje med Akavias event</label>
+            </value>
+            <value>
+                <fullName>Missnöje med Akavias medlemsförmåner</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missnöje med Akavias medlemsförmåner</label>
+            </value>
+            <value>
+                <fullName>Missnöje med Akavias medlemstidning</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missnöje med Akavias medlemstidning</label>
+            </value>
+            <value>
+                <fullName>Missnöje med Akavias politik</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missnöje med Akavias politik</label>
+            </value>
+            <value>
+                <fullName>Missnöje med lokal representation</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missnöje med lokal representation</label>
+            </value>
+            <value>
+                <fullName>TBD 1</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TBD 1</label>
+            </value>
+            <value>
+                <fullName>TBD 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TBD 2</label>
+            </value>
+            <value>
+                <fullName>TBD 3</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TBD 3</label>
+            </value>
+            <value>
+                <fullName>Vill inte uppge</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Vill inte uppge</label>
+            </value>
+            <value>
+                <fullName>Övrigt</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Övrigt</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

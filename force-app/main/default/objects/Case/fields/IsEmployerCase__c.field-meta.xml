@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsEmployerCase__c</fullName>
+    <description>Checks that case has an Account and that the recordtype of the Account is Employer.</description>
+    <formula>AND(NOT(ISNULL(AccountId)),
+				NOT(ISBLANK(AccountId))) &amp;&amp;
+Account.RecordTypeName__c = &apos;Employer&apos;</formula>
+    <label>Är Arbetsgivarärende</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

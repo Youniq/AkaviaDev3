@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MembershipOneYear__c</fullName>
+    <description>Används av flow för att veta när yrk år 1 ska uppdateras till yrkesverksam. Sätts baserat på examensdatum.</description>
+    <formula>ADDMONTHS( Person__r.GraduationDate__c , 12) &lt;= TODAY()</formula>
+    <label>Medlem 1 år</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

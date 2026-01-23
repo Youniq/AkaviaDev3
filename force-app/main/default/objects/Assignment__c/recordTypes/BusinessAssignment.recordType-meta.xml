@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BusinessAssignment</fullName>
+    <active>true</active>
+    <label>Arbetsplatsuppdrag</label>
+    <picklistValues>
+        <picklist>AssignmentSource__c</picklist>
+        <values>
+            <fullName>Sveriges Farmaceuter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sveriges Ingenjörer</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>Adept</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Arbetsmiljöombud</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Kontaktombud</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Lokalombud</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Lokalombud%2C suppleant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mentor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Studentmarknadsförare</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type__c</picklist>
+        <values>
+            <fullName>Anställd</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Centralt Förtroendevald</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Lokalt Förtroendevald</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+</RecordType>

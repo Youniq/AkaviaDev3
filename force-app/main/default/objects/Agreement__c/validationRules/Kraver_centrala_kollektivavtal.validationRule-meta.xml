@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Kraver_centrala_kollektivavtal</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    OR(
+       ISPICKVAL(Type__c, &quot;Hängavtal&quot;),
+       ISPICKVAL(Type__c, &quot;Lokalt kollektivavtal&quot;)
+      ),
+    OR(
+        ISBLANK(ParentAgreement__c),
+        NOT(ISPICKVAL(ParentAgreement__r.Type__c, &quot;Centralt kollektivavtal&quot;))
+      )
+)</errorConditionFormula>
+    <errorMessage>Det går inte att spara lokala kollektivavtal/hängavtal utan ett överordnat centralt kollektivavtal</errorMessage>
+</ValidationRule>

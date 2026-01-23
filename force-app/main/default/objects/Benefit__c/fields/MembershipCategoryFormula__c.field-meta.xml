@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MembershipCategoryFormula__c</fullName>
+    <description>Used to be able to use the multi select picklist as a criteria for filtering i flows</description>
+    <externalId>false</externalId>
+    <formula>IF(INCLUDES(MembershipCategories__c, &apos;Yrkesverksam&apos;),&apos;Yrkesverksam&apos;,&apos;&apos;) + &apos;: &apos;
++IF(INCLUDES(MembershipCategories__c, &apos;Yrkesverksam första året&apos;),&apos;Yrkesverksam första året&apos;,&apos;&apos;) + &apos;: &apos;
++IF(INCLUDES(MembershipCategories__c, &apos;Studerande&apos;),&apos;Studerande&apos;,&apos;&apos;) + &apos;: &apos;
++IF(INCLUDES(MembershipCategories__c, &apos;Pensionär&apos;),&apos;Pensionär&apos;,&apos;&apos;) + &apos;: &apos;
++IF(INCLUDES(MembershipCategories__c, &apos;Egenföretagare&apos;),&apos;Egenföretagare&apos;,&apos;&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Medlemskategorier</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

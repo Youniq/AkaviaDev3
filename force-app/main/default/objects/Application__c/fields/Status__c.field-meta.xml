@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ny ansökan</fullName>
+                <default>false</default>
+                <label>Ny ansökan</label>
+            </value>
+            <value>
+                <fullName>Manuell hantering</fullName>
+                <default>true</default>
+                <label>Manuell hantering</label>
+            </value>
+            <value>
+                <fullName>Särskild prövning</fullName>
+                <default>false</default>
+                <label>Särskild prövning</label>
+            </value>
+            <value>
+                <fullName>Reglera skuld</fullName>
+                <default>false</default>
+                <label>Reglera skuld</label>
+            </value>
+            <value>
+                <fullName>Redan medlem</fullName>
+                <default>false</default>
+                <label>Redan medlem</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

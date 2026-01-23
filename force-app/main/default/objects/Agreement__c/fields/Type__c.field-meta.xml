@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <label>Typ</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Centralt kollektivavtal</fullName>
+                <default>false</default>
+                <label>Centralt kollektivavtal</label>
+            </value>
+            <value>
+                <fullName>Löneavtal</fullName>
+                <default>false</default>
+                <label>Löneavtal</label>
+            </value>
+            <value>
+                <fullName>Pensionsavtal</fullName>
+                <default>false</default>
+                <label>Pensionsavtal</label>
+            </value>
+            <value>
+                <fullName>Lokalt kollektivavtal</fullName>
+                <default>false</default>
+                <label>Lokalt kollektivavtal</label>
+            </value>
+            <value>
+                <fullName>Hängavtal</fullName>
+                <default>false</default>
+                <label>Hängavtal</label>
+            </value>
+            <value>
+                <fullName>Företagsavtal</fullName>
+                <default>false</default>
+                <label>Företagsavtal</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

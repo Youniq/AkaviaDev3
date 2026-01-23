@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Slutdatum_inte_mindre_an_startdatum</fullName>
+    <active>false</active>
+    <description>Ett medlemskap får inte ha ett slutdatum som är tidigare än startdatumet</description>
+    <errorConditionFormula>EndDate__c &lt; StartDate__c</errorConditionFormula>
+    <errorMessage>Slutdatum kan inte vara innan startdatum, var vänlig och uppdatera slutdatumet.</errorMessage>
+</ValidationRule>

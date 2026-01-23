@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Obligatorisk_overordnad_Lokallokal</fullName>
+    <active>true</active>
+    <description>Lokallokalförening kräver lokalförening</description>
+    <errorConditionFormula>AND(ISPICKVAL(Type__c, &quot;Lokallokalförening&quot;),
+    OR(
+       ISBLANK(ParentAssociation__c),
+       NOT(ISPICKVAL(ParentAssociation__r.Type__c , &quot;Lokalförening&quot;))
+    )
+)</errorConditionFormula>
+    <errorDisplayField>ParentAssociation__c</errorDisplayField>
+    <errorMessage>En lokallokalförening kräver en lokalförening som överordnad förening</errorMessage>
+</ValidationRule>

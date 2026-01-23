@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AssociationAssignment</fullName>
+    <active>true</active>
+    <label>Föreningsuppdrag</label>
+    <picklistValues>
+        <picklist>AssignmentSource__c</picklist>
+        <values>
+            <fullName>Sveriges Farmaceuter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sveriges Ingenjörer</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Role__c</picklist>
+        <values>
+            <fullName>Fullmäktige%2C suppleant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>INTERN - Utbildningsadministratör</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ledamot</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ledamot%2C suppleant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LedamotFullmaktige</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Medlemsadministratör</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ordförande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ordförande%2C vice</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Revisor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Revisor%2C suppleant</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Valberedning</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Valberedning%2C fullmäktige</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Valberedning%2C sammankallande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Valberedning%2C suppleant</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type__c</picklist>
+        <values>
+            <fullName>Centralt Förtroendevald</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Lokalt Förtroendevald</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+</RecordType>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Manuell_hantering</fullName>
+    <columns>NAME</columns>
+    <columns>ApplicationDate__c</columns>
+    <columns>Decision__c</columns>
+    <columns>Status__c</columns>
+    <columns>MembershipType__c</columns>
+    <columns>Type__c</columns>
+    <columns>Person__c</columns>
+    <columns>Comment__c</columns>
+    <columns>CommentUniversity__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Decision__c</field>
+        <operation>equals</operation>
+        <value>Inväntar</value>
+    </filters>
+    <label>Manuell hantering</label>
+</ListView>

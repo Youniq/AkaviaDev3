@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContactPerson__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Den som är kontaktperson för föreningen</description>
+    <label>Kontaktperson</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Enbart personer kan väljas i detta fält</errorMessage>
+        <filterItems>
+            <field>Account.IsPersonAccount</field>
+            <operation>equals</operation>
+            <value>True</value>
+        </filterItems>
+        <infoMessage>Sök efter personer/medlemmar att fylla i detta fält</infoMessage>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Kontaktperson Föreningar</relationshipLabel>
+    <relationshipName>KontaktPerson</relationshipName>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

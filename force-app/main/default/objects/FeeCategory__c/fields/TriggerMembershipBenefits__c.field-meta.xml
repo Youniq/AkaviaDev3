@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TriggerMembershipBenefits__c</fullName>
+    <description>Fältet ersatt av Is_30_days_from_start_date__c och logik direkt i flödet &quot;Fee Category - Scheduled - 30 days add membership benefits&quot;</description>
+    <formula>AND( AutoUpgrade__c ,
+StartDate__c + 30 = TODAY()
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>DEPRECATED - Trigger MembershipBenefits</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

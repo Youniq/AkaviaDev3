@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UpdateNeeded__c</fullName>
+    <description>System only field. Used in scheduled flow to update the aktuell anställning field.</description>
+    <formula>IF(OR
+			(AND(Person__r.LatestEmployment__c  &lt;&gt; Id,
+        Status__c = &quot;Aktiv&quot;)
+   ,AND(Person__r.LatestEmployment__c = Id,
+								Status__c &lt;&gt; &quot;Aktiv&quot;))
+			,true, false)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>UpdateNeeded</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

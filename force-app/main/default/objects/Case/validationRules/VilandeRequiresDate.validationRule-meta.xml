@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VilandeRequiresDate</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+     ISPICKVAL(Status, &quot;Vilande&quot;),
+     ISBLANK(ReActivationDate__c)
+)</errorConditionFormula>
+    <errorDisplayField>ReActivationDate__c</errorDisplayField>
+    <errorMessage>Återaktiveringsdatum är obligatoriskt för att kunna sätta ärendet till vilande</errorMessage>
+</ValidationRule>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LegalAidApproved__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>Gäller rättshjälpsärenden. Klicka i denna ruta när rättshjälp har beviljats medlemmen. Ska fyllas i under ärendets handläggning</inlineHelpText>
+    <label>Rättshjälp bevlijad</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

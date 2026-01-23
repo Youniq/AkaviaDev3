@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ValidateEndDate</fullName>
+    <active>false</active>
+    <errorConditionFormula>DAY(EndDate__c + 1) &lt;&gt; 1</errorConditionFormula>
+    <errorDisplayField>EndDate__c</errorDisplayField>
+    <errorMessage>En ny avgiftsklass bör alltid gälla till och med sista varje månad</errorMessage>
+</ValidationRule>

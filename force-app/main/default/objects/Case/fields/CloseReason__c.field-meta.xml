@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CloseReason__c</fullName>
+    <label>Stängningsorsak</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>Återkallat rättshjälp</fullName>
+                <default>false</default>
+                <label>Återkallat rättshjälp</label>
+            </value>
+            <value>
+                <fullName>Avslutad</fullName>
+                <default>false</default>
+                <label>Avslutad</label>
+            </value>
+            <value>
+                <fullName>Dom</fullName>
+                <default>false</default>
+                <label>Dom</label>
+            </value>
+            <value>
+                <fullName>Dom/beslut</fullName>
+                <default>false</default>
+                <label>Dom/beslut</label>
+            </value>
+            <value>
+                <fullName>Dom/beslut – ej framgång</fullName>
+                <default>false</default>
+                <label>Dom/beslut – ej framgång</label>
+            </value>
+            <value>
+                <fullName>Dom/beslut – framgång</fullName>
+                <default>false</default>
+                <label>Dom/beslut – framgång</label>
+            </value>
+            <value>
+                <fullName>Ej rättshjälp</fullName>
+                <default>false</default>
+                <label>Ej rättshjälp</label>
+            </value>
+            <value>
+                <fullName>Ersättning ej utbetald</fullName>
+                <default>false</default>
+                <label>Ersättning ej utbetald</label>
+            </value>
+            <value>
+                <fullName>Ersättning utbetald</fullName>
+                <default>false</default>
+                <label>Ersättning utbetald</label>
+            </value>
+            <value>
+                <fullName>Förlikning</fullName>
+                <default>false</default>
+                <label>Förlikning</label>
+            </value>
+            <value>
+                <fullName>Medlem önskar avsluta</fullName>
+                <default>false</default>
+                <label>Medlem önskar avsluta</label>
+            </value>
+            <value>
+                <fullName>Övrigt</fullName>
+                <default>false</default>
+                <label>Övrigt</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

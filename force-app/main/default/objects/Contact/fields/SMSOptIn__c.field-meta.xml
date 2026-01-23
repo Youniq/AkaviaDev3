@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SMSOptIn__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Används i marketing cloud för att avgöra om medllemmen har gett sitt medgivande för sms kommunikation</description>
+    <inlineHelpText>Vänligen kryssa ur ruta om du inte vill få SMS med medlemserbjudanden. Du kan dock inte avsäga dig medlemsinformation.</inlineHelpText>
+    <label>SMS Kommunikation</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Checkbox</type>
+</CustomField>

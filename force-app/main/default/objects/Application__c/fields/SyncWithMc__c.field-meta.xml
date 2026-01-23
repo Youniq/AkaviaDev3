@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SyncWithMc__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When this checkbox is true, the record will be synced into Marketing Cloud. THis is managed from flow &quot;Account_TRG_SyncWithMcIsChanged&quot;.
+Replacing the formula field: MC_validator__c.</description>
+    <label>Sync with MC</label>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

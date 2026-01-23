@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source__c</fullName>
+    <label>Kontaktväg</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Via universitet eller högskola</fullName>
+                <default>false</default>
+                <label>På universitet eller högskola</label>
+            </value>
+            <value>
+                <fullName>Via kollega</fullName>
+                <default>false</default>
+                <label>Via kollega</label>
+            </value>
+            <value>
+                <fullName>Via fackligt ombud</fullName>
+                <default>false</default>
+                <label>Via fackligt ombud</label>
+            </value>
+            <value>
+                <fullName>Genom bekant eller närstående</fullName>
+                <default>false</default>
+                <label>Genom bekant eller närstående</label>
+            </value>
+            <value>
+                <fullName>Googlesökning</fullName>
+                <default>false</default>
+                <label>Googlesökning</label>
+            </value>
+            <value>
+                <fullName>Annons/reklam</fullName>
+                <default>false</default>
+                <label>Annons/reklam</label>
+            </value>
+            <value>
+                <fullName>Jag blev kontaktad av Akavia</fullName>
+                <default>false</default>
+                <label>Jag blev kontaktad av Akavia</label>
+            </value>
+            <value>
+                <fullName>Annat</fullName>
+                <default>false</default>
+                <label>Annat</label>
+            </value>
+            <value>
+                <fullName>Via telefon</fullName>
+                <default>false</default>
+                <label>Via telefon</label>
+            </value>
+            <value>
+                <fullName>Medlemsservice</fullName>
+                <default>false</default>
+                <label>Medlemsservice</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

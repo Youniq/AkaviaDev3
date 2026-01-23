@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Godk_nda_ans_kningar</fullName>
+    <columns>NAME</columns>
+    <columns>ApplicationDate__c</columns>
+    <columns>Status__c</columns>
+    <columns>Type__c</columns>
+    <columns>Person__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Decision__c</field>
+        <operation>equals</operation>
+        <value>Godkänd</value>
+    </filters>
+    <label>Godkända ansökningar</label>
+</ListView>

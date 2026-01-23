@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CategoryCommunity__c</fullName>
+    <description>Extern kommunicerad kategori vid ärendeskapande av medlem.</description>
+    <inlineHelpText>Extern kommunicerad kategori vid ärendeskapande av medlem.</inlineHelpText>
+    <label>Kategori</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>A-kassa och inkomstförsäkring</fullName>
+                <default>false</default>
+                <label>A-kassa och inkomstförsäkring</label>
+            </value>
+            <value>
+                <fullName>Avgift och betalning</fullName>
+                <default>false</default>
+                <label>Avgift och betalning</label>
+            </value>
+            <value>
+                <fullName>Anställning och lön</fullName>
+                <default>false</default>
+                <label>Anställning och lön</label>
+            </value>
+            <value>
+                <fullName>Reducerad avgift</fullName>
+                <default>false</default>
+                <label>Ansökan om reducerad avgift</label>
+            </value>
+            <value>
+                <fullName>Önskar ett medlemsintyg</fullName>
+                <default>false</default>
+                <label>Önskar ett medlemsintyg</label>
+            </value>
+            <value>
+                <fullName>Registerutdrag</fullName>
+                <default>false</default>
+                <label>Behandling av personuppgifter</label>
+            </value>
+            <value>
+                <fullName>Dataportabilitet</fullName>
+                <default>false</default>
+                <label>Begäran om dataportabilitet - enligt GDPR</label>
+            </value>
+            <value>
+                <fullName>Övrigt</fullName>
+                <default>false</default>
+                <label>Övrigt</label>
+            </value>
+            <value>
+                <fullName>Överklaga beslut om arbetsskada</fullName>
+                <default>false</default>
+                <label>Överklaga beslut om arbetsskada</label>
+            </value>
+            <value>
+                <fullName>Överklaga beslut om a-kassa</fullName>
+                <default>false</default>
+                <label>Överklaga beslut om a-kassa</label>
+            </value>
+            <value>
+                <fullName>Medlemslista förtroendevald</fullName>
+                <default>false</default>
+                <label>Medlemslista förtroendevald</label>
+            </value>
+            <value>
+                <fullName>Medlemskapet</fullName>
+                <default>false</default>
+                <label>Medlemskapet</label>
+            </value>
+            <value>
+                <fullName>Kategori A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Kategori A</label>
+            </value>
+            <value>
+                <fullName>Kategori B</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Kategori B</label>
+            </value>
+            <value>
+                <fullName>Kategori C</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Kategori C</label>
+            </value>
+            <value>
+                <fullName>Medlemsintyg</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Medlemsintyg</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

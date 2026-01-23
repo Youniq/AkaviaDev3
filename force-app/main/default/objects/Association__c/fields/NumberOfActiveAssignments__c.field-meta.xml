@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NumberOfActiveAssignments__c</fullName>
+    <description>This is populated from Automation, scheduled flow: Association_Scheduled_CalcActiveAssignments. 
+Counts how many active assignments (person assignments) there are for a Lokalförening/Lokallokal förening. 
+The value is later on user to determine the status of a Lokal-/Lokallokalförening. 0 active assignments = status &apos;Vilande&apos;</description>
+    <externalId>false</externalId>
+    <label>Antal Aktiva Uppdrag</label>
+    <precision>4</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

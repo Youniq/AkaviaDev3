@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>F_reningar_UTAN_kontaktf_rbund</fullName>
+    <columns>NAME</columns>
+    <columns>ContactAssociation__c</columns>
+    <columns>ContactPerson__c</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>UPDATEDBY_USER</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ContactAssociation__c</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>Type__c</field>
+        <operation>equals</operation>
+        <value>Lokalförening,Lokallokalförening</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Aktiv</value>
+    </filters>
+    <label>Föreningar UTAN kontaktförbund</label>
+    <sharedTo>
+        <group>Negotiation</group>
+    </sharedTo>
+</ListView>

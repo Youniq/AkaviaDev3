@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Membership__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Used for statistic purposes and is set by automations</description>
+    <label>Medlemskap</label>
+    <referenceTo>Membership__c</referenceTo>
+    <relationshipLabel>Ansökningar</relationshipLabel>
+    <relationshipName>Applications</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <label>Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Billecta - Create Debtor</fullName>
+                <default>false</default>
+                <label>Billecta - Create Debtor</label>
+            </value>
+            <value>
+                <fullName>Billecta - Update Debtor</fullName>
+                <default>false</default>
+                <label>Billecta - Update Debtor</label>
+            </value>
+            <value>
+                <fullName>Billecta - Delayed Update Debtor</fullName>
+                <default>false</default>
+                <label>Billecta - Delayed Update Debtor</label>
+            </value>
+            <value>
+                <fullName>Billecta - Delete Debtor</fullName>
+                <default>false</default>
+                <label>Billecta - Delete Debtor</label>
+            </value>
+            <value>
+                <fullName>Billecta - Create Invoice</fullName>
+                <default>false</default>
+                <label>Billecta - Create Invoice</label>
+            </value>
+            <value>
+                <fullName>Billecta - Create Invoices</fullName>
+                <default>false</default>
+                <label>Billecta - Create Invoices</label>
+            </value>
+            <value>
+                <fullName>Billecta - Create Retroactive Invoice</fullName>
+                <default>false</default>
+                <label>Billecta - Create Retroactive Invoice</label>
+            </value>
+            <value>
+                <fullName>Billecta - Pause Invoice</fullName>
+                <default>false</default>
+                <label>Billecta - Pause Invoice</label>
+            </value>
+            <value>
+                <fullName>Billecta - Resume Invoice</fullName>
+                <default>false</default>
+                <label>Billecta - Resume Invoice</label>
+            </value>
+            <value>
+                <fullName>Billecta - Cancel Invoice</fullName>
+                <default>false</default>
+                <label>Billecta - Cancel Invoice</label>
+            </value>
+            <value>
+                <fullName>Billecta - Cancel Invoices</fullName>
+                <default>false</default>
+                <label>Billecta - Cancel Invoices</label>
+            </value>
+            <value>
+                <fullName>Billecta - Get Payment Info</fullName>
+                <default>false</default>
+                <label>Billecta - Get Payment Info</label>
+            </value>
+            <value>
+                <fullName>DailyEmployerUpdateBasun</fullName>
+                <default>false</default>
+                <label>DailyEmployerUpdateBasun</label>
+            </value>
+            <value>
+                <fullName>DailyWorkplaceUpdateBasun</fullName>
+                <default>false</default>
+                <label>DailyWorkplaceUpdateBasun</label>
+            </value>
+            <value>
+                <fullName>D&amp;B - Add person to portfolio</fullName>
+                <default>false</default>
+                <label>D&amp;B - Add person to portfolio</label>
+            </value>
+            <value>
+                <fullName>D&amp;B - Get person from portfolio</fullName>
+                <default>false</default>
+                <label>D&amp;B - Get person from portfolio</label>
+            </value>
+            <value>
+                <fullName>D&amp;B - Delete person from portfolio</fullName>
+                <default>false</default>
+                <label>D&amp;B - Delete person from portfolio</label>
+            </value>
+            <value>
+                <fullName>D&amp;B - Get person info</fullName>
+                <default>false</default>
+                <label>D&amp;B - Get monitored person info</label>
+            </value>
+            <value>
+                <fullName>D&amp;B - Update person list</fullName>
+                <default>false</default>
+                <label>D&amp;B - Update person monitoring list</label>
+            </value>
+            <value>
+                <fullName>D&amp;B - Get all person changes</fullName>
+                <default>false</default>
+                <label>D&amp;B - Get all person changes</label>
+            </value>
+            <value>
+                <fullName>Marketing Cloud - Delete contacts</fullName>
+                <default>false</default>
+                <label>Marketing Cloud - Delete contacts</label>
+            </value>
+            <value>
+                <fullName>Brilliant</fullName>
+                <default>false</default>
+                <label>Brilliant</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

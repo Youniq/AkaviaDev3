@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PreferredFirstname__c</fullName>
+    <description>A formula to get the preferred first name from Account into Contact to be able to use it as merge field in email template</description>
+    <externalId>false</externalId>
+    <formula>Account.PreferredFirstName__c</formula>
+    <label>Föredraget Förnamn</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reducerade_avgifter_tidsbestamda</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    CONTAINS(TEXT(FeeCategory__c), &quot;reducerad&quot;),
+     ISBLANK(EndDate__c)
+)</errorConditionFormula>
+    <errorMessage>Reducerade avgiftsklasser behöver ett slutdatum</errorMessage>
+</ValidationRule>

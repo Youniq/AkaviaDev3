@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Role__c</fullName>
+    <inlineHelpText>Roll som uppdragstagaren har mot uppdragsstället</inlineHelpText>
+    <label>Roll</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Type__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ordförande</fullName>
+                <default>false</default>
+                <label>Ordförande</label>
+            </value>
+            <value>
+                <fullName>Ordförande, vice</fullName>
+                <default>false</default>
+                <label>Ordförande, vice</label>
+            </value>
+            <value>
+                <fullName>Ledamot</fullName>
+                <default>false</default>
+                <label>Ledamot</label>
+            </value>
+            <value>
+                <fullName>Lokalombud</fullName>
+                <default>false</default>
+                <label>Lokalombud</label>
+            </value>
+            <value>
+                <fullName>Medlemsadministratör</fullName>
+                <default>false</default>
+                <label>Medlemsadministratör</label>
+            </value>
+            <value>
+                <fullName>Studentmarknadsförare</fullName>
+                <default>false</default>
+                <label>Studentmarknadsförare</label>
+            </value>
+            <value>
+                <fullName>Kontaktombud</fullName>
+                <default>false</default>
+                <label>Kontaktombud</label>
+            </value>
+            <value>
+                <fullName>Ledamot, suppleant</fullName>
+                <default>false</default>
+                <label>Ledamot, suppleant</label>
+            </value>
+            <value>
+                <fullName>Lokalombud, suppleant</fullName>
+                <default>false</default>
+                <label>Lokalombud, suppleant</label>
+            </value>
+            <value>
+                <fullName>Arbetsmiljöombud</fullName>
+                <default>false</default>
+                <label>Arbetsmiljöombud</label>
+            </value>
+            <value>
+                <fullName>Valberedning</fullName>
+                <default>false</default>
+                <label>Valberedning</label>
+            </value>
+            <value>
+                <fullName>Valberedning, sammankallande</fullName>
+                <default>false</default>
+                <label>Valberedning, sammankallande</label>
+            </value>
+            <value>
+                <fullName>Valberedning, suppleant</fullName>
+                <default>false</default>
+                <label>Valberedning, suppleant</label>
+            </value>
+            <value>
+                <fullName>LedamotFullmaktige</fullName>
+                <default>false</default>
+                <label>Fullmäktige, ledamot</label>
+            </value>
+            <value>
+                <fullName>Mentor</fullName>
+                <default>false</default>
+                <label>Mentor</label>
+            </value>
+            <value>
+                <fullName>Adept</fullName>
+                <default>false</default>
+                <label>Adept</label>
+            </value>
+            <value>
+                <fullName>Valberedning, fullmäktige</fullName>
+                <default>false</default>
+                <label>Fullmäktige, valberedning</label>
+            </value>
+            <value>
+                <fullName>Fullmäktige, suppleant</fullName>
+                <default>false</default>
+                <label>Fullmäktige, suppleant</label>
+            </value>
+            <value>
+                <fullName>INTERN - Utbildningsadministratör</fullName>
+                <default>false</default>
+                <label>INTERN - Utbildningsadministratör</label>
+            </value>
+            <value>
+                <fullName>Revisor</fullName>
+                <default>false</default>
+                <label>Revisor</label>
+            </value>
+            <value>
+                <fullName>Revisor, suppleant</fullName>
+                <default>false</default>
+                <label>Revisor, suppleant</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Ordförande</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Ordförande, vice</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Ledamot</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <valueName>Lokalombud</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <valueName>Medlemsadministratör</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <valueName>Kontaktombud</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Ledamot, suppleant</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <valueName>Lokalombud, suppleant</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <valueName>Arbetsmiljöombud</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Valberedning</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Valberedning, sammankallande</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Valberedning, suppleant</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lokalt Förtroendevald</controllingFieldValue>
+            <valueName>INTERN - Utbildningsadministratör</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Anställd</controllingFieldValue>
+            <valueName>Studentmarknadsförare</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Mentorskap</controllingFieldValue>
+            <valueName>Mentor</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Mentorskap</controllingFieldValue>
+            <valueName>Adept</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>LedamotFullmaktige</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Valberedning, fullmäktige</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Fullmäktige, suppleant</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Revisor</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Centralt Förtroendevald</controllingFieldValue>
+            <valueName>Revisor, suppleant</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

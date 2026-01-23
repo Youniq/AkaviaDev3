@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Update_Chef_pa_befintligt_anstallning</fullName>
+    <active>true</active>
+    <description>Chef får inte sättas på befintligt anställningspost, får enbart göras på nya anställningar</description>
+    <errorConditionFormula>AND(
+				ISCHANGED(Manager__c),
+				NOT $Permission.SystemAdminOverride
+				)</errorConditionFormula>
+    <errorMessage>Chef kan inte anges på en befintligt anställning, om medlemmen blivit chef var vänlig skapa en ny anställning och välj chef.</errorMessage>
+</ValidationRule>

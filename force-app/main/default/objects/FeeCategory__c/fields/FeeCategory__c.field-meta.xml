@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FeeCategory__c</fullName>
+    <label>Avgiftsklass</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>MembershipCategory__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetName>Avgiftsklasser</valueSetName>
+        <valueSettings>
+            <controllingFieldValue>Studerande</controllingFieldValue>
+            <valueName>Studerande</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Studerande</controllingFieldValue>
+            <valueName>Åter student</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam första året</controllingFieldValue>
+            <valueName>Första året</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Fullbetalande</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Låg reducerad</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Hög reducerad</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Anställd utomlands med utländsk arbetsgivare</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Dubbelansluten SULF</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Dubbelansluten SULF doktorand</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Dubbelansluten SRAT</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Dubbelansluten Norden</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Dubbelansluten LR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Ingen avgift Yrkesverksam</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yrkesverksam</controllingFieldValue>
+            <valueName>Ingen avgift Yrkesverksam första året</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Egenföretagare</controllingFieldValue>
+            <valueName>Fullbetalande egenföretagare</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Egenföretagare</controllingFieldValue>
+            <valueName>Advokat egen firma</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Egenföretagare</controllingFieldValue>
+            <valueName>Ingen avgift Egenföretagare</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Pensionär</controllingFieldValue>
+            <valueName>Pensionär</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Pensionär</controllingFieldValue>
+            <valueName>Ingen avgift Pensionär</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

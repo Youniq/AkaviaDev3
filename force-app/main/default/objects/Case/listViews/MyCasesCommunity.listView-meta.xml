@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MyCasesCommunity</fullName>
+    <columns>CASES.CASE_NUMBER</columns>
+    <columns>CategoryCommunity__c</columns>
+    <columns>CASES.STATUS</columns>
+    <columns>CASES.CLOSED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>HideForMember__c</field>
+        <operation>equals</operation>
+        <value>0</value>
+    </filters>
+    <label>Mina Medlemsärenden</label>
+</ListView>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LocalAssociationNotExists__c</fullName>
+    <description>För framtagning av vilka personer som saknar AG</description>
+    <formula>AND(
+Status__c = &apos;Aktiv&apos;, Workplace__r.Parent.Association__c = NULL)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Lokalförening exsisterar ej</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

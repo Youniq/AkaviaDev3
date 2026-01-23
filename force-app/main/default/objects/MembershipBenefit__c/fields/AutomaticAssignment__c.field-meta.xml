@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AutomaticAssignment__c</fullName>
+    <description>Systemfält. Används i flow för att kunna plocka ut vilka medlemsförmåner som har automatiskt tilldelats medlemmen.</description>
+    <formula>Benefit__r.AutomaticAssignment__c</formula>
+    <label>Automatisk tilldelning</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

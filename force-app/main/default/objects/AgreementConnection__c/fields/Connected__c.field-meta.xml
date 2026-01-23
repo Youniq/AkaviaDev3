@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Connected__c</fullName>
+    <description>Används för att räkna ut ifall avtalanslutningen är aktivt baserat på inkopplings datum samt giltigt t.o.m.</description>
+    <formula>IF(
+    AND(
+        ConnectionDate__c &lt;= TODAY(),
+        OR(
+            ConnectionDate__c &gt;= TODAY(),
+            ISBLANK(ValidTo__c)
+            )
+        ),
+    TRUE,
+    FALSE
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Inkoppplad</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

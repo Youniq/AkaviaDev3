@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RejectionReason__c</fullName>
+    <label>Avslagsorsak</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Skuld kvarstår</fullName>
+                <default>false</default>
+                <label>Skuld kvarstår</label>
+            </value>
+            <value>
+                <fullName>Redan medlem</fullName>
+                <default>false</default>
+                <label>Redan medlem</label>
+            </value>
+            <value>
+                <fullName>Ej behörig</fullName>
+                <default>false</default>
+                <label>Ej behörig</label>
+            </value>
+            <value>
+                <fullName>Dispens ej beviljad</fullName>
+                <default>false</default>
+                <label>Dispens ej beviljad</label>
+            </value>
+            <value>
+                <fullName>Dubblettansökan</fullName>
+                <default>false</default>
+                <label>Dubblettansökan</label>
+            </value>
+            <value>
+                <fullName>To be decided</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>To be decided</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

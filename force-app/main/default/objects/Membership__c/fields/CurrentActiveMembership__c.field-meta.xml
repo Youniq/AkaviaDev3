@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CurrentActiveMembership__c</fullName>
+    <description>Field used by middleware, returns true if Membership is &quot;Senaste medlemskap&quot;, active and not deceased</description>
+    <formula>AND(
+					SenasteMedlemskap__c = true,
+					OR(Status__c = &quot;Aktiv&quot;, Status__c = &quot;Begärt utträde&quot;),
+					NOT(ISPICKVAL(ExitReason__c, &apos;Avliden&apos;)))</formula>
+    <label>Aktivt medlemskap</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

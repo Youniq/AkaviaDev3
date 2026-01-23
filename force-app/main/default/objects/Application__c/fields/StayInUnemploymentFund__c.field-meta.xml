@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>StayInUnemploymentFund__c</fullName>
+    <description>Om medlems är med i a-kassan via Akavia så visas fältet i utträdesansökan i portalen</description>
+    <label>Önskar kvarstå i a-kassan</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Ja</fullName>
+                <default>false</default>
+                <label>Ja</label>
+            </value>
+            <value>
+                <fullName>Nej</fullName>
+                <default>false</default>
+                <label>Nej</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

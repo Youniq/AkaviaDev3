@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DeleteMemberFilesToday__c</fullName>
+    <description>Används i schedulerad flow för att triggra radering av filer kopplade till detta ärende som är delade med medlemmen.</description>
+    <formula>DeleteMemberFilesDate__c = TODAY()</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Radera medlesfiler idag</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

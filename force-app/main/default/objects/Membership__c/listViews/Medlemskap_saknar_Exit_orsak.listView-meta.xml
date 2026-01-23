@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Medlemskap_saknar_Exit_orsak</fullName>
+    <booleanFilter>1 AND 2 AND 3</booleanFilter>
+    <columns>NAME</columns>
+    <columns>ExitReason__c</columns>
+    <columns>Status__c</columns>
+    <columns>StartDate__c</columns>
+    <columns>EndDate__c</columns>
+    <columns>MembershipCategory__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>notEqual</operation>
+        <value>Makulerad</value>
+    </filters>
+    <filters>
+        <field>ExitReason__c</field>
+        <operation>notEqual</operation>
+        <value>Utträde,Uteslutning,Avliden</value>
+    </filters>
+    <filters>
+        <field>EndDate__c</field>
+        <operation>greaterOrEqual</operation>
+        <value>5/1/2021</value>
+    </filters>
+    <label>Medlemskap - saknar Exit orsak</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

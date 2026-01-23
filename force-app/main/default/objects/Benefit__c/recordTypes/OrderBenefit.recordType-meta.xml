@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OrderBenefit</fullName>
+    <active>true</active>
+    <label>Beställningsförmån</label>
+    <picklistValues>
+        <picklist>BenefitPurpose__c</picklist>
+        <values>
+            <fullName>Kombinerande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Lojaliserande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rekryterande</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ExcludeForFeeCategories__c</picklist>
+        <values>
+            <fullName>Advokat egen firma</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Anställd utomlands med utländsk arbetsgivare</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubbelansluten LR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubbelansluten Norden</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubbelansluten SRAT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubbelansluten SULF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Dubbelansluten SULF doktorand</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fullbetalande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fullbetalande egenföretagare</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Första året</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hög reducerad</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ingen avgift Egenföretagare</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ingen avgift Pensionär</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ingen avgift Yrkesverksam</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ingen avgift Yrkesverksam första året</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Låg reducerad</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pensionär</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Studerande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Åter student</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>MembershipCategories__c</picklist>
+        <values>
+            <fullName>Egenföretagare</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pensionär</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Studerande</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yrkesverksam</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yrkesverksam första året</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

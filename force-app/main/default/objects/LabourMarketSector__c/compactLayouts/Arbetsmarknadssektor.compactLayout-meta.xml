@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Arbetsmarknadssektor</fullName>
+    <fields>Name</fields>
+    <fields>Type__c</fields>
+    <fields>Code__c</fields>
+    <fields>LegalForm__c</fields>
+    <fields>Section__c</fields>
+    <label>Arbetsmarknadssektor</label>
+</CompactLayout>
