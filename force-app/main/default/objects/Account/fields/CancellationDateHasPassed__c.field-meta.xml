@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CancellationDateHasPassed__c</fullName>
+    <description>Systemfält för att trigga schemalagd flow för cancellering av relaterade records på konktakten som trätt ut. Account - schedule cancellation flow</description>
+    <formula>CancellationDate__c &lt;= TODAY()</formula>
+    <label>Cancellation date has passed</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

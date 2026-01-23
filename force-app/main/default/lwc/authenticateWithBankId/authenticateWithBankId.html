@@ -1,0 +1,52 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <lightning-quick-action-panel title="BankID Authentication"> <!--Add Label for translation-->
+        
+        
+        
+        <div class="slds-is-relative">
+            
+            <div if:true={showStartButton} >
+                <button
+                class="
+                slds-button slds-button_brand
+                slds-align_absolute-center
+                "
+                onclick={initBankId}
+            >
+                Start BankID Authentication<img
+                src={BANKIDLOGOWHITE}
+                width="15%"
+                alt="White BankId logo"
+                />
+            </button>
+
+        </div>
+
+            
+             <div if:true={isLoading} class="slds-text-align_center">
+                {status}<br><br>
+            </div>
+            <div if:true={isLoaded} class="slds-text-align_center">
+                <div if:false={errorMessage}>
+                    <lightning-icon icon-name="utility:success" alternative-text="Success!" variant="success"
+            title="success variant"></lightning-icon>
+            {currentObj.userFirendlyStatus}
+                </div>
+                <div if:true={errorMessage} class="slds-text-align_center">
+                    {currentObj.userFriendlyStatus} <br>
+                    {currentObj.userFriendlyMessage}<br><br>
+                    <lightning-icon icon-name="utility:error" alternative-text="Error!" variant="error" title="error variant"></lightning-icon>
+                </div>                  
+            </div>
+            <div if:true={isLoading} class="slds-align_absolute-center" style="height: 100px;">
+                <lightning-spinner alternative-text="Waiting for Authentication"></lightning-spinner>
+            </div>
+        </div>
+
+        <!--<div slot="footer">
+            <lightning-button variant="neutral" label="Close" onclick={closeAction}></lightning-button>
+        </div>
+   -->
+    </lightning-quick-action-panel>
+</template>

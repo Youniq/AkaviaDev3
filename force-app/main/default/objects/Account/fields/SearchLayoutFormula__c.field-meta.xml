@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SearchLayoutFormula__c</fullName>
+    <description>Används i Search Layot för att visa ShippingCity &amp;  RecordType.Name för Arbetsställen och  RecordType.Name för övriga Record Types</description>
+    <externalId>false</externalId>
+    <formula>IF(   RecordType.Name = &apos;Arbetsställe&apos;,  RecordType.Name  &amp; &apos; &apos; &amp;  ShippingCity   , RecordType.Name)</formula>
+    <label>Account Record Type - City</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

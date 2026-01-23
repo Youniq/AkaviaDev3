@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Uttr_de_yrk1_m_faktura</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>MembershipCategory__c</columns>
+    <columns>AutoGraduationDate__c</columns>
+    <columns>OverdueAmount__c</columns>
+    <columns>Balance__c</columns>
+    <columns>MembershipStatus__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>MembershipCategory__c</field>
+        <operation>equals</operation>
+        <value>Yrkesverksam första året</value>
+    </filters>
+    <filters>
+        <field>OverdueAmount__c</field>
+        <operation>greaterThan</operation>
+        <value>0</value>
+    </filters>
+    <filters>
+        <field>MembershipStatus__c</field>
+        <operation>equals</operation>
+        <value>Avslutad</value>
+    </filters>
+    <filters>
+        <field>CancellationDate__c</field>
+        <operation>greaterOrEqual</operation>
+        <value>2/1/2024</value>
+    </filters>
+    <filters>
+        <field>CancellationDate__c</field>
+        <operation>lessThan</operation>
+        <value>5/1/2024</value>
+    </filters>
+    <filters>
+        <field>AutoGraduationDate__c</field>
+        <operation>equals</operation>
+        <value>2/1/2024</value>
+    </filters>
+    <label>Utträde yrk1 m faktura</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

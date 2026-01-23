@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NoInputFromUser__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Gör att komponenten inte visar ute några text-fält för medlemmen att fylla i. Komponenten skapar upp ett ärende utifrån fast information här i inställningen.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Markera den här boxen när du inte vill rendera några text-fält för medlemmen att fylla i.  Komponenten skapar upp ett ärende utifrån fast information här i inställningen.</inlineHelpText>
+    <label>No input from user</label>
+    <type>Checkbox</type>
+</CustomField>

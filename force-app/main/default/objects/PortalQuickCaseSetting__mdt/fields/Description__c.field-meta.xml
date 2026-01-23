@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Description__c</fullName>
+    <description>Komponenten lägger in den här Description på ärenden när &quot;No input from user&quot; är markerad på instöllningen.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Komponenten lägger in detta som Description på ärenden när &quot;No input from user&quot; är markerad på inställningen.</inlineHelpText>
+    <label>Case Description</label>
+    <length>32000</length>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

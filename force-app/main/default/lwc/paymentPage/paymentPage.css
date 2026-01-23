@@ -1,0 +1,266 @@
+@media screen and (min-width: 1200px) {
+  .slds-radio[type="radio"]:before,
+  .ak-form [type="radio"]:before {
+    width: 25px;
+    height: 25px;
+    margin-top: 1px;
+    margin-left: 0;
+  }
+}
+@media screen and (min-width: 768px) {
+  .slds-radio [type="radio"]:before,
+  .ak-form [type="radio"]:before {
+    margin-top: 2px;
+  }
+}
+
+.slds-radio [type="radio"]:before,
+.ak-form [type="radio"]:before {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1a1818;
+  background-color: #fff;
+  border-radius: 50px;
+  margin-top: -3px;
+  margin-left: -3px;
+}
+
+.slds-radio [type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0;
+  clip: rect(10 10 10 10);
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  border-top: 5px solid #1a1818;
+  border-radius: 10;
+  outline: none;
+  -webkit-transition: 0.05s ease-in;
+  -o-transition: 0.05s ease-in;
+  transition: 0.05s ease-in;
+  padding-top: 12px;
+}
+
+h1 {
+  font-size: 3rem;
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.preamble {
+  font-size: 18px;
+  line-height: 20px;
+  margin: 32px 0;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0 1em;
+  /* margin: 0.2rem; */
+  padding: 0.5rem;
+}
+
+tr > th {
+  vertical-align: bottom;
+}
+
+tr > th > h5 {
+  width: 122px;
+}
+
+@media screen and (min-width: 300px) {
+  .tableHeader {
+    opacity: 0.7;
+    font-weight: normal;
+  }
+
+  th > .tableHeader,
+  td.sortable {
+    padding: 5px;
+  }
+
+  table th:first-child > .tableHeader,
+  table td.sortable:first-child {
+    padding-left: 0;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  th > .tableHeader,
+  td.sortable {
+    padding: 10px 15px 5px 15px;
+  }
+
+  tr > th > h5 {
+    width: 165px;
+  }
+}
+
+.ak-slds-form-element__legend {
+  font-size: unset;
+  opacity: 0.7;
+  font-weight: var(--lwc-fontWeightBold, 700);
+  text-transform: uppercase;
+}
+
+table.sortable {
+  padding: 0;
+  display: table-cell;
+  vertical-align: inherit;
+  font-size: 100%;
+  border-collapse: separate;
+  border-spacing: 0 1em;
+  border: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  /* margin-top: 0px !important; */
+}
+
+td.sortable {
+  display: table-cell;
+  vertical-align: inherit;
+  border: none !important;
+}
+h3 {
+  font-size: 18px;
+  line-height: 18px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+h4 {
+  opacity: 0.7;
+  font-weight: (--lwc-fontWeightBold, 700);
+  text-transform: uppercase;
+}
+
+.slds-form-element__legend {
+  opacity: 0.7;
+  font-size: unset;
+  font-weight: var(--lwc-fontWeightBold, 700);
+  float: left;
+}
+
+table {
+  width: 100% !important;
+  border: none !important;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 70%;
+}
+lightning-radio-group.legend {
+  font-weight: var(--lwc-fontWeightBold, 700);
+  float: left;
+  text-transform: uppercase !important;
+}
+.x-button::after {
+  background-color: coral;
+  text-decoration-color: #1a1818;
+}
+
+lightning-combobox {
+  dropdown-alignment: auto;
+}
+
+img,
+.FormCaptcha__Image {
+  max-width: 125%;
+}
+/* Styles for change payment method nutton */
+button.button {
+  border: none;
+}
+
+.slds-button-akavia {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding-top: var(
+    --slds-c-button-spacing-block-start,
+    var(--sds-c-button-spacing-block-start, 0)
+  );
+  padding-right: var(
+    --slds-c-button-spacing-inline-end,
+    var(--sds-c-button-spacing-inline-end, 0)
+  );
+  padding-bottom: var(
+    --slds-c-button-spacing-block-end,
+    var(--sds-c-button-spacing-block-end, 0)
+  );
+  padding-left: var(
+    --slds-c-button-spacing-inline-start,
+    var(--sds-c-button-spacing-inline-start, 0)
+  );
+  background: none;
+  background-color: var(
+    --slds-c-button-color-background,
+    var(--sds-c-button-color-background, transparent)
+  );
+  background-clip: border-box;
+  border-color: var(
+    --slds-c-button-color-border,
+    var(--sds-c-button-color-border, transparent)
+  );
+  border-style: solid;
+  border-width: var(
+    --slds-c-button-sizing-border,
+    var(--sds-c-button-sizing-border, var(--lwc-borderWidthThin, 1px))
+  );
+  border-radius: 0 !important;
+  box-shadow: var(--slds-c-button-shadow, var(--sds-c-button-shadow));
+  line-height: var(
+    --slds-c-button-line-height,
+    var(--sds-c-button-line-height, var(--lwc-lineHeightButton, 1.875rem))
+  );
+  text-decoration: none;
+  color: var(
+    --slds-c-button-text-color,
+    var(--sds-c-button-text-color, var(--lwc-brandAccessible, rgb(15, 14, 14)))
+  ) !important;
+  -webkit-appearance: none;
+  white-space: normal;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-transform: uppercase !important;
+}
+.slds-button-akavia:hover {
+  background-color: #ff7d1f;
+  color: #1a1818 !important;
+  border-color: #ff7d1f;
+  transition: all 0.1s ease-in;
+}
+
+.slds-button-akavia:disabled {
+  background-color: var(--lwc-brandDisabled, rgb(201, 199, 197));
+  border-color: var(--lwc-brandDisabled, rgb(201, 199, 197));
+  color: var(--lwc-colorTextButtonBrandDisabled, rgb(255, 255, 255));
+}
+
+.button--submit,
+[type="submit"]:not([value="RefreshCaptcha"]),
+.FormSubmitButton {
+  display: inline-block;
+  cursor: pointer;
+  margin: 0;
+  text-align: center !important;
+  padding: 16px 15px 16px 15px;
+  border: none;
+  text-transform: uppercase;
+  min-width: -moz-fit-content;
+  min-width: -webkit-fit-content;
+  border-radius: 0 !important;
+}
+
+.bankIdText {
+  border: 2px solid #000000;
+}

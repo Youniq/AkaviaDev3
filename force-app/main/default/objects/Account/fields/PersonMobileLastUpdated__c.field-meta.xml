@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PersonMobileLastUpdated__c</fullName>
+    <description>Date stamp providing insight to Marketing Cloud on when the member last updated their mobile number.</description>
+    <label>Person Mobile Last Updated</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

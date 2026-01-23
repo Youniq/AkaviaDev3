@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Activate_Protal_User_No_Email_Address</fullName>
+    <active>false</active>
+    <errorConditionFormula>AND(ActivePortalUser__c ,
+ ISBLANK(PersonEmail )
+)</errorConditionFormula>
+    <errorDisplayField>PersonEmail</errorDisplayField>
+    <errorMessage>Ange en emailadress innan du aktiverar personen som portalanvändare.</errorMessage>
+</ValidationRule>

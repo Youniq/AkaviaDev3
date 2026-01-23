@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MC_FormulasTimestamp__c</fullName>
+    <description>This field is updated when a change to a formula field i detected. Formula field changes doesn&apos;t trigger a resync to MC. This timetsamp-field will cause a resave of Account record, therefore a resync with MC occurs.  Don&apos;t use for other purposes.
+[Sep 2024] Currently tracking formula updates on MembershipCategory__c, MembershipStatus__c and MemberPhase__c</description>
+    <label>MC Formulas Timestamp</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>DateTime</type>
+</CustomField>

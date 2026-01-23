@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SystemPersonSectionMismatch__c</fullName>
+    <description>Beräknar om en medlems värde i SystemPersonSection__c (och därmed PersonSection__c formulan) behöver uppdateras.
+Studerande ska alltid ha &quot;Studerandesektionen&quot;, medan övriga ska plocka sektion från arbetsgivare om möjligt.</description>
+    <formula>AND(IsPersonAccount,
+OR(MembershipStatus__c = &quot;Aktiv&quot;, MembershipStatus__c = &apos;Begärt utträde&apos;),
+OR(AND(
+MembershipCategory__c = &quot;Studerande&quot;, NOT(ISPICKVAL(SystemPersonSection__c, &quot;Studerandesektionen&quot;))
+),
+AND(MembershipCategory__c != &quot;Studerande&quot;, CurrentEmployer__c != null, CurrentEmployer__r.Section__c != TEXT(SystemPersonSection__c))
+)
+)</formula>
+    <label>Systemfield: Medlemssektion missmatch</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

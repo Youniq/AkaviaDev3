@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <label>Typ</label>
+    <required>false</required>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Prisjustering</fullName>
+                <default>false</default>
+                <label>Prisjustering</label>
+            </value>
+            <value>
+                <fullName>Anställning</fullName>
+                <default>false</default>
+                <label>Anställning</label>
+            </value>
+            <value>
+                <fullName>Anställningsavtal</fullName>
+                <default>false</default>
+                <label>Anställningsavtal</label>
+            </value>
+            <value>
+                <fullName>Arbetsmiljö</fullName>
+                <default>false</default>
+                <label>Arbetsmiljö</label>
+            </value>
+            <value>
+                <fullName>Arbetsskada</fullName>
+                <default>false</default>
+                <label>Arbetsskada</label>
+            </value>
+            <value>
+                <fullName>Arbetstid</fullName>
+                <default>false</default>
+                <label>Arbetstid</label>
+            </value>
+            <value>
+                <fullName>Avskedande</fullName>
+                <default>false</default>
+                <label>Avskedande</label>
+            </value>
+            <value>
+                <fullName>Disciplinåtgärd</fullName>
+                <default>false</default>
+                <label>Disciplinåtgärd</label>
+            </value>
+            <value>
+                <fullName>Diskriminering</fullName>
+                <default>false</default>
+                <label>Diskriminering</label>
+            </value>
+            <value>
+                <fullName>Egen företagare</fullName>
+                <default>false</default>
+                <label>Egen företagare</label>
+            </value>
+            <value>
+                <fullName>Förhandlingsstöd</fullName>
+                <default>false</default>
+                <label>Förhandlingsstöd</label>
+            </value>
+            <value>
+                <fullName>Föräldraledighet</fullName>
+                <default>false</default>
+                <label>Föräldraledighet</label>
+            </value>
+            <value>
+                <fullName>Föreningsbildande</fullName>
+                <default>false</default>
+                <label>Föreningsbildande</label>
+            </value>
+            <value>
+                <fullName>Föreningsstöd</fullName>
+                <default>false</default>
+                <label>Föreningsstöd</label>
+            </value>
+            <value>
+                <fullName>Företrädesrätt</fullName>
+                <default>false</default>
+                <label>Företrädesrätt</label>
+            </value>
+            <value>
+                <fullName>Företagsledare (ej omfattas av LAS)</fullName>
+                <default>false</default>
+                <label>Företagsledare (ej omfattas av LAS)</label>
+            </value>
+            <value>
+                <fullName>Karriärrådgivning</fullName>
+                <default>false</default>
+                <label>Karriärrådgivning</label>
+            </value>
+            <value>
+                <fullName>Kollektivavtal</fullName>
+                <default>false</default>
+                <label>Kollektivavtal</label>
+            </value>
+            <value>
+                <fullName>Konkurs/företagsrekonstruktion</fullName>
+                <default>false</default>
+                <label>Konkurs/företagsrekonstruktion</label>
+            </value>
+            <value>
+                <fullName>Korttidpermittering</fullName>
+                <default>false</default>
+                <label>Korttidpermittering</label>
+            </value>
+            <value>
+                <fullName>Lönefordran</fullName>
+                <default>false</default>
+                <label>Lönefordran</label>
+            </value>
+            <value>
+                <fullName>Löneförhandling/revision</fullName>
+                <default>false</default>
+                <label>Löneförhandling/revision</label>
+            </value>
+            <value>
+                <fullName>Lönegaranti</fullName>
+                <default>false</default>
+                <label>Lönegaranti</label>
+            </value>
+            <value>
+                <fullName>Lönerådgivning</fullName>
+                <default>false</default>
+                <label>Lönerådgivning</label>
+            </value>
+            <value>
+                <fullName>MBL/Samverkan</fullName>
+                <default>false</default>
+                <label>MBL/Samverkan</label>
+            </value>
+            <value>
+                <fullName>Omorganisation</fullName>
+                <default>false</default>
+                <label>Omorganisation</label>
+            </value>
+            <value>
+                <fullName>Omplacering</fullName>
+                <default>false</default>
+                <label>Omplacering</label>
+            </value>
+            <value>
+                <fullName>Omställningsstudiestöd</fullName>
+                <default>false</default>
+                <label>Omställningsstudiestöd</label>
+            </value>
+            <value>
+                <fullName>Pension</fullName>
+                <default>false</default>
+                <label>Pension</label>
+            </value>
+            <value>
+                <fullName>Rehabilitering</fullName>
+                <default>false</default>
+                <label>Rehabilitering</label>
+            </value>
+            <value>
+                <fullName>Registervård</fullName>
+                <default>false</default>
+                <label>Registervård</label>
+            </value>
+            <value>
+                <fullName>Semester</fullName>
+                <default>false</default>
+                <label>Semester</label>
+            </value>
+            <value>
+                <fullName>Sjukskrivning</fullName>
+                <default>false</default>
+                <label>Sjukskrivning</label>
+            </value>
+            <value>
+                <fullName>Studieledighet</fullName>
+                <default>false</default>
+                <label>Studieledighet</label>
+            </value>
+            <value>
+                <fullName>Tjänstledighet</fullName>
+                <default>false</default>
+                <label>Tjänstledighet</label>
+            </value>
+            <value>
+                <fullName>Uppsägning arbetsbrist</fullName>
+                <default>false</default>
+                <label>Uppsägning arbetsbrist</label>
+            </value>
+            <value>
+                <fullName>Uppsägning personliga skäl</fullName>
+                <default>false</default>
+                <label>Uppsägning personliga skäl</label>
+            </value>
+            <value>
+                <fullName>Uppsägning egen</fullName>
+                <default>false</default>
+                <label>Uppsägning egen</label>
+            </value>
+            <value>
+                <fullName>Uthyrningslagen</fullName>
+                <default>false</default>
+                <label>Uthyrningslagen</label>
+            </value>
+            <value>
+                <fullName>Uppsägning Provanställning</fullName>
+                <default>false</default>
+                <label>Avbrytande av provanställning</label>
+            </value>
+            <value>
+                <fullName>Verksamhetsövergång</fullName>
+                <default>false</default>
+                <label>Verksamhetsövergång</label>
+            </value>
+            <value>
+                <fullName>Visstidsanställning – konvertering</fullName>
+                <default>false</default>
+                <label>Visstidsanställning – konvertering</label>
+            </value>
+            <value>
+                <fullName>Yttrande</fullName>
+                <default>false</default>
+                <label>Yttrande</label>
+            </value>
+            <value>
+                <fullName>Överenskommelse</fullName>
+                <default>false</default>
+                <label>Överenskommelse</label>
+            </value>
+            <value>
+                <fullName>Övrigt</fullName>
+                <default>false</default>
+                <label>Övrigt</label>
+            </value>
+            <value>
+                <fullName>Fråga</fullName>
+                <default>false</default>
+                <label>Fråga</label>
+            </value>
+            <value>
+                <fullName>A-autogiro/efaktura</fullName>
+                <default>false</default>
+                <label>A-autogiro/efaktura</label>
+            </value>
+            <value>
+                <fullName>A-a-kassa</fullName>
+                <default>false</default>
+                <label>A-a-kassa</label>
+            </value>
+            <value>
+                <fullName>A-medlem stannar</fullName>
+                <default>false</default>
+                <label>A-medlem stannar</label>
+            </value>
+            <value>
+                <fullName>A-kassa utträde</fullName>
+                <default>false</default>
+                <label>A-kassa utträde</label>
+            </value>
+            <value>
+                <fullName>A-kassefråga</fullName>
+                <default>false</default>
+                <label>A-kassefråga</label>
+            </value>
+            <value>
+                <fullName>A-samtal upp1</fullName>
+                <default>false</default>
+                <label>A-samtal upp1</label>
+            </value>
+            <value>
+                <fullName>A-samtal upp2</fullName>
+                <default>false</default>
+                <label>A-samtal upp2</label>
+            </value>
+            <value>
+                <fullName>A-välkomstsamtal</fullName>
+                <default>false</default>
+                <label>A-välkomstsamtal</label>
+            </value>
+            <value>
+                <fullName>Beställa Diplom</fullName>
+                <default>false</default>
+                <label>Beställa Diplom</label>
+            </value>
+            <value>
+                <fullName>Betalsätt</fullName>
+                <default>false</default>
+                <label>Betalsätt</label>
+            </value>
+            <value>
+                <fullName>Fakturafråga</fullName>
+                <default>false</default>
+                <label>Fakturafråga</label>
+            </value>
+            <value>
+                <fullName>Fråga om medlemskap/ändring/avgifter</fullName>
+                <default>false</default>
+                <label>Fråga om medlemskap/ändring/avgifter</label>
+            </value>
+            <value>
+                <fullName>Förlänga studentmedlemskap</fullName>
+                <default>false</default>
+                <label>Förlänga studentmedlemskap</label>
+            </value>
+            <value>
+                <fullName>Försäkringar</fullName>
+                <default>false</default>
+                <label>Försäkringar</label>
+            </value>
+            <value>
+                <fullName>Inkomstförsäkring</fullName>
+                <default>false</default>
+                <label>Inkomstförsäkring</label>
+            </value>
+            <value>
+                <fullName>Inträde</fullName>
+                <default>false</default>
+                <label>Inträde</label>
+            </value>
+            <value>
+                <fullName>Medlemsförmåner</fullName>
+                <default>false</default>
+                <label>Medlemsförmåner</label>
+            </value>
+            <value>
+                <fullName>Uppdatera arbetsgivare</fullName>
+                <default>false</default>
+                <label>Uppdatera arbetsgivare</label>
+            </value>
+            <value>
+                <fullName>Utträde</fullName>
+                <default>false</default>
+                <label>Utträde</label>
+            </value>
+            <value>
+                <fullName>Vidarebefordringar</fullName>
+                <default>false</default>
+                <label>Vidarebefordringar</label>
+            </value>
+            <value>
+                <fullName>Övriga frågor</fullName>
+                <default>false</default>
+                <label>Övriga frågor</label>
+            </value>
+            <value>
+                <fullName>Wiraya</fullName>
+                <default>false</default>
+                <label>Wiraya</label>
+            </value>
+            <value>
+                <fullName>Folksam</fullName>
+                <default>false</default>
+                <label>Folksam</label>
+            </value>
+            <value>
+                <fullName>Arbetsgivarärende</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Arbetsgivarärende</label>
+            </value>
+            <value>
+                <fullName>Dok.Inifrån</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Dok.Inifrån</label>
+            </value>
+            <value>
+                <fullName>Konflikt på Klarna</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Konflikt på Klarna</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>5</visibleLines>
+</CustomField>

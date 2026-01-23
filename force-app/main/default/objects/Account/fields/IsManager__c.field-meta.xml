@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsManager__c</fullName>
+    <description>Formula to show if the person is marked as Manager on the Latest Employment if the Latest Employment is active.</description>
+    <formula>If(LatestEmployment__r.Status__c = &apos;Aktiv&apos;, LatestEmployment__r.Manager__c, false)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Visar om personen är markerad som chef på sin nuvarande anställning.</inlineHelpText>
+    <label>Är Chef</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bokade_M_testider</fullName>
+    <columns>NAME</columns>
+    <columns>MeetingType__c</columns>
+    <columns>StartDateTime__c</columns>
+    <columns>Sektor__c</columns>
+    <columns>Account__c</columns>
+    <columns>Comments__c</columns>
+    <columns>Status__c</columns>
+    <columns>OWNER.FIRST_NAME</columns>
+    <columns>OWNER.LAST_NAME</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>StartDateTime__c</field>
+        <operation>greaterOrEqual</operation>
+        <value>TODAY</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Bokad,Bekräftad</value>
+    </filters>
+    <label>Bokade Mötestider</label>
+</ListView>

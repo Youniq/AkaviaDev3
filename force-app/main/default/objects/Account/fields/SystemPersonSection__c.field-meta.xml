@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SystemPersonSection__c</fullName>
+    <description>Ett systemfält som populeras av auomtation. Det här ska innehålla medlemmens nuvarande/senaste sektion; även om currentEmployer__c töms så ska det här värdet bibehållas.
+Värdet används sedan av ett befintligt formulafält &quot;Account. PersonSection__c&quot;. Då legacyfältet används i många rapporter och Marketing-resor så byggs det så här.
+Med picklist val som matchar Arbetsmarknadsektor.Sektion alternativen.</description>
+    <label>Systemfält: Medlemssektion</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Privata</fullName>
+                <default>false</default>
+                <label>Privata</label>
+            </value>
+            <value>
+                <fullName>Statliga</fullName>
+                <default>false</default>
+                <label>Statliga</label>
+            </value>
+            <value>
+                <fullName>Kommunala</fullName>
+                <default>false</default>
+                <label>Kommunala</label>
+            </value>
+            <value>
+                <fullName>Studerandesektionen</fullName>
+                <default>false</default>
+                <label>Studerandesektionen</label>
+            </value>
+            <value>
+                <fullName>Saknas</fullName>
+                <default>false</default>
+                <label>Saknas</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

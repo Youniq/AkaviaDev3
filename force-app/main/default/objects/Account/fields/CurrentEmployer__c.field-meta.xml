@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CurrentEmployer__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Används i schedulerad flow som går varje dag samt konverteringsflow och anställningsflow</description>
+    <inlineHelpText>Sätts automatiskt baserad på aktiv anställning.</inlineHelpText>
+    <label>Aktuell arbetsgivare</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Du kan enbart koppla arbetsgivare till personen</errorMessage>
+        <filterItems>
+            <field>Account.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Arbetsgivare</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Active Employments</relationshipLabel>
+    <relationshipName>ActiveEmployments</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Lookup</type>
+</CustomField>

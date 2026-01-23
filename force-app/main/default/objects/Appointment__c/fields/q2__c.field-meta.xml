@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>q2__c</fullName>
+    <description>Skapat av Christian på stretch för testning</description>
+    <externalId>false</externalId>
+    <inlineHelpText>2. Gav det dig ett mervärde att lönerådgivningen skedde via Teams, jämfört med telefon eller mejl? Bedömning mellan 1 och 5 stjärnor där 5 stjärnor bäst.</inlineHelpText>
+    <label>Gav det mervärde att ha mötet via teams?</label>
+    <precision>1</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

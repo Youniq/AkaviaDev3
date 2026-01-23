@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Personkonton_Oninionsbildare</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>ACCOUNT.TYPE</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <columns>MCSynkValidator__c</columns>
+    <columns>SyncWithMc__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>PersonAccount.PersonAccount</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.TYPE</field>
+        <operation>equals</operation>
+        <value>Opinionsbildare</value>
+    </filters>
+    <label>Personkonton - Opinionsbildare</label>
+</ListView>

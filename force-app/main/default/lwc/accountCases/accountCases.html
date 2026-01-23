@@ -1,0 +1,68 @@
+<template>
+    <section class="akavia">
+        <header class="slds-var-m-bottom_large"
+            if:true={displayComponentHeader}
+            >
+            <h2 id="header_customerCases">{labels.CP_usrCaseListHeader}</h2>
+        </header>
+            
+        <div if:true={hasCases}>
+            <template if:true={sortedState}>
+                <table role="grid" aria-labelledby="header_customerCases">
+                    <tbody>
+                    <tr>
+                        
+                        <th aria-sort={sortedState.CaseNumber.sortOrder} data-field="CaseNumber">
+                            <span tabindex="0" role="button" onclick={handleSortTextField} onkeyup={handleSortTextField} class="ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseNumber}
+                            </span>
+                        </th>
+                        <th aria-sort={sortedState.CategoryCommunity__c.sortOrder} data-field="CategoryCommunity__c">
+                            <span tabindex="0" role="button" onclick={handleSortTextField} onkeyup={handleSortTextField} class="ak-tableHeader ak-cell">
+                                {labels.CP_labelCategory}
+                            </span>
+                        </th>
+                        <th aria-sort={sortedState.Status.sortOrder} data-field="Status" class="slds-show_small">
+                            <span tabindex="0" role="button" onclick={handleSortTextField} onkeyup={handleSortTextField} class="ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseStatus}
+                            </span>
+                        </th>
+                        <th aria-sort={sortedState.CreatedDate.sortOrder} data-field="CreatedDate" class="slds-show_small">
+                            <span tabindex="0" role="button" onclick={handleSortDateField} onkeyup={handleSortDateField} class="ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseCreatedDate}
+                            </span>
+                        </th>
+                    </tr>
+                    <template for:each={userCases} for:item="uCase">
+                        <tr key={uCase.Id}>
+                            <td tabindex="-1" data-id={uCase.Id} class="ak-cell"><a href={uCase.caseUrl} onclick={handleLinkClick}>{uCase.CaseNumber}</a></td>
+                            <td tabindex="-1" class="ak-cell">{uCase.CategoryCommunity__c} </td>
+                            <td tabindex="-1" class="ak-cell slds-show_small">{uCase.Status}</td>
+                            <td tabindex="-1" class="ak-cell slds-show_small">
+                                <!-- {uCase.formatedCreatedDate} -->
+                                <lightning-formatted-date-time
+                                value={uCase.CreatedDate}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                                >
+                                </lightning-formatted-date-time>
+                            </td>
+                        </tr>
+                    </template>
+                    </tbody>
+                </table>
+            </template>
+        </div>
+        <template if:true={noCases}>
+            <p>
+                {labels.CP_labelNoCases}
+            </p>
+        </template>
+        <template if:true={hasCasesError}>
+            <p class="slds-text-color_error">
+                {labels.CP_errorGeneral} <a href="https://www.akavia.se/om-akavia/kontakt/" target="_blank" title="Link to contact page"><span>{labels.CP_errorContact1}</span></a> {labels.CP_errorContact2}
+            </p>
+        </template>
+    </section>
+</template>

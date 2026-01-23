@@ -1,0 +1,15 @@
+<!--
+  @description       : 
+  @author            : Malin Nilsson (Stretch Customer AB)
+  @group             : 
+  @last modified on  : 2025-09-09
+  @last modified by  : Malin Nilsson (Stretch Customer AB)
+-->
+<template>
+    <lightning-button variant="brand" label="Exportera medlemslista" onclick={handleExportClick} disabled={isLoading}
+        class="export-button">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Exporterar..." size="small"></lightning-spinner>
+        </template>
+    </lightning-button>
+</template>

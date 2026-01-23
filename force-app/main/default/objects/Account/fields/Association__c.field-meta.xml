@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Association__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Kopplad lokal/lokallokal-förening</description>
+    <inlineHelpText>Kopplad lokal/lokallokal-förening</inlineHelpText>
+    <label>Förening</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Föreningen måste vara av typen lokal/lokalokalförening</errorMessage>
+        <filterItems>
+            <field>Association__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Lokalförening, Lokallokalförening</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Association__c</referenceTo>
+    <relationshipLabel>Arbetsplatser</relationshipLabel>
+    <relationshipName>Accounts</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Lookup</type>
+</CustomField>

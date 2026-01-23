@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LeadSource__c</fullName>
+    <inlineHelpText>Visar vilken källa lead/personen hämtats från</inlineHelpText>
+    <label>Lead källa</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value>
+                <fullName>UHR</fullName>
+                <default>false</default>
+                <label>UHR</label>
+            </value>
+            <value>
+                <fullName>UHR Master</fullName>
+                <default>false</default>
+                <label>UHR Master</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

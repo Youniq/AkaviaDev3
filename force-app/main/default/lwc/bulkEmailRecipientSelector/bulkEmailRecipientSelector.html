@@ -1,0 +1,148 @@
+<!--
+  @description       : 
+  @author            : Malin Nilsson (Stretch Customer AB)
+  @group             : 
+  @last modified on  : 2025-11-27
+  @last modified by  : Malin Nilsson (Stretch Customer AB)
+-->
+<template>
+    <!-- <div class="slds-card"> -->
+    <div class="slds-card__header">
+        <h3 class="slds-card__header-title">
+            <span class="slds-text-heading_small">Välj mottagare</span>
+        </h3>
+    </div>
+    <!-- <div class="slds-card__body slds-card__body_inner"> -->
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Laddar mottagare..." size="medium"></lightning-spinner>
+    </template>
+
+    <!-- Error Message -->
+    <template if:true={errorMessage}>
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small" title="Error">
+                <lightning-icon icon-name="utility:error" size="x-small"></lightning-icon>
+            </span>
+            <h2>{errorMessage}</h2>
+        </div>
+    </template>
+
+    <!-- Filter Section -->
+    <template if:false={isLoading}>
+        <div class="slds-grid slds-gutters slds-m-bottom_medium">
+            <div class="slds-col slds-no-flex">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-combobox name="selectionFilter" label="Visa" value={selectionFilter}
+                            placeholder="Alla mottagare" options={selectionFilterOptions}
+                            onchange={handleSelectionFilterChange}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-grow">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input type="search" id="filter-input" label="Sök mottagare" value={filterValue}
+                            onchange={handleFilterChange} placeholder="Sök efter namn, email eller arbetsplats...">
+                        </lightning-input>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-no-flex">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-combobox name="pageSize" label="Antal per sida" value={pageSize}
+                            options={pageSizeOptions} onchange={handlePageSizeChange}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Recipient Selection Table -->
+    <template if:false={isLoading}>
+        <div class="slds-form-element">
+            <label class="slds-form-element__label">
+                Tillgängliga mottagare ({totalFilteredRecords} filtrerade, visar {availableRecipients.length} på denna
+                sida)
+            </label>
+            <div class="slds-form-element__control">
+                <lightning-datatable data={availableRecipients} columns={columns} key-field="id"
+                    onrowselection={handleRowSelection} onsort={handleSort} hide-checkbox-column={hideCheckboxColumn}
+                    max-row-selection={maxRowSelection} max-row-count={maxRowCount} selected-rows={selectedRowKeys}
+                    resize-columns={resizeColumns} show-row-number-column={showRowNumberColumn}
+                    enable-infinite-loading={enableInfiniteLoading} onloadmore={handleLoadMore}>
+                </lightning-datatable>
+            </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <template if:true={totalPages}>
+            <!-- Traditional Pagination (for larger page sizes) -->
+            <template if:false={infiniteScrollMode}>
+                <div class="slds-grid slds-grid_align-spread slds-m-top_medium">
+                    <div class="slds-col slds-no-flex">
+                        <div class="slds-text-body_small slds-text-color_weak">
+                            Sida {currentPage} av {totalPages} ({totalFilteredRecords} poster totalt)
+                        </div>
+                    </div>
+                    <div class="slds-col slds-no-flex">
+                        <div class="slds-button-group">
+                            <lightning-button variant="neutral" label="Föregående" onclick={handlePreviousPage}
+                                disabled={isPreviousDisabled} class="slds-m-horizontal_x-small"></lightning-button>
+                            <lightning-button variant="neutral" label="Nästa" onclick={handleNextPage}
+                                disabled={isNextDisabled} class="slds-m-horizontal_x-small"></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Infinite Scroll Info (for smaller page sizes) -->
+            <template if:true={infiniteScrollMode}>
+                <div class="slds-grid slds-grid_align-spread slds-m-top_medium">
+                    <div class="slds-col slds-no-flex">
+                        <div class="slds-text-body_small slds-text-color_weak">
+                            Visar {availableRecipients.length} av {totalFilteredRecords} poster
+                        </div>
+                    </div>
+                    <div class="slds-col slds-no-flex">
+                    </div>
+                </div>
+            </template>
+        </template>
+    </template>
+
+    <!-- Action Buttons -->
+    <div class="slds-form-element slds-m-top_medium">
+        <div class="slds-form-element__control">
+            <div class="slds-button-group">
+                <lightning-button variant="brand" label="Välj alla" onclick={selectAllRecipients}
+                    disabled={isSelectAllDisabled} class="slds-m-horizontal_x-small"></lightning-button>
+                <lightning-button variant="neutral" label="Rensa alla" onclick={clearAllRecipients}
+                    disabled={isClearAllDisabled} class="slds-m-horizontal_x-small"></lightning-button>
+            </div>
+        </div>
+    </div>
+    <!--  Summary of Selected Recipients -->
+    <div class="slds-form-element slds-m-top_medium slds-m-bottom_medium">
+        <div class="slds-box slds-box_x-small slds-theme_shade">
+            <div class="slds-grid slds-grid_vertical-align-center slds-gutters">
+                <div class="slds-col slds-no-flex slds-var-m-left_small">
+                    <lightning-icon icon-name="utility:user" size="x-small"></lightning-icon>
+                </div>
+                <div class="slds-col slds-grow">
+                    <span class="slds-text-body_regular">
+                        <strong>{selectedRecipients.length}</strong> valda mottagare
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- </div> -->
+    <!-- </div> -->
+</template>

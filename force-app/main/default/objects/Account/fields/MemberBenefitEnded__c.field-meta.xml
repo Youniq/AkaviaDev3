@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MemberBenefitEnded__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used in Scheduled flow on account. When record has gone through the flow the checkbox becomes true and we dont pass the same account through the flow again</description>
+    <label>Systemfält: MemberBenefitEnded</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

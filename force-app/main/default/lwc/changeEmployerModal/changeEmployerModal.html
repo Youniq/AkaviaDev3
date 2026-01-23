@@ -1,0 +1,212 @@
+<template>
+  <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium"
+    aria-labelledby="modal-heading-01" aria-modal="true">
+    <div class="slds-modal__container">
+      <button
+        class="akavia-modal-focus slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-text-heading_large"
+        title={labels.EP_btnClose} onclick={handleCloseModal} disabled={loading}>
+        <label>✖</label>
+        <span class="slds-assistive-text">{labels.EP_btnClose}</span>
+      </button>
+      <div class="slds-modal__header slds-modal__header_empty slds-hide"></div>
+      <div class="slds-modal__content slds-var-p-around_medium slds-is-relative">
+        <template if:true={loading}>
+          <div class="spinner">
+            <lightning-spinner variant="brand" alternative-text="Loading" size="large"></lightning-spinner>
+          </div>
+        </template>
+        <!-- <span>{progress}</span> -->
+
+        <!-- *** STEP ONE *** -->
+        <template if:true={steps.one.active}>
+          <section class="slds-var-m-top_medium">
+            <h4 class="ak-formLabel">
+              <abbr title="obligatoriskt" class="slds-required">*</abbr>
+              {labels.EP_ChangeEmployer_labelSelectEmployment}
+            </h4>
+            <lightning-radio-group name="employmentType" label={labels.EP_ChangeEmployer_labelSelectEmployment}
+              variant="label-hidden" options={employmentOptions} onchange={handleEmploymentPick} required
+              message-when-value-missing={labels.EP_ChangeEmployer_labelRadioValidationError} type="radio"
+              class="validate"></lightning-radio-group>
+          </section>
+          <section class="slds-var-m-top_medium">
+            <p>
+              <i>{labels.EP_additionalInfoTxt}</i>
+              <span class="slds-var-m-horizontal_small slds-align-top tooltip">
+                <lightning-helptext content={labels.EP_tooltipUnemployedDefinition}></lightning-helptext>
+              </span>
+            </p>
+          </section>
+        </template>
+
+        <!-- *** STEP TWO *** -->
+        <template if:true={steps.two.active}>
+          <template if:true={state.isUpdateEmployer}>
+            <!-- <section class="slds-var-m-top_x-large"> -->
+            <section if:true={showSearchEmployer} class="slds-var-m-top_medium">
+              <c-search-employer onemployerselected={handleSelectedEmployer} has-error={childValidationError}
+                selected-employer={selEmployer} onerror={handleChildError}></c-search-employer>
+            </section>
+
+            <!-- Toggle missing employer -->
+            <section class="slds-var-m-top_xx-large">
+              <c-toggled-conent id="toggle_miss_employer" label={labels.EP_ChangeEmployer_labelMissingEmployer}
+                help-text={labels.EP_ChangeEmployer_tooltipMissingEmployer} toggle-state={state.missingEmployer}
+                ontoggle={handleToggle}>
+                <template if:true={state.missingEmployer}>
+                  <div class="slds-var-m-top_large">
+                    <h4 class="ak-formLabel">
+                      <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                      {labels.EP_ChangeEmployer_labelEmployerMissingEmployer}
+                    </h4>
+                    <lightning-input id="company_name_input" type="text" variant="label-hidden"
+                      label={labels.EP_ChangeEmployer_labelEmployerMissingEmployer} required
+                      onkeyup={handleCompanyInput}
+                      message-when-value-missing={labels.EP_ChangeEmployer_labelInputValidationError} class="validate">
+                    </lightning-input>
+                  </div>
+                  <div class="slds-var-m-top_large">
+                    <h4 class="ak-formLabel">
+                      <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                      {labels.EP_ChangeEmployer_labelAddressMissingWorkplace}
+                    </h4>
+                    <lightning-input id="company_address_input" type="text" variant="label-hidden"
+                      label={labels.EP_ChangeEmployer_labelAddressMissingWorkplace} required
+                      onkeyup={handleCompanyInput}
+                      message-when-value-missing={labels.EP_ChangeEmployer_labelInputValidationError} class="validate">
+                    </lightning-input>
+                  </div>
+                </template>
+              </c-toggled-conent>
+            </section>
+          </template>
+
+          <template if:true={state.isUnemployed}>
+            <p class="slds-var-m-around_large">
+              {labels.EP_infoThankYou} <br>
+              {labels.EP_ChangeEmployer_infoUnemployedRegistered}
+            </p>
+          </template>
+          <template if:true={state.isNotWorking}>
+            <p class="slds-var-m-around_large">
+              {labels.EP_infoThankYou} <br>
+              {labels.EP_ChangeEmployer_infoNotWorkingRegistered}
+            </p>
+          </template>
+
+          <template if:true={state.isSelfEmployed}>
+            <p class="slds-var-m-around_large">
+              {labels.EP_infoThankYou} <br>
+              {labels.EP_ChangeEmployer_infoSelfEmployedRegistered}
+            </p>
+          </template>
+        </template>
+
+        <!-- *** STEP THREE *** -->
+        <template if:true={steps.three.active}>
+          <template if:true={selEmployer}>
+            <!-- <section class="slds-var-m-top_x-large"> -->
+            <section if:true={showPickWorkplace} class="slds-var-m-top_medium">
+              <c-pick-workplace employer-id={selEmployer.Id} onworkplaceselected={handleSelectedWorkplace}
+                has-error={childValidationError} onerror={handleChildError}></c-pick-workplace>
+            </section>
+            <!-- Toggle missing workplace -->
+            <section class="slds-var-m-top_xx-large">
+              <c-toggled-conent id="toggle_miss_workplace" label={labels.EP_ChangeEmployer_labelMissingWorkplace}
+                help-text={labels.EP_ChangeEmployer_tooltipMissingWorkplace} toggle-state={state.missingWorkplace}
+                ontoggle={handleToggle}>
+                <template if:true={state.missingWorkplace}>
+                  <div class="slds-var-m-top_large">
+                    <h4 class="ak-formLabel">
+                      <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                      {labels.EP_ChangeEmployer_labelAddressMissingWorkplace}
+                    </h4>
+                    <lightning-input id="wp_adress_input" type="text" variant="label-hidden"
+                      label={labels.EP_ChangeEmployer_labelAddressMissingWorkplace} required
+                      onkeyup={handleCompanyInput}
+                      message-when-value-missing={labels.EP_ChangeEmployer_labelInputValidationError} class="validate">
+                    </lightning-input>
+                  </div>
+                </template>
+              </c-toggled-conent>
+            </section>
+          </template>
+          <template if:true={state.missingEmployer}>
+            <p class="slds-var-m-around_large">
+              {labels.EP_infoThankYou} <br>
+              {labels.EP_ChangeEmployer_infoCaseMissingEmployer}
+            </p>
+          </template>
+        </template>
+
+        <!-- *** STEP FOUR *** -->
+        <template if:true={steps.four.active}>
+          <template if:true={selWorkplaceId}>
+            <!-- <section class="slds-var-m-top_x-large"> -->
+            <section class="slds-var-m-top_medium">
+              <h4 class="ak-formLabel">
+                <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                {labels.EP_ChangeEmployer_labelSelectIsManager}
+              </h4>
+              <lightning-radio-group name="isManagerSelect" label={labels.EP_ChangeEmployer_labelSelectIsManager}
+                variant="label-hidden" options={managerOptions} onchange={handleIsManagerPick} required type="radio"
+                message-when-value-missing={labels.EP_ChangeEmployer_labelRadioValidationError} class="validate">
+              </lightning-radio-group>
+            </section>
+          </template>
+          <template if:true={state.missingWorkplace}>
+            <p class="slds-var-m-around_large">
+              {labels.EP_infoThankYou} <br>
+              {labels.EP_ChangeEmployer_infoCaseMissingWorkplace}
+            </p>
+          </template>
+        </template>
+
+        <!-- *** STEP FIVE *** -->
+        <template if:true={steps.five.active}>
+          <p class="slds-var-m-around_large">
+            {labels.EP_infoThankYou} <br>
+            {labels.EP_ChangeEmployer_infoEmploymentRegistered}
+          </p>
+        </template>
+
+        <!-- BUTTONS & ERROR CONTAINER -->
+        <section class="slds-grid slds-var-m-top_x-large">
+          <div class="slds-col slds-grow-none slds-var-m-right_small">
+            <template if:true={showPrevButton}>
+              <button type="button" title={labels.EP_btnPrevious} onclick={handleClickPrevious}
+                class="ak-button-base ak-button-black" disabled={loading}>
+                <label> {labels.EP_btnPrevious} </label>
+              </button>
+            </template>
+          </div>
+
+          <!-- Display error message if something goes wrong -->
+          <div class="slds-col slds-grow-none slds-align-middle">
+            <template if:true={errorMessage}>
+              <p class="slds-text-color_error ak-error">
+                {errorMessage}
+              </p>
+            </template>
+          </div>
+
+          <div class="slds-col slds-grow-none slds-col_bump-left">
+            <template if:false={showCloseButton}>
+              <button type="button" title={labels.EP_btnContinue} onclick={handleClickNext}
+                class="ak-button-base ak-button-black" disabled={loading}>
+                <label> {labels.EP_btnContinue} </label>
+              </button>
+            </template>
+            <template if:true={showCloseButton}>
+              <button type="button" title={labels.EP_btnClose} onclick={handleCloseModal}
+                class="ak-button-base ak-button-black" disabled={loading}>
+                <label>{labels.EP_btnClose}</label>
+              </button>
+            </template>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

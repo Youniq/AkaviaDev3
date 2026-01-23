@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GraduationYear__c</fullName>
+    <description>Året personen tar sin examen från sina studier</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Året personen tog examen</inlineHelpText>
+    <label>Examensår</label>
+    <length>4</length>
+    <required>false</required>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

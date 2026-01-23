@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Name__c</fullName>
+    <description>Används för att kunna lägga in namnet i en quick action utan att den ska kunna uppdateras</description>
+    <externalId>false</externalId>
+    <formula>FirstName &amp; &quot; &quot; &amp; LastName</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Namn</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

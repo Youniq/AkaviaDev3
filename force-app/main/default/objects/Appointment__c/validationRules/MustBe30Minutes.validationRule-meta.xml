@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MustBe30Minutes</fullName>
+    <active>false</active>
+    <description>Used temp to not update times longer/shorter then 30 minutes</description>
+    <errorConditionFormula>IF(TEXT((EndDateTime__c - StartDateTime__c)*24*60) != &quot;30&quot;, true, false)</errorConditionFormula>
+    <errorMessage>Du kan inte skapa kortare eller längre möten än 30 minuter för tillfället.</errorMessage>
+</ValidationRule>

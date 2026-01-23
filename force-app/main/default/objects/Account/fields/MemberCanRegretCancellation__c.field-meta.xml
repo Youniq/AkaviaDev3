@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MemberCanRegretCancellation__c</fullName>
+    <description>System fält för att räkna ut om det går mer än 30 dagar sedan medlemmen utträdde. Används i ångra utträdes flödet</description>
+    <formula>TODAY() &lt;= CancellationDate__c +30</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>MemberCanRegretCancellation</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

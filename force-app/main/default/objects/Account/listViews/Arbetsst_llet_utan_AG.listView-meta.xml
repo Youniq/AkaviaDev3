@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Arbetsst_llet_utan_AG</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>PARENT_NAME</columns>
+    <columns>Status__c</columns>
+    <columns>WorkplaceNumber__c</columns>
+    <columns>EmployerOrgNumber__c</columns>
+    <columns>NumberOfActiveEmployees__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Workplace</value>
+    </filters>
+    <filters>
+        <field>PARENT_NAME</field>
+        <operation>equals</operation>
+    </filters>
+    <filters>
+        <field>ACCOUNT.NAME</field>
+        <operation>notContain</operation>
+        <value>00 radera</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.NAME</field>
+        <operation>notContain</operation>
+        <value>radera</value>
+    </filters>
+    <label>Arbetsställen utan AG</label>
+    <sharedTo>
+        <group>Registervard</group>
+    </sharedTo>
+</ListView>

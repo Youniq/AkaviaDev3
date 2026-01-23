@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Bulk Email Composer</masterLabel>
+    <description>Component for sending bulk emails to employees from an employer account</description>
+    <targets>
+        <target>lightning__RecordAction</target>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordAction">
+            <actionType>ScreenAction</actionType>
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="recordId" type="String" label="Record ID" description="The ID of the record to send emails for" required="true"/>
+            <property name="accountId" type="String" label="Account ID" description="The ID of the employer account" required="true"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

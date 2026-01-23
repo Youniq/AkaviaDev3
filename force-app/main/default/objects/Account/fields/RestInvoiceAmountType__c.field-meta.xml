@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RestInvoiceAmountType__c</fullName>
+    <description>Indicates which type of invoice is to be generated in Billecta based on the RestInvoiceAmount__c</description>
+    <externalId>false</externalId>
+    <label>RestInvoiceAmountType</label>
+    <length>50</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

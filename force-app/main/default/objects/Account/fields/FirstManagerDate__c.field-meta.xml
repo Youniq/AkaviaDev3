@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FirstManagerDate__c</fullName>
+    <inlineHelpText>Sätts automatiskt baserat på första chefsanställningens startdatum.</inlineHelpText>
+    <label>Första chefsdatum</label>
+    <summarizedField>Employment__c.StartDate__c</summarizedField>
+    <summaryFilterItems>
+        <field>Employment__c.Manager__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Employment__c.Person__c</summaryForeignKey>
+    <summaryOperation>min</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

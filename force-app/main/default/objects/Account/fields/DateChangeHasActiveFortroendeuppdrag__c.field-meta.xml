@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DateChangeHasActiveFortroendeuppdrag__c</fullName>
+    <inlineHelpText>Sätts automatiskt när person avslutar resp får uppdrag, Aktivt förtroendeuppdrag = sant/talskt</inlineHelpText>
+    <label>Senaste förändring uppdrag</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

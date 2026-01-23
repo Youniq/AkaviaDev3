@@ -1,0 +1,96 @@
+<template>
+  <template if:true={searchFilterEnabled}>
+    <div class="slds-var-m-bottom_x-large">
+      <h4 class="ak-formLabel">
+        {labels.EP_PickWorkplace_searchHeader}
+        <span class="slds-var-m-horizontal_small">
+          <lightning-helptext class="tooltip" content={labels.EP_PickWorkplace_labelHelpSearch} ></lightning-helptext>
+        </span>
+      </h4>
+      <lightning-input
+      name="enter-search"
+      label={labels.EP_PickWorkplace_searchHeader}
+      variant="label-hidden"
+      value={searchString}
+      type="search"
+      onkeyup={handleKeyUp}
+    ></lightning-input>
+    </div>
+  </template>
+  <h4 class="ak-formLabel slds-var-m-top_medium">
+    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+    {labels.EP_PickWorkplace_header}
+  </h4>
+  <template if:true={hasResults}>
+    <div class="slds-grid slds-gutters_direct-medium slds-var-m-bottom_x-small">
+      <div class="slds-col slds-size_2-of-3 slds-medium-size_2-of-5">
+        <span class="ak-tableHeader">{labels.EP_PickWorkplace_labelColWorkplace}</span>
+      </div>
+      <div class="slds-col">
+        <span class="ak-tableHeader">{labels.EP_PickWorkplace_labelColCity}</span>
+      </div>
+    </div>
+    <!-- sldsValidatorIgnoreNextLine -->
+    <fieldset class={fieldsetClasses}>
+      <legend
+        class="slds-form-element__legend slds-form-element__label slds-assistive-text"
+      >
+        <abbr title="obligatoriskt" class="slds-required">*</abbr>
+        {labels.EP_PickWorkplace_header}
+      </legend>
+      <div class="slds-form-element__control">
+        <template
+          for:each={filteredWorkplaces}
+          for:item="item"
+          for:index="index"
+        >
+          <span class="slds-radio" key={item.Id} style="display: block">
+            <input
+              type="radio"
+              id={index}
+              value={item.Id}
+              name="workplace"
+              onclick={handleSelection}
+              aria-describedby="error"
+              required
+            />
+            <label class="slds-radio__label" for={index} style="display: block">
+              <span class="slds-grid">
+                <span class="slds-radio_faux"></span>
+                <span class="slds-form-element__label slds-col">
+                  <div class="slds-grid">
+                    <div class="slds-col slds-size_2-of-3 slds-medium-size_2-of-5">
+                      {item.Name}
+                    </div>
+                    <div class="slds-col">{item.ShippingCity}</div>
+                  </div>
+                </span>
+              </span>
+            </label>
+          </span>
+        </template>
+      </div>
+      <div if:true={hasError} id="error" class="slds-form-element__help">
+        {labels.EP_PickWorkplace_radioValidationError}
+      </div>
+    </fieldset>
+  </template>
+
+  <template if:true={loading}>
+    <div class="spinner-wrapper slds-var-m-top_x-large">
+      <div class="spinner-inline">
+        <lightning-spinner
+          variant="brand"
+          alternative-text="Loading"
+          size="small"
+        ></lightning-spinner>
+      </div>
+    </div>
+  </template>
+
+  <template if:true={hasNoResult}>
+    <p>{labels.EP_PickWorkplace_labelNoResult_1} <br />
+      {labels.EP_PickWorkplace_labelNoResult_2}
+    </p>
+  </template>
+</template>

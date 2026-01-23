@@ -1,0 +1,69 @@
+<template>
+    <div class="slds-p-around_small">
+        <div class="slds-form slds-form_stacked">
+            <!-- Task Type Multi-pick -->
+            <lightning-dual-listbox
+                name="caseTypes"
+                label="Typ av ärenden"
+                source-label="Tillgängliga"
+                selected-label="Valda"
+                field-level-help="Välj en eller flera typer"
+                options={typeOptions}
+                value={caseTypes}
+                onchange={handleTypeMultiChange}
+                class="slds-m-bottom_small">
+            </lightning-dual-listbox>
+
+            <!-- Comments with @mentions -->
+            <lightning-textarea
+                name="callComments"
+                label="Kommentarer"
+                placeholder="Skriv dina kommentarer här... Använd @Förnamn Efternamn för att tagga kollegor"
+                value={comments}
+                onchange={handleInputChange}
+                onkeydown={handleKeyNav}
+            ></lightning-textarea>
+
+            <!-- Suggestions dropdown -->
+            <template if:true={showSuggestions}>
+                <div class="mention-list slds-dropdown slds-dropdown_fluid slds-show slds-m-top_x-small" role="listbox">
+                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                        <template for:each={suggestions} for:item="s" for:index="index">
+                            <li key={s.id} role="presentation">
+                                <div data-index={index} data-id={s.id} class={s._class} onclick={handleSuggestionClick} role="option">
+                                    <span class="avatar" aria-hidden="true">{s.initials}</span>
+                                    <span class="sugg-name">{s.name}</span>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+
+            <!-- Mentions as modern pills -->
+            <template if:true={hasMentions}>
+                <div class="slds-m-top_small">
+                    <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small">Taggade användare:</div>
+                    <div class="mention-badges">
+                        <template for:each={mentionedUsers} for:item="user">
+                            <lightning-pill key={user} label={user} name={user} onremove={removeMention}></lightning-pill>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Draft status (inline and subtle) -->
+            <template if:true={showStatus}>
+                <div class={statusClass}>
+                    <lightning-icon icon-name={statusIcon} size="xx-small" class="slds-m-right_x-small"></lightning-icon>
+                    <span>{statusMessage}</span>
+                </div>
+            </template>
+        </div>
+        <!-- Buttons footer -->
+        <div class="slds-m-top_small slds-grid slds-grid_align-end">
+            <lightning-button variant="neutral" label="Avbryt" onclick={cancelLog}></lightning-button>
+            <lightning-button variant="brand" label="Spara" onclick={saveLog} class="slds-m-left_x-small"></lightning-button>
+        </div>
+    </div>
+</template>

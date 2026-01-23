@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TotalActiveEmployments__c</fullName>
+    <description>Används på arbetsgivare för att summera upp antal aktiva anställningar på alla underliggande arbetsställen</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Sammanlagt antal aktiva anställningar på underliggande arbetsställen. Uppdateras varje timma.</inlineHelpText>
+    <label>Totalt Antal Aktiva Anställningar</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

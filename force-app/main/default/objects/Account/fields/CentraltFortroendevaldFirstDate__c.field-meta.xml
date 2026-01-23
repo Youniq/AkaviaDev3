@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CentraltFortroendevaldFirstDate__c</fullName>
+    <description>Om medlemmen har minst ett aktivt uppdrag av typen Centralt förtroendevald visas det tidigaste startdatumet för medlemmens uppdrag av typen Centralt förtroendevald</description>
+    <inlineHelpText>Datum då medlemmen blev Centralt förtroendevald</inlineHelpText>
+    <label>Centralt förtroendevald, första datum</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

@@ -1,0 +1,28 @@
+.akavia-oooContainer {
+  display: block;
+  border: 2px solid #ffc224;
+  white-space: pre-wrap;
+}
+
+/*Adjusting file uploader width in diff screen sizes to match the width of Add New omment button. */
+@media screen and (min-width: 769px) {
+  .akavia-fileupload {
+    width: 375px;
+    display: block;
+  }
+
+  .akavia-oooContainer {
+    width: 375px;
+  }
+}
+
+/*Adjusting file uploader width in diff screen sizes to match the width of Add New omment button. */
+@media screen and (min-width: 1200px) {
+  .akavia-fileupload {
+    width: 445px;
+    display: block;
+  }
+  .akavia-oooContainer {
+    width: 445px;
+  }
+}

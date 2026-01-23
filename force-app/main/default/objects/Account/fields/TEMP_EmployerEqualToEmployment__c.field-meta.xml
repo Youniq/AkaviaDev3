@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TEMP_EmployerEqualToEmployment__c</fullName>
+    <description>Used in Dataquality assessment to see if Current Employer is correct according to current Employment</description>
+    <formula>false</formula>
+    <label>TEMP_EmployerEqualToEmployment</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

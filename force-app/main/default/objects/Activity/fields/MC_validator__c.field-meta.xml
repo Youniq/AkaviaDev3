@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MC_validator__c</fullName>
+    <description>DEPRECATED - No longer needed to sync Tasks to markering cloud, but keeping field in case it becomes necessary in the future.</description>
+    <formula>DATEVALUE(CreatedDate) &gt; today()-365 &amp;&amp; NOT(ISBLANK(WhoId))</formula>
+    <label>DEPRECATED: Synkad med Marketing Cloud</label>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Page Header</masterLabel>
+    <description>This component display a page header section with a preamble, with inputs for the texts</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="mainHeader" type="String" label="H1 Text" description="Main Page header" default="HUVUDRUBRIK" />
+            <property name="preamble" type="String" label="Preamble Text" description="Preamble text" default="Ingress" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

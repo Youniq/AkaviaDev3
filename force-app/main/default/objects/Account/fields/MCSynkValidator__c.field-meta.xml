@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MCSynkValidator__c</fullName>
+    <description>Används för att kontrollera att email eller telefonnummer finns på Person kontot för synkronisering till mc cloud. Inge telefon eller email ingen synk</description>
+    <formula>/*Version 1.0, 2021-04-26,T*/
+/*
+IF(
+AND(IsPersonAccount = TRUE,
+NOT(ISPICKVAL(Type, &apos;Föredetta medlem&apos;)),
+OR(
+NOT(ISBLANK(PersonEmail)),
+NOT(ISBLANK(PersonMobilePhone))
+)),
+TRUE,
+FALSE)
+*/
+
+/*Version 2.0, 2022-09-05,CE*/
+
+/*IF(
+AND(IsPersonAccount = TRUE,
+CancellationDate__c +365 &gt; today() || ISBLANK(CancellationDate__c) ||  ISPICKVAL(Type, &apos;Förtroendevald, ej Akavia&apos;) ,
+Deceased__c = false,
+OR(
+NOT(ISBLANK(PersonEmail)),
+NOT(ISBLANK(PersonMobilePhone))
+)										
+),
+TRUE,
+FALSE)*/
+
+/*Version 2.1, 2022-09-28,CE*/
+/* IF(
+AND(IsPersonAccount = TRUE,MembershipStatus__c != &apos;Avliden&apos;,MembershipStatus__c != &apos;Utesluten&apos;,MembershipStatus__c != &apos;Makulerad&apos;,((MembershipStatus__c = &apos;Aktiv&apos; &amp;&amp; ISBLANK(CancellationDate__c)) ||(MembershipStatus__c = &apos;Ej medlem&apos; &amp;&amp; ISPICKVAL(Type, &quot;Förtroendevald, ej Akavia&quot;)) || ((MembershipStatus__c != &apos;Aktiv&apos; &amp;&amp; MembershipStatus__c != &apos;Ej medlem&apos;) &amp;&amp; CancellationDate__c +182 &gt; today())),
+OR(
+NOT(ISBLANK(PersonEmail)),
+NOT(ISBLANK(PersonMobilePhone))
+)										
+),
+TRUE,
+FALSE)*/
+
+/*Version 2.3, 2023-05-02, MN*/
+IF(
+	AND(
+		IsPersonAccount = TRUE,
+		MembershipStatus__c != &apos;Avliden&apos;,
+		MembershipStatus__c != &apos;Utesluten&apos;,
+		MembershipStatus__c != &apos;Makulerad&apos;,
+		(
+			(MembershipStatus__c = &apos;Kommande&apos; &amp;&amp; ISBLANK(CancellationDate__c)) ||
+			(MembershipStatus__c = &apos;Aktiv&apos; &amp;&amp; ISBLANK(CancellationDate__c)) ||
+			(MembershipStatus__c = &apos;Ej medlem&apos; &amp;&amp; ISPICKVAL(Type, &quot;Förtroendevald, ej Akavia&quot;)) || 
+                        (MembershipStatus__c = &apos;Ej medlem&apos; &amp;&amp; ISPICKVAL(Type, &quot;Opinionsbildare&quot;)) || 
+                        (MembershipStatus__c = &apos;Ej medlem&apos; &amp;&amp; ISPICKVAL(Type, &quot;Lead&quot;)) || 
+            (MembershipStatus__c = &apos;Avslutad&apos; &amp;&amp; ISPICKVAL(Type, &quot;Förtroendevald, ej Akavia&quot;)) ||
+			(
+				(MembershipStatus__c != &apos;Aktiv&apos; &amp;&amp; MembershipStatus__c != &apos;Ej medlem&apos; &amp;&amp; MembershipStatus__c != &apos;Kommande&apos;) &amp;&amp; 
+				CancellationDate__c +182 &gt; today()
+			)
+		),
+		OR(
+			NOT(ISBLANK(PersonEmail)),
+			NOT(ISBLANK(PersonMobilePhone))
+		)
+	),
+TRUE,
+FALSE)</formula>
+    <label>Synkad med Marketing Cloud</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

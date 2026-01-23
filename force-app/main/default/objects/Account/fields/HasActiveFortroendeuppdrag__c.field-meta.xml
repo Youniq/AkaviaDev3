@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HasActiveFortroendeuppdrag__c</fullName>
+    <description>CountActiveFortroendeuppdrag__c is a numberfield calculated from a Declarative Rollup Summary. 
+This field is used for displaying if a member has an active Förtroendeuppdrag or not.</description>
+    <formula>CountActiveFortroendeuppdrag__c &gt; 0</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Den här medlemmen har minst ett aktivt förtroendeuppdrag</inlineHelpText>
+    <label>Aktivt förtroendeuppdrag</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

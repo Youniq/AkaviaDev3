@@ -1,0 +1,14 @@
+.help-text {
+  color: var(--lwc-colorTextLabel, rgba(0, 0, 0, 0.6));
+  font-size: 0.75rem;
+}
+
+.spinner-wrapper {
+  height: 50px;
+  text-align: center;
+}
+
+.spinner-inline {
+  position: relative;
+  display: inline-block;
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OrgNr_i_siffror_och_utan_bindestreck</fullName>
+    <active>true</active>
+    <description>Reglen för att förhindra skapande av konton med orgnummer i text och bindestreck i orgnumret</description>
+    <errorConditionFormula>IF(
+    NOT(ISBLANK(AccountNumber)),
+    (OR(Not(ISNUMBER(AccountNumber)),
+			LEN(AccountNumber) &lt;&gt; 10						
+							)),
+    false
+				)</errorConditionFormula>
+    <errorDisplayField>AccountNumber</errorDisplayField>
+    <errorMessage>Organisationsnummer skall vara 10 siffror utan bindestreck</errorMessage>
+</ValidationRule>

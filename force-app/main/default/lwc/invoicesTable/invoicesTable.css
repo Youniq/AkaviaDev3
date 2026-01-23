@@ -1,0 +1,77 @@
+th.h3 {
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+a {
+  color: #1a1818;
+  border-bottom: 2px solid #1a1818;
+}
+a:hover {
+  background-color: #1a1818;
+  color: #fff;
+}
+
+table {
+  border: none !important;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 70%;
+  padding: 0.5rem;
+  width: 100% !important;
+}
+
+tr > th > h5 {
+  width: 122px;
+}
+
+table.sortable {
+  padding: 0;
+  display: table-cell;
+  vertical-align: inherit;
+  font-size: 100%;
+  border-collapse: separate;
+  border-spacing: 0 1em;
+  border: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  /* margin-top: 0px !important; */
+}
+
+td.sortable {
+  display: table-cell;
+  vertical-align: inherit;
+  border: none !important;
+}
+
+td > button {
+  border: none;
+}
+
+@media screen and (min-width: 300px) {
+  .tableHeader {
+    opacity: 0.7;
+    font-weight: normal;
+  }
+
+  th > .tableHeader,
+  td.sortable {
+    padding: 5px;
+  }
+
+  table th:first-child > .tableHeader,
+  table td.sortable:first-child {
+    padding-left: 0;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  th > .tableHeader,
+  td.sortable {
+    padding: 10px 15px 5px 15px;
+  }
+
+  tr > th > h5 {
+    width: 165px;
+  }
+}

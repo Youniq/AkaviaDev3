@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Setting used by Bisnode/Spar/DnB integration (kärt barn har många namn)</description>
+    <enableFeeds>false</enableFeeds>
+    <label>Bisnode</label>
+    <visibility>Public</visibility>
+</CustomObject>

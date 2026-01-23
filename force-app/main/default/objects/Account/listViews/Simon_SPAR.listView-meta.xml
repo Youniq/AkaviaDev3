@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Simon_SPAR</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>ACCOUNT.LAST_UPDATE</columns>
+    <columns>MembershipStatus__c</columns>
+    <columns>ACCOUNT.TYPE</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <columns>BisnodeMessage__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>PersonAccount.PersonAccount</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.NAME</field>
+        <operation>equals</operation>
+        <value>unknown</value>
+    </filters>
+    <filters>
+        <field>MembershipStatus__c</field>
+        <operation>equals</operation>
+        <value>Aktiv</value>
+    </filters>
+    <label>Unknown SPAR</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

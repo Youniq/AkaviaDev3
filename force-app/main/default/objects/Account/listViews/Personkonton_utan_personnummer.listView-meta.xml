@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Personkonton_utan_personnummer</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>SocialSecurityNumber__c</columns>
+    <columns>ACCOUNT.TYPE</columns>
+    <columns>MembershipStatus__c</columns>
+    <columns>MembershipCategory__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>PersonAccount.PersonAccount</value>
+    </filters>
+    <filters>
+        <field>SocialSecurityNumber__c</field>
+        <operation>lessOrEqual</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.TYPE</field>
+        <operation>equals</operation>
+        <value>Medlem</value>
+    </filters>
+    <filters>
+        <field>MembershipStatus__c</field>
+        <operation>equals</operation>
+        <value>Aktiv</value>
+    </filters>
+    <label>Personkonton - utan personnummer</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Slutdatum_ifyllt_om_annan_adress</fullName>
+    <active>true</active>
+    <description>Slutdatum måste fyllas i om annan adress är ifyllt</description>
+    <errorConditionFormula>AND(
+				OR(
+								NOT(ISBLANK(PersonOtherStreet)),
+				    NOT(ISBLANK(PersonOtherCity)),
+				    NOT(ISBLANK(PersonOtherPostalCode)),
+			     NOT(ISBLANK(PersonOtherState)),
+				    NOT(ISBLANK(PersonOtherCountry))
+								),
+				ISBLANK(EndDateOtherAddress__c)
+				)</errorConditionFormula>
+    <errorMessage>Slutdatum måste anges när annan adress för personer angivits</errorMessage>
+</ValidationRule>

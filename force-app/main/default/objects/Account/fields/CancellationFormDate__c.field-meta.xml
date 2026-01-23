@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CancellationFormDate__c</fullName>
+    <description>Används i schedulerad flow att ta bort Aktivera uttrdäesformulär checkboxen samt menyvalet i communtyn efter 30 dagar.</description>
+    <label>Utträdesformulär aktiverat datum</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

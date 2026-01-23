@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Hantera_uppdrag_radera_AG</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>ACCOUNT.RECORDTYPE</columns>
+    <columns>OrganisationNumber__c</columns>
+    <columns>Status__c</columns>
+    <columns>ACCOUNT.ADDRESS2_CITY</columns>
+    <columns>TotalActiveEmployments__c</columns>
+    <columns>PARENT_NAME</columns>
+    <columns>UPDATEDBY_USER.ALIAS</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Employer,Account.Workplace</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.NAME</field>
+        <operation>startsWith</operation>
+        <value>ffv radera</value>
+    </filters>
+    <label>Hantera uppdrag - radera AG</label>
+    <sharedTo>
+        <group>Registervard</group>
+    </sharedTo>
+</ListView>

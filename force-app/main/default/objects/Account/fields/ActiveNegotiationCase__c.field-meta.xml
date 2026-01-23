@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ActiveNegotiationCase__c</fullName>
+    <description>Används för att visa att en person har ett öppet förhandlingsärende för användare som saknar behörighet till dessa.</description>
+    <formula>NumberOfOpenNegotiationCases__c &gt; 0</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Denna person har ett pågående förhandlingsärende. Uppdateras en gång i timmen.</inlineHelpText>
+    <label>Aktivt förhandlingsärende</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

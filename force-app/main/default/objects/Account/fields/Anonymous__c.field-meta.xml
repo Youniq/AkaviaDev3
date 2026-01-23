@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Anonymous__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Anger ifall om personen/medlemmen är anonym</description>
+    <inlineHelpText>Att vara anonym på arbetsplatsen innebär att varken din arbetsgivare eller den lokala fackföreningen (på din arbetsplats) får veta att du är medlem i Akavia. Väljer du att vara anonym kan dina fackliga representanter på arbetsplatsen inte företräda dig och dina intressen då de inte känner till att du är medlem.
+Kontakta Medlemsservice genom att skicka ett ärende eller ring om du önskar ändra din status till/från anonym.</inlineHelpText>
+    <label>Anonym på arbetsplats</label>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

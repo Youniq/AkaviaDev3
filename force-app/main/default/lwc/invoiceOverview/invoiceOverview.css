@@ -1,0 +1,123 @@
+h2 {
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+th.h3 {
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+a {
+  color: #1a1818;
+  border-bottom: 2px solid #1a1818;
+}
+a:hover {
+  background-color: #1a1818;
+  color: #fff;
+}
+
+@media screen and (min-width: 1200px) {
+  .slds-radio[type="radio"]:before,
+  .ak-form [type="radio"]:before {
+    width: 25px;
+    height: 25px;
+    margin-top: 1px;
+    margin-left: 0;
+  }
+}
+@media screen and (min-width: 768px) {
+  .slds-radio [type="radio"]:before,
+  .ak-form [type="radio"]:before {
+    margin-top: 2px;
+  }
+}
+
+.slds-radio [type="radio"]:before,
+.ak-form [type="radio"]:before {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1a1818;
+  background-color: #fff;
+  border-radius: 50px;
+  margin-top: -3px;
+  margin-left: -3px;
+}
+
+.slds-radio [type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0;
+  clip: rect(10 10 10 10);
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  border-top: 5px solid #1a1818;
+  border-radius: 10;
+  outline: none;
+  -webkit-transition: 0.05s ease-in;
+  -o-transition: 0.05s ease-in;
+  transition: 0.05s ease-in;
+  padding-top: 12px;
+}
+
+h2 {
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+.ak-slds-form-element__legend {
+  font-size: unset;
+  opacity: 0.7;
+  font-weight: var(--lwc-fontWeightBold, 700);
+  text-transform: uppercase;
+}
+
+h3 {
+  font-size: 18px;
+  line-height: 18px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+h4 {
+  opacity: 0.7;
+  font-weight: (--lwc-fontWeightBold, 700);
+  text-transform: uppercase;
+}
+
+.slds-form-element__legend {
+  opacity: 0.7;
+  font-size: unset;
+  font-weight: var(--lwc-fontWeightBold, 700);
+  float: left;
+}
+
+button.btn-pay {
+  border-radius: 0;
+  background-color: #1a1818;
+  border-color: #1a1818;
+  color: #fff;
+  text-transform: uppercase;
+  transition: none;
+}
+
+button.btn-pay:hover {
+  background-color: #ff7d1f;
+  border-color: #ff7d1f;
+  color: #1a1818;
+}
+
+button.btn-pay[disabled],
+button.btn-pay:disabled {
+  opacity: 0.5;
+}
+
+button.btn-pay[disabled]:hover {
+  background-color: #1a1818;
+  border-color: #1a1818;
+  color: #fff;
+}

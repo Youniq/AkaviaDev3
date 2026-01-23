@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Invoice List</masterLabel>
+    <description>This component shows the Invoices sorted on Invoice Date (newest first) and let's users pay their invoices via the Billecta Swish Api. All Text strings used are editable from Custom Labels.</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="person" type="String" label="User AccountId" description="Warning: Should always be {!User.AccountId}. Change this for debugging only" default="{!User.AccountId}" />
+            <property name="maxRows" type="Integer" label="Set Maximum Number of Rows" description="Setting a limit will ensure that only the e.g. 6 or 12 latest invoices will be displayed." default="6" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

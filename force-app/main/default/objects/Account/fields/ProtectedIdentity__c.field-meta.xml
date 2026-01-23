@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ProtectedIdentity__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indikerar om personen har skyddad identitet</description>
+    <inlineHelpText>Medlemmen har skyddad identitet.</inlineHelpText>
+    <label>Skyddad Identitet</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

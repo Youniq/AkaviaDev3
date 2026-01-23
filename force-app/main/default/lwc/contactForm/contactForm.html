@@ -1,0 +1,198 @@
+<!--
+  @description       : 
+  @author            : Malin Nilsson (Stretch Customer AB)
+  @group             : 
+  @last modified on  : 2023-10-25
+  @last modified by  : Malin Nilsson (Stretch Customer AB)
+-->
+<template>
+    <section class="akavia slds-var-m-bottom_x-large">
+        <section class="slds-grid">
+            <header class="slds-col">
+                <h1 class="h1">{labels.CP_casePageHeader}</h1>
+                <p class="preamble">
+                    {labels.CP_casePagePreamble}
+                </p>
+            </header>
+        </section>
+        <div class="slds-is-relative">
+            <div class="ak-border">
+                <template if:true={loading}>
+                    <div class="spinner">
+                        <lightning-spinner variant="brand" alternative-text="Loading" size="large"></lightning-spinner>
+                    </div>
+                </template>
+                <template if:true={initOk}>
+                    <div if:false={showFinishedMsg} class="slds-grid slds-gutters_direct slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                            <h4 class="ak-formLabel">
+                                <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                {labels.CP_labelEmail}
+                            </h4>
+                            <lightning-input type="email" label={labels.CP_labelEmail} variant="label-hidden"
+                                value={usrAccount.PersonEmail} required class="emailInput" disabled={showUploadFiles}
+                                message-when-type-mismatch={labels.CP_errorEmailTypeMismatch}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                            <h4 class="ak-formLabel">
+                                <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                {labels.CP_labelFormCategory}
+                            </h4>
+                            <lightning-combobox name="contactCategory" label={labels.CP_labelFormCategory}
+                                variant="label-hidden" data-field="category" options={catPicklistValues}
+                                onchange={handleInput} required class="caseInput" disabled={showUploadFiles}>
+                            </lightning-combobox>
+                        </div>
+                        <template if:true={ifDefaultForm}>
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                <h4 class="ak-formLabel">
+                                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                    {labels.CP_labelFormSubject}
+                                </h4>
+                                <lightning-input name="contactHeader" type="text" label={labels.CP_labelFormSubject}
+                                    variant="label-hidden" data-field="Subject" required class="caseInput"
+                                    disabled={showUploadFiles}>
+                                </lightning-input>
+                                <!-- pattern="[a-zA-ZåäöÅÄÖ0-9´` .,\-?!/()'$£@€]+" -->
+
+                                <!-- pattern="[a-zA-ZåäöÅÄÖ0-9 .,-?!\/]+" -->
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                <h4 class="ak-formLabel">
+                                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                    {labels.CP_labelFormDescription}
+                                </h4>
+                                <lightning-textarea name="contactInfo" label={labels.CP_labelFormDescription}
+                                    variant="label-hidden" data-field="Description" required class="caseInput"
+                                    disabled={showUploadFiles}>
+                                </lightning-textarea>
+                            </div>
+                            <template if:true={showUploadFiles}>
+                                <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                    <h4 class="ak-formLabel">
+                                        {labels.CP_labelFormFileUpload}
+                                    </h4>
+                                    <lightning-file-upload label={labels.CP_labelFormFileUpload} name="fileUploader"
+                                        accept={acceptedFormats} onuploadfinished={handleUploadFinished}
+                                        record-id={newCase.Id} multiple class="akavia-fileupload">
+                                    </lightning-file-upload>
+                                </div>
+                                <div if:true={files} class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                    <h4 class="ak-formLabel">
+                                        {labels.CP_labelUploadedFiles}
+                                    </h4>
+                                    <ul>
+                                        <template for:each={files} for:item="file">
+                                            <li key={file.documentId}><span>{file.name}</span></li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </template>
+                        </template>
+
+                        <template if:true={ifReducedFee}>
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                <h4 class="ak-formLabel">
+                                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                    {labels.CP_labelIncome}
+                                    <span class="slds-var-m-horizontal_small">
+                                        <lightning-helptext class="tooltip" content={labels.CP_tooltipIncome}>
+                                        </lightning-helptext>
+                                    </span>
+                                </h4>
+                                <lightning-input type="number" name="reducedFeeSalary" data-field="reducedFeeSalary"
+                                    label={labels.CP_labelIncome} variant="label-hidden" formatter="currency"
+                                    step="0.01" required class="caseInput"
+                                    placeholder={labels.CP_IncomePlaceholder}
+                                    message-when-step-mismatch={labels.CP_errorIncomeTooManyDecimals}
+                                    message-when-bad-input={labels.CP_errorIncomeInvalidInput}>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                <h4 class="ak-formLabel">
+                                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                    {labels.CP_labelFromDate}
+                                </h4>
+                                <lightning-input type="date" name="fromDate" data-field="reducedFeeFromDate"
+                                    label={labels.CP_labelFromDate} variant="label-hidden" min={minFromDate}
+                                    onchange={handleSelFromDate} class="caseInput" placeholder={labels.CP_FromDatePlaceholder} required></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                <h4 class="ak-formLabel">
+                                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                    {labels.CP_labelToDate}
+                                </h4>
+                                <lightning-input type="date" name="toDate" data-field="reducedFeeToDate"
+                                    label={labels.CP_labelToDate} variant="label-hidden" min={minToDate}
+                                    disabled={disableToDate} class="caseInput" placeholder={labels.CP_ToDatePlaceholder} required></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-var-p-vertical_x-small">
+                                <h4 class="ak-formLabel">
+                                    {labels.CP_labelMotivation}
+                                </h4>
+                                <lightning-textarea name="contactMotivation" label={labels.CP_labelMotivation}
+                                    variant="label-hidden" data-field="reducedFeeMotivation" class="caseInput">
+                                </lightning-textarea>
+                            </div>
+                        </template>
+                        <template if:true={displayBottomInfoSV}>
+                            <div class="slds-col slds-size_1-of-1 slds-var-m-top_medium">
+                                <div class="infoBox">
+                                    <p>
+                                        <lightning-icon icon-name="utility:chevronright" size="small" variant="inverse"
+                                            class="slds-var-m-right_small"></lightning-icon>
+                                        {selCatConfig.BottomInformationSV__c}
+                                    </p>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:true={displayBottomInfoEN}>
+                            <div class="slds-col slds-size_1-of-1 slds-var-m-top_medium">
+                                <div class="infoBox">
+                                    <lightning-icon icon-name="utility:chevronright" size="small" variant="inverse"
+                                        class="slds-var-m-right_small"></lightning-icon>
+                                    <p>{selCatConfig.BottomInformationEN__c}</p>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="slds-col slds-grid slds-grid_reverse slds-var-m-top_medium">
+                            <div class="slds-col slds-col_bump-left slds-grow-none slds-var-p-top_x-small">
+                                <button type="button" title={labels.CP_btnSend} onclick={handleClick} disabled={loading}
+                                    class="ak-button-base ak-button-black">
+                                    <label>{btnLabel}</label>
+                                </button>
+                            </div>
+                            <div if:true={errorMessage} class="slds-col slds-grow-none slds-var-p-top_x-small">
+                                <p class="slds-text-color_error">
+                                    {errorMessage} <a href="https://www.akavia.se/om-akavia/kontakt/"
+                                        target="_blank">{labels.CP_errorContact1}</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div if:true={showFinishedMsg}>
+                        <p>{labels.CP_infoThankYou} <br>
+                            {labels.CP_infoCaseRegistered} {newCase.CaseNumber}.
+                        </p>
+                        <!-- Adding an errorMessage display here too just to enable errors for failure during emailadress save. -->
+                        <template if:true={errorOnEmailSave} class="">
+                            <p class="slds-text-color_error slds-var-p-top_small">
+                                {labels.CP_errorEmailSave} <a href="https://www.akavia.se/om-akavia/kontakt/"
+                                    target="_blank">{labels.CP_errorContact1}</a>
+                            </p>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={initOk}>
+                    <div if:true={errorMessage}>
+                        <p class="slds-text-color_error">
+                            {errorMessage} <a href="https://www.akavia.se/om-akavia/kontakt/"
+                                target="_blank">{labels.CP_errorContact1}</a>
+                        </p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+</template>

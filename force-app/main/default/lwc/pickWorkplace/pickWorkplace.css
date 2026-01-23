@@ -1,0 +1,9 @@
+.spinner-wrapper {
+  height: 50px;
+  text-align: center;
+}
+
+.spinner-inline {
+  position: relative;
+  display: inline-block;
+}

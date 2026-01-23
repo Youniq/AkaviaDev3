@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reason__c</fullName>
+    <description>Den Case Reason som ska sättas på det nya ärendet.</description>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Den Case Reason som ska sättas på det nya ärendet. Måste matcha API Name för ett picklist option på Case -&gt; Case Reason (reason__c). 
+
+Notera att valbara värden varierar beroende på Artikeltyp (Record Type)</inlineHelpText>
+    <label>Case Reason</label>
+    <length>255</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

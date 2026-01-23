@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsDistributionPostalPaperOnly__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Har endast effekt vid postalt distributionssätt. Markera för att alltid skicka fakturan som papperspost, även om medlemmen har digital brevlåda (t.ex. Kivra). Normalt skickas fakturan digitalt om möjligt. Info skickas till Billecta</description>
+    <inlineHelpText>Har endast effekt vid postalt distributionssätt. Tvinga pappersfaktura även om digital brevlåda (t.ex. Kivra) finns.</inlineHelpText>
+    <label>Postal pappersfaktura</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

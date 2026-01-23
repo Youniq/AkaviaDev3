@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AutogiroBank__c</fullName>
+    <description>Used when fetching information about bank accounts via Billecta API</description>
+    <label>Autogiro: Bank</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>Billecta_AutogiroBank</valueSetName>
+    </valueSet>
+</CustomField>

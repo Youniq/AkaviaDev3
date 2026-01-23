@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ParentLabourMarketSector__c</fullName>
+    <description>Hämtar namnet på arbetsmarknadsstället som arbetsgivaren har så att de visas på alla kopplade arbetsställen.</description>
+    <externalId>false</externalId>
+    <formula>IF(IsPersonAccount = false,Parent.LabourMarketSector__r.Name,CurrentEmployer__r.LabourMarketSector__r.Name)</formula>
+    <label>Arbetsgivarens Arbetsmarknadssektor</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

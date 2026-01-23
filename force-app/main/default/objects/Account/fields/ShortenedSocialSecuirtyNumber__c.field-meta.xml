@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ShortenedSocialSecuirtyNumber__c</fullName>
+    <description>Används för att kunna söka på personnummer utan århundrande, såsom 19 eller 20 innan</description>
+    <externalId>false</externalId>
+    <label>Förkortat personnummer</label>
+    <length>10</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

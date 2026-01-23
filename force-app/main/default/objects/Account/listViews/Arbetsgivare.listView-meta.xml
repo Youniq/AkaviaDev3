@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Arbetsgivare</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OrganisationNumber__c</columns>
+    <columns>Status__c</columns>
+    <columns>NumberOfWorksites__c</columns>
+    <columns>ACCOUNT.ADDRESS2_STATE</columns>
+    <columns>ACCOUNT.ADDRESS2_CITY</columns>
+    <columns>TotalActiveEmployments__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Account.Employer</value>
+    </filters>
+    <label>Arbetsgivare</label>
+</ListView>

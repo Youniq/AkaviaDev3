@@ -1,0 +1,143 @@
+<template>
+  <div class="akavia component-wrapper">
+    <section class="slds-grid">
+      <header class="slds-col">
+        <h1 class="h1">{labels.EP_pageHeader}</h1>
+        <p class="preamble">
+          {labels.EP_pagePreamble1}
+        </p>
+      </header>
+    </section>
+    <div class="slds-is-relative">
+      <template if:true={loading}>
+        <div class="spinner">
+          <lightning-spinner variant="brand" alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+      </template>
+
+      <!-- Display error message if something goes wrong during initiation -->
+      <div if:true={showError} class="slds-var-m-bottom_medium">
+        <p class="slds-text-color_error">
+          {labels.EP_errorGeneral}
+        </p>
+      </div>
+
+      <!-- Something went wrong during initiation, hence not showing component - only displaying error. -->
+      <template if:false={showError}>
+        <!-- Grid -->
+        <section class="slds-grid slds-wrap slds-var-m-top_large">
+          <!-- Col -->
+          <header class="slds-col slds-size_1-of-1 slds-large-size_1-of-4 ak-cell">
+            <h2 class="ak-h2">{labels.EP_headerEmployer}</h2>
+          </header>
+          <!-- Col -->
+          <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-4">
+            <!-- Row within col -->
+            <div class="slds-grid ak-headerHeight slds-grid_vertical-align-end">
+              <!-- Inner col -->
+              <div class="slds-col slds-size_2-of-3 slds-medium-size_1-of-3 ak-tableHeader ak-cell">
+                <span if:true={hasEmployment}>{labels.EP_labelCurrEmployer}</span>
+              </div>
+              <!-- Inner col -->
+              <div class="slds-col slds-size_1-of-3 slds-medium-size_1-of-6 ak-tableHeader ak-cell">
+                <span if:true={hasEmployment}>{labels.EP_labelOrgNumber}</span>
+              </div>
+            </div>
+            <!-- Row within col -->
+            <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+              <!-- Inner col -->
+              <div if:true={hasEmployment}
+                class="slds-col slds-size_2-of-3 slds-medium-size_1-of-3 ak-cell slds-var-m-bottom_medium">
+                <span>{employment.employerName}</span>
+              </div>
+              <!-- Inner col -->
+              <div if:true={hasEmployment}
+                class="slds-col slds-size_1-of-3 slds-medium-size_1-of-6 ak-cell slds-var-m-bottom_medium">
+                <span>{employment.orgNum}</span>
+              </div>
+              <!-- Inner col -->
+              <div if:false={hasEmployment}
+                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 ak-cell slds-var-m-bottom_medium">
+                <span if:true={usrAccount.selfEmployedIsEvaluating}><i>{labels.EP_labelSelfemployedEval}</i></span>
+                <span if:true={hasNoEmployment}><i>{labels.EP_labelNoEmployment}</i></span>
+                <span if:true={isUnemployed}><i>{labels.EP_labelUnemployed}</i></span>
+              </div>
+              <!-- Inner col -->
+              <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                <button type="button" title={labels.EP_btnChangeEmployer} onclick={handleChangeEmployer}
+                  disabled={disabledButton} class="ak-button-base ak-button-large ak-button-black slds-float_right">
+                  <label>{labels.EP_btnChangeEmployer}</label>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section if:false={hideManagerSection}>
+          <!-- Grid -->
+          <div
+            class="slds-grid slds-wrap slds-grid_vertical-align-center slds-var-m-top_xx-large slds-var-m-bottom_medium">
+            <!-- Col -->
+            <header class="slds-var-m-bottom_small slds-col slds-size_1-of-1 slds-medium-size_2-of-4 ak-cell">
+              <h2 class="ak-h2">
+                {isManagerHeader}
+                <span class="slds-var-m-horizontal_small slds-align-top">
+                  <lightning-helptext content={isManagerTooltip}></lightning-helptext>
+                </span>
+              </h2>
+            </header>
+            <!-- Col -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-4">
+              <button type="button" title={labels.EP_btnEditIsManager} onclick={handleConfirmManagerChange}
+                disabled={disabledButton} class="ak-button-base ak-button-large ak-button-black slds-float_right">
+                <label>{labels.EP_btnEditIsManager}</label>
+              </button>
+            </div>
+          </div>
+        </section>
+      </template>
+
+      <!-- Change Is Manager value -->
+      <template if:true={showConfirmManagerChangeModal}>
+        <c-confirmation-modal onconfirm={handleChangeIsManager} onmodalclose={handleModalClose}
+          confirmed={managerChangeDone}>
+          <!-- SLOT: BEFORE CONFIRM  -->
+          <div slot="beforeConfirm">
+            <p if:false={employment.isManager}>
+              {labels.EP_infoBeforeConfirmStartAsManager}
+            </p>
+            <p if:true={employment.isManager}>
+              {labels.EP_infoBeforeConfirmEndAsManager}
+            </p>
+          </div>
+          <!-- SLOT: AFTER CONFIRM -->
+          <div slot="afterConfirm">
+            <template if:false={showManagerChangeErr}>
+              <p if:false={employment.isManager}>
+                {labels.EP_infoThankYou} <br>
+                {labels.EP_infoAfterConfirmEndAsManager}
+              </p>
+              <p if:true={employment.isManager}>
+                {labels.EP_infoThankYou} <br>
+                {labels.EP_infoAfterConfirmStartAsManager}
+              </p>
+            </template>
+            <template if:true={showManagerChangeErr}>
+              <p class="slds-text-color_error">
+                {labels.EP_errorGeneral}
+              </p>
+            </template>
+          </div>
+        </c-confirmation-modal>
+      </template>
+
+      <!-- Change Employer Modal -->
+      <template if:true={showChangeEmployerModal}>
+        <c-change-employer-modal onmodalclose={handleModalClose} onnewemployment={handleNewEmployment}
+          usr-account-id={usrAccount.Id} usr-account-selfemp-eval={usrAccount.SelfemployedEvaluating__c}
+          usr-contact-id={usrContactId} active-employment-id={employment.id} usr-unemployed={usrAccount.isUnemployed}>
+        </c-change-employer-modal>
+      </template>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>localUnionEducation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indikerar om medlemmen/förtroendevalt har deltaig på en kampanj av typen &apos;Utbildning&apos;. Dock ej Akaviaprogrammet.
+
+Uppdateras av en mass action scheduler: Account_MAS_MarkLocalUnionEducated</description>
+    <label>Har gått lokalfacklig utbildning</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,27 @@
+<template>
+  <div class="slds-form-element">
+    <label
+      class="slds-checkbox_toggle slds-grid slds-grid_vertical-align-center"
+    >
+      <input
+        type="checkbox"
+        name="checkbox-toggle-16"
+        value="checkbox-toggle-16"
+        aria-describedby="checkbox-toggle-16"
+        checked={toggleState}
+        onchange={handleToggle}
+      />
+      <span
+        id="checkbox-toggle-16"
+        class="slds-checkbox_faux_container slds-var-m-right_small"
+        aria-live="assertive"
+      >
+        <span class="slds-checkbox_faux"></span>
+      </span>
+      <label class="slds-form-element__label slds-m-bottom_none">{label}</label>
+      <lightning-helptext content={helpText}></lightning-helptext>
+    </label>
+  </div>
+  <!-- Slot for content to be hidden or displayed depending on toggle state -->
+  <slot></slot>
+</template>

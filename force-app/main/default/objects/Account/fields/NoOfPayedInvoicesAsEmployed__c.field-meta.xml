@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NoOfPayedInvoicesAsEmployed__c</fullName>
+    <description>Used when deciding how to handle persons in the Expel Members Functionality (APEX)</description>
+    <label># Betalda Fakturor Som Yrkesverksam</label>
+    <summaryFilterItems>
+        <field>Invoice__c.MembershipCategory__c</field>
+        <operation>equals</operation>
+        <value>Yrkesverksam första året, Yrkesverksam, Egenföretagare</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>Invoice__c.PaymentStatus__c</field>
+        <operation>equals</operation>
+        <value>Betald, Delbetald</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Invoice__c.Person__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

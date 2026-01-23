@@ -1,0 +1,186 @@
+<!--
+  @description       : 
+  @author            : Malin Nilsson (Stretch Customer AB)
+  @group             : 
+  @last modified on  : 2025-11-27
+  @last modified by  : Malin Nilsson (Stretch Customer AB)
+-->
+<template>
+    <lightning-quick-action-panel header="Maila anställda medlemmar">
+        <div class="slds-card">
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- Loading Spinner -->
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Laddar..." size="medium"></lightning-spinner>
+                </template>
+
+                <!-- Success Message -->
+                <template if:true={successMessage}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_success" role="alert">
+                        <span class="slds-assistive-text">Skickat</span>
+                        <span class="slds-icon_container slds-icon-utility-success slds-m-right_x-small"
+                            title="Skickat">
+                            <lightning-icon icon-name="utility:success" size="x-small"></lightning-icon>
+                        </span>
+                        <h2>{successMessage}</h2>
+                    </div>
+                </template>
+                <!-- No Employees Message -->
+                <template if:true={noEmployeesMessage}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                        <span class="slds-assistive-text">Information</span>
+                        <span class="slds-icon_container slds-icon-utility-info slds-m-right_x-small"
+                            title="Information">
+                            <lightning-icon icon-name="utility:info" size="x-small"></lightning-icon>
+                        </span>
+                        <h2>{noEmployeesMessage}</h2>
+                    </div>
+                </template>
+
+
+                <!-- Main Content -->
+                <template if:false={isLoading}>
+                    <template if:false={noEmployeesMessage}>
+                        <!-- RecipientsSelector Table -->
+                        <c-bulk-email-recipient-selector account-id={effectiveAccountId}
+                            onselectionchange={handleRecipientSelectionChange}>
+                        </c-bulk-email-recipient-selector>
+
+                        <div class="slds-card__header slds-var-p-top_xx-large">
+                            <h3 class="slds-card__header-title">
+                                <span class="slds-text-heading_small">Komponera Email</span>
+                                <!-- Using margin to align the helptext with the title -->
+                                <span class="slds-p-left_xx-small" style="margin:-4px 0 0 0;"><lightning-helptext
+                                        icon-name="utility:info" content="Notera att mailet skickas med noreply@akavia.se men med ditt namn som alias (utskicket kan inte svaras på). 
+                                    Samt att alla mottagare är bcc i utskicket."></lightning-helptext></span>
+                            </h3>
+                        </div>
+
+
+                        <!-- 5. Email Subject -->
+                        <div class="slds-form-element__control">
+                            <lightning-input type="text" id="email-subject" required label="Ämne" value={emailSubject}
+                                onchange={handleSubjectChange} placeholder="Ditt ämne..."
+                                maxlength={MAX_SUBJECT_LENGTH}>
+                            </lightning-input>
+                        </div>
+
+
+                        <!-- 6. Email Message -->
+                        <div class="slds-form-element__control">
+                            <lightning-input-rich-text value={emailBody} required label="Meddelande"
+                                onchange={handleBodyChange} placeholder="Meddelande..." variant='bottom-toolbar'
+                                formats={allowedFormats}>
+                            </lightning-input-rich-text>
+                        </div>
+
+
+                        <!-- 8. Email Attachments -->
+                        <!-- COMMENTED OUT: Attachment logic temporarily disabled due to duplicate errors in Salesforce
+                             when sending attachments on the same second. Will be re-enabled in future release. -->
+                        <!--
+                        <div class="slds-form-element__control">
+                            <lightning-file-upload name="fileUploader" label="Bifoga filer"
+                                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xlsx,.xls,.ppt,.pptx" record-id={recordId}
+                                onuploadfinished={handleUploadFinished} multiple>
+                            </lightning-file-upload>
+                        </div>
+
+                        <template if:true={hasUploadedFiles}>
+                            <div class="slds-m-top_medium">
+                                <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                    <h4 class="slds-text-heading_small">Bifogade filer:</h4>
+                                    <div class="slds-form-element__help">
+                                        <template if:true={isAttachmentSizeValid}>
+                                            <span
+                                                class="slds-text-color_success">{attachmentSizeMB}MB/{MAX_ATTACHMENT_SIZE_MB}MB</span>
+                                        </template>
+                                        <template if:false={isAttachmentSizeValid}>
+                                            <span
+                                                class="slds-text-color_error">{attachmentSizeMB}MB/{MAX_ATTACHMENT_SIZE_MB}MB
+                                                (för stort)</span>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="slds-list_dotted">
+                                    <template for:each={uploadedFiles} for:item="file">
+                                        <div key={file.id} class="slds-item slds-m-bottom_x-small">
+                                            <div class="slds-grid slds-grid_vertical-align-center">
+                                                <div class="slds-col slds-grow slds-m-right_large">
+                                                    <span
+                                                        class="slds-icon_container slds-icon-utility-attach slds-m-right_x-small">
+                                                        <lightning-icon icon-name="utility:attach"
+                                                            size="x-small"></lightning-icon>
+                                                    </span>
+                                                    <span class="slds-text-body_regular">{file.name}</span>
+                                                </div>
+                                                <div class="slds-col slds-no-flex">
+                                                    <lightning-button-icon icon-name="utility:delete" variant="bare"
+                                                        size="small" data-file-id={file.id} onclick={handleRemoveFile}
+                                                        title="Ta bort fil">
+                                                    </lightning-button-icon>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        -->
+
+                        <!-- Sending Status -->
+                        <template if:true={isSending}>
+                            <div class="slds-m-top_medium">
+                                <lightning-spinner alternative-text="Skickar email..." size="small"></lightning-spinner>
+                                <span class="slds-m-left_small">Skickar email till {selectedRecipients.length}
+                                    mottagare...</span>
+                            </div>
+                        </template>
+                    </template>
+                </template>
+
+                <!-- Message Container at Bottom -->
+                <template if:true={validationWarning}>
+                    <div class="slds-m-top_medium">
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning"
+                            role="alert">
+                            <span class="slds-assistive-text">Varning</span>
+                            <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small"
+                                title="Varning">
+                                <lightning-icon icon-name="utility:warning" size="x-small"></lightning-icon>
+                            </span>
+                            <h2>{validationWarning}</h2>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={errorMessage}>
+                    <div class="slds-m-top_medium">
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error"
+                            role="alert">
+                            <span class="slds-assistive-text">Error</span>
+                            <span class="slds-icon_container slds-icon-utility-error slds-m-right_x-small"
+                                title="Description of icon when needed">
+                                <lightning-icon icon-name="utility:error" size="x-small"></lightning-icon>
+                            </span>
+                            <h2>{errorMessage}</h2>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Footer with Action Buttons -->
+                <div slot="footer" class="slds-text-align_center slds-m-top_medium">
+                    <div class="slds-button-group slds-button-group_horizontal">
+                        <lightning-button variant="neutral" label="Avbryt" onclick={handleCancel}
+                            class="slds-m-horizontal_x-small"></lightning-button>
+                        <template if:false={noEmployeesMessage}>
+                            <lightning-button variant="brand" label="Skicka Email" onclick={sendEmail}
+                                disabled={isSendEmailDisabled} class="slds-m-horizontal_x-small"></lightning-button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </lightning-quick-action-panel>
+
+</template>

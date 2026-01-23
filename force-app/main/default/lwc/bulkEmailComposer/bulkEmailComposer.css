@@ -1,0 +1,96 @@
+/* Custom styles for the bulk email composer */
+.slds-form-element {
+    margin-bottom: 1rem;
+}
+
+.slds-form-element__label {
+    font-weight: 600;
+    color: #3e3e3c;
+}
+
+.slds-input {
+    border-radius: 0.25rem;
+}
+
+.slds-textarea {
+    border-radius: 0.25rem;
+}
+
+.slds-notify {
+    margin-bottom: 1rem;
+}
+
+.slds-required {
+    color: #c23934;
+}
+
+/* Spinner alignment */
+.slds-spinner_container {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* File upload styling */
+.slds-file-selector {
+    border: 1px dashed #dddbda;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.slds-file-selector:hover {
+    border-color: #0176d3;
+}
+
+/* Rich text editor styling */
+.slds-rich-text-editor {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+}
+
+
+/* Summary box styling */
+.slds-box_x-small {
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.slds-theme_shade {
+    background-color: #f3f3f3;
+    border: 1px solid #dddbda;
+}
+
+/* Success and error message styling */
+.slds-theme_success {
+    background-color: #04844b;
+    color: white;
+}
+
+.slds-theme_error {
+    background-color: #c23934;
+    color: white;
+}
+
+/* Loading state styling */
+.slds-is-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .slds-form-element__control {
+        width: 100%;
+    }
+    
+    .slds-button-group {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .slds-button-group .slds-button {
+        margin-right: 0;
+        margin-bottom: 0.25rem;
+    }
+}

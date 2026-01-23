@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AssociationForNonMember__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Används för de fall det är en person av typen Förtroendevald, ej akavia</description>
+    <label>Medlem i förbund (Ej Akavia)</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Du kan enbart välj föreningar av typen &quot;Förbund&quot;</errorMessage>
+        <filterItems>
+            <field>Association__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Förbund</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Association__c</referenceTo>
+    <relationshipLabel>Medlemmar, ej akavia</relationshipLabel>
+    <relationshipName>NonMemberAssociation</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

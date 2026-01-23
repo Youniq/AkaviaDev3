@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>F_rtroendevalda_ej_akavia</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>SocialSecurityNumber__c</columns>
+    <columns>ContactAssociation__c</columns>
+    <columns>ACCOUNT.CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>PersonAccount.PersonAccount</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.TYPE</field>
+        <operation>equals</operation>
+        <value>&quot;Förtroendevald, ej Akavia&quot;</value>
+    </filters>
+    <label>Personkonton - Förtroendevald, ej akavia</label>
+</ListView>

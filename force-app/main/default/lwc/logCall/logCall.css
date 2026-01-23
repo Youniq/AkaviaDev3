@@ -1,0 +1,78 @@
+/* Modern LWC CSS using standard values with fallbacks */
+
+/* Mention suggestions dropdown */
+.mention-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.mention-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.mention-item:hover {
+    background-color: #f3f3f3;
+}
+
+.highlighted {
+    background-color: #e6f2ff;
+}
+
+/* Avatar for mention suggestions */
+.avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #0176d3;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.sugg-name {
+    font-size: 0.875rem;
+    color: #181818;
+}
+
+/* Mention badges container */
+.mention-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+/* Mention text label */
+.mention-text {
+    font-size: 0.875rem;
+    color: #706e6b;
+    margin-bottom: 0.25rem;
+}
+
+/* Status indicator */
+.status-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Responsive adjustments using modern CSS */
+@media (max-width: 768px) {
+    .slds-grid_align-end {
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .mention-badges {
+        justify-content: flex-start;
+    }
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LegalForm__c</fullName>
+    <description>Jurisk Form text baserad på koden som finns i fältet</description>
+    <externalId>false</externalId>
+    <formula>CASE(LegalFormCode__c, 
+    10,	&quot;Fysiska personer&quot;,
+    21,	&quot;Enkla bolag&quot;,
+    22,	&quot;Partrederier&quot;,
+    23,	&quot;Värdepappersfonder&quot;,
+    31,	&quot;Handelsbolag, kommanditbolag&quot;,
+    41,	&quot;Bankaktiebolag&quot;,
+    42,	&quot;Försäkringsaktiebolag&quot;,
+    43,	&quot;Europabolag&quot;,
+    49,	&quot;Övriga aktiebolag&quot;,
+    51,	&quot;Ekonomiska föreningar&quot;,
+    53,	&quot;Bostadsrättsföreningar&quot;,
+    54,	&quot;Kooperativ hyresrättsförening&quot;,
+    55,	&quot;Europakooperativ, grupperingar&quot;,
+    61,	&quot;Ideella föreningar&quot;,
+    62,	&quot;Samfälligheter&quot;,
+    63,	&quot;Registrerade trossamfund&quot;,
+    71, &quot;Familjestiftelser&quot;,
+    72, &quot;Övriga stiftelser och fonder&quot;,
+    81,	&quot;Statliga enheter&quot;,
+    82, &quot;Kommuner&quot;,
+    83,	&quot;Kommunalförbund&quot;,
+    84,	&quot;Landsting&quot;,
+    87,	&quot;Off. korporationer o anstalter&quot;,
+    88,	&quot;Hypoteksföreningar&quot;,
+    91,	&quot;Oskiftade dödsbon&quot;,
+    92,	&quot;Ömsesidiga försäkringsbolag&quot;,
+    93,	&quot;Sparbanker&quot;,
+    94,	&quot;Understöds-, Försäkringsförening&quot;,
+    95,	&quot;Arbetslöshetskassor&quot;,
+    96,	&quot;Utländska juridiska personer&quot;,
+    98,	&quot;Övr sv jur pers, enl särsk lag&quot;,
+    99,	&quot;Juridisk form ej utredd&quot;, &quot; &quot;)</formula>
+    <label>Juridisk Form</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

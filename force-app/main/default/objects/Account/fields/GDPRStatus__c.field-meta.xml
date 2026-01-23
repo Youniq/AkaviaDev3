@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GDPRStatus__c</fullName>
+    <description>Keeps track of which GDPR stage a person account has undertaken after exit. If 30 Days GDPR rule has been processed on an account, this field will be set to 30 Days.</description>
+    <label>GDPR Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>30 Days</fullName>
+                <default>false</default>
+                <label>30 Days</label>
+            </value>
+            <value>
+                <fullName>1 Year</fullName>
+                <default>false</default>
+                <label>1 Year</label>
+            </value>
+            <value>
+                <fullName>3 Year</fullName>
+                <default>false</default>
+                <label>3 Year</label>
+            </value>
+            <value>
+                <fullName>5 Year</fullName>
+                <default>false</default>
+                <label>5 Year</label>
+            </value>
+            <value>
+                <fullName>7 Year</fullName>
+                <default>false</default>
+                <label>7 Year</label>
+            </value>
+            <value>
+                <fullName>10 Year</fullName>
+                <default>false</default>
+                <label>10 Year</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

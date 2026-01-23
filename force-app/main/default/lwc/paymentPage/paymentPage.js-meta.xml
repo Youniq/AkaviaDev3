@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Payment Options</masterLabel>
+    <description>This component enables Members to review and edit their payment options</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="displayPageHeader" type="Boolean" label="Display Page Header?" description="Toggles the Payment Page Header (H2) on/off)" default="true" />
+            <property name="displayPageSubheader" type="Boolean" label="Display Page Subheader?" description="Toggles the Payment Page Subheader (H3) on/off)" default="true" />
+            <property name="displayPageIngress" type="Boolean" label="Display Payment Page Ingress?" description="Toggles the Payment Page Ingress (p) on/off)" default="true" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

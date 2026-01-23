@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Medlem_och_anst_lld</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>CurrentEmployer__c</columns>
+    <columns>ACCOUNT.TYPE</columns>
+    <columns>MembershipCategory__c</columns>
+    <columns>MembershipStatus__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>MembershipStatus__c</field>
+        <operation>equals</operation>
+        <value>Aktiv</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.TYPE</field>
+        <operation>equals</operation>
+        <value>Anställd</value>
+    </filters>
+    <label>Medlem och anställd</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

@@ -1,0 +1,28 @@
+<template>
+    <template if:true={show}>
+        <article class="slds-card logcall-card">
+            <div class="slds-card__header slds-grid slds-grid_align-spread slds-grid_vertical-align-center logcall-header slds-p-around_x-small">
+                <div class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-m-right_x-small">
+                        <lightning-icon icon-name="standard:log_a_call" size="small" alternative-text="Logga"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title slds-truncate logcall-title" title="Logga ett samtal">Logga ett samtal</h2>
+                    </div>
+                </div>
+                <div class="slds-no-flex">
+                    <lightning-button-icon icon-name={toggleIcon}
+                                           variant="border"
+                                           size="small"
+                                           class="logcall-card__chevron"
+                                           alternative-text="Visa/Dölj"
+                                           onclick={toggleOpen}
+                                           title="Visa/Dölj"></lightning-button-icon>
+                </div>
+            </div>
+            <div class="slds-card__body slds-card__body_inner" if:true={open}>
+                <c-log-call record-id={recordId}></c-log-call>
+            </div>
+        </article>
+    </template>
+</template>

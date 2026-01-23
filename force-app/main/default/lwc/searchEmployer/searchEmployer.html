@@ -1,0 +1,76 @@
+<template>
+  <div>
+    <h4 class="ak-formLabel">{labels.EP_SearchEmployer_header}</h4>
+    <lightning-input name="enter-search" label={labels.EP_SearchEmployer_header} variant="label-hidden" type="search"
+      onkeyup={handleKeyUp} autofocus></lightning-input>
+    <span class="help-text"><i>{labels.EP_SearchEmployer_helptext}</i></span>
+  </div>
+  <div class="slds-var-m-top_x-large">
+    <!-- Display the header even if there's no search result returned. -->
+    <h4 if:true={searchResults} class="ak-formLabel">
+      <abbr title="obligatoriskt" class="slds-required">*</abbr>
+      {labels.EP_SearchEmployer_labelResults}
+    </h4>
+    <template if:true={hasResults}>
+      <div class="slds-grid slds-gutters_direct-medium slds-var-m-bottom_x-small">
+        <div class="slds-col slds-size_2-of-3 slds-medium-size_2-of-5">
+          <span class="ak-tableHeader">{labels.EP_SearchEmployer_labelColEmployer}</span>
+        </div>
+        <div class="slds-col">
+          <span class="ak-tableHeader">{labels.EP_labelOrgNumber}</span>
+        </div>
+      </div>
+      <div>
+        <!-- sldsValidatorIgnoreNextLine -->
+        <fieldset class={fieldsetClasses}>
+          <legend class="slds-form-element__legend slds-form-element__label slds-assistive-text">
+            <abbr title="obligatoriskt" class="slds-required">*</abbr>
+            {labels.EP_SearchEmployer_labelResults}
+          </legend>
+          <div class="slds-form-element__control">
+            <template for:each={searchResults} for:item="item" for:index="index">
+              <span class="slds-radio" key={item.Id} style="display: block">
+                <input type="radio" id={index} value={item.Id} name="employer" onclick={handleSelection}
+                  aria-describedby="error" checked={item.selected} required />
+                <label class="slds-radio__label" for={index} style="display: block">
+                  <span class="slds-grid">
+                    <span class="slds-radio_faux"></span>
+                    <span class="slds-form-element__label slds-col">
+                      <div class="slds-grid">
+                        <div class="slds-col slds-size_2-of-3 slds-medium-size_2-of-5">
+                          {item.Name}
+                        </div>
+                        <div class="slds-col">{item.OrganisationNumber__c}</div>
+                      </div>
+                    </span>
+                  </span>
+                </label>
+              </span>
+            </template>
+          </div>
+          <div if:true={hasError} id="error" class="slds-form-element__help">
+            {labels.EP_SearchEmployer_radioValidationError}
+          </div>
+        </fieldset>
+      </div>
+    </template>
+    <template if:true={loading}>
+      <div class="spinner-wrapper">
+        <div class="spinner-inline">
+          <lightning-spinner variant="brand" alternative-text="Loading" size="small"></lightning-spinner>
+        </div>
+      </div>
+    </template>
+    <template if:true={hasNoResult}>
+      <p>{labels.EP_SearchEmployer_labelNoResult}</p>
+    </template>
+  </div>
+  <template if:true={hasSelectedEmployer}>
+    <div class="slds-var-m-top_x-large">
+      <h4 class="ak-formLabel">{labels.EP_SearchEmployer_LabelSelEmployer}</h4>
+      <div>
+        {selectedEmployer.Name}
+      </div>
+    </div>
+  </template>
+</template>

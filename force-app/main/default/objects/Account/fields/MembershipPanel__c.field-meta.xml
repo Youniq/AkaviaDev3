@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MembershipPanel__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Om checkboxen är ifylld är personen med i en medlemspanel</description>
+    <label>Panel</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

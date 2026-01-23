@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LatestMembership__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Kommer använda automation för att automatiskt populeras</description>
+    <inlineHelpText>Denna är ifylld med det senaste aktuella medlemskapet</inlineHelpText>
+    <label>Senaste medlemskap</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Medlemskapet matchar inte mot personen.</errorMessage>
+        <filterItems>
+            <field>Membership__c.Person__c</field>
+            <operation>equals</operation>
+            <valueField>$Source.Id</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Membership__c</referenceTo>
+    <relationshipLabel>Accounts</relationshipLabel>
+    <relationshipName>Accounts</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

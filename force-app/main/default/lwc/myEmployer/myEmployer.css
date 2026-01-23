@@ -1,0 +1,13 @@
+.component-wrapper {
+  /* The measurement that allows all columns + large button to fit on one row */
+  max-width: 1222px;
+  margin: auto;
+}
+
+@media (min-width: 64em) {
+  .ak-headerHeight {
+    /* Intended use is for table header cells to have same height as the most left h2 header.
+        And with this height be able to align table header cell content to cell bottom.  */
+    height: 53px;
+  }
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NegotiatorAdvisor__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Lookup mot objektet för att kunna länka ihop en förhandlare/rådgivare (användare) till ett konto</description>
+    <label>Förhandlare/Rådgivare</label>
+    <lookupFilter>
+        <active>false</active>
+        <filterItems>
+            <field>User.UserRole.Name</field>
+            <operation>equals</operation>
+            <value>Förhandlare</value>
+        </filterItems>
+        <filterItems>
+            <field>User.UserRole.Name</field>
+            <operation>equals</operation>
+            <value>Rådgivare</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>User</referenceTo>
+    <relationshipName>Accounts</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Lookup</type>
+</CustomField>

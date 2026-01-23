@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Flow Email Addresses</label>
+    <protected>false</protected>
+    <values>
+        <field>AkaviaEkonomiEmailAddress__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>AkaviaFortroendevaldEmailAddress__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>AkaviaRattshjalpEmailAddress__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>AkaviaRegistervardEmailAddress__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>AkaviaServiceEmailAddress__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>Akavia_Forhandling_Email_Address__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>Akavia_Radgivning_Email_Address__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>Lawyer_Email__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+    <values>
+        <field>No_Reply_Email_Address__c</field>
+        <value xsi:type="xsd:string">uat@akavia.se</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prevent_Changing_Account_Name</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    OR( ISCHANGED( FirstName ),
+    ISCHANGED(  LastName )
+     ),
+     ISPICKVAL($Profile.UserType,&apos;CsnOnly&apos;)
+)</errorConditionFormula>
+    <errorMessage>Vänligen skicka in ett ärende om du vill ändra ditt namn</errorMessage>
+</ValidationRule>

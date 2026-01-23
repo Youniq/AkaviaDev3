@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ActivePortalUser__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Används för att skapa en användare ifall checkad, och för att inaktivera en användare ifall utcheckad.</description>
+    <inlineHelpText>Användare skapas om ibockad, inaktiveras om urbockad.</inlineHelpText>
+    <label>Aktiv portalanvändare</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AgeForRetirementCheck__c</fullName>
+    <description>This will return a number of the persons age when this changes. If its this persons birthdate and the person is either Yrkesverksam or Egenföretagare, and the age is 65 or higher, then this will show the age as a result. Its used in the flow for canceling the accounts membership.</description>
+    <externalId>false</externalId>
+    <formula>IF(
+				AND(
+								MembershipStatus__c = &apos;Aktiv&apos;,
+								OR(
+												AND(
+																MONTH(DateOfBirth__c) = MONTH(TODAY()),
+																Age__c &gt;=65,
+																OR(
+																				MembershipCategory__c = &apos;Yrkesverksam&apos;,
+																				MembershipCategory__c = &apos;Egenföretagare&apos;)
+												),
+												AND(
+																MembershipStatus__c = &apos;Aktiv&apos;,
+																MembershipCategory__c = &apos;Pensionär&apos;)
+								)
+				),
+				Year(TODAY())-YEAR(DateOfBirth__c),
+				NULL
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Age For Retirement Check</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

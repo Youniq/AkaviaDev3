@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="objectApiNameFilter" type="String" label="Visa endast på objekt (API-namn)" description="Lämna tomt för alla objekt. Ange t.ex. Person__c eller Account."/>
+            <property name="personAccountsOnly" type="Boolean" label="Endast Personkonton (Account.IsPersonAccount=true)"/>
+            <property name="defaultOpen" type="Boolean" label="Öppen som standard" description="Visa panelen öppnad som standard (annars är den stängd)."/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

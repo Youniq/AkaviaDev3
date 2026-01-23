@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NumberOfMembership__c</fullName>
+    <inlineHelpText>Antal gånger personen har haft ett medlemskap hos Akavia.</inlineHelpText>
+    <label>Antal Medlemskap</label>
+    <summaryForeignKey>Membership__c.Person__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

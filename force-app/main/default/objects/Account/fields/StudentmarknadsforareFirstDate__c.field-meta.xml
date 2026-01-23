@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>StudentmarknadsforareFirstDate__c</fullName>
+    <description>Om medlemmen har minst ett aktivt uppdrag med rollen Studentmarknadsförare visas det tidigaste startdatumet för medlemmens uppdrag med rollen Studentmarknadsförare</description>
+    <inlineHelpText>Datum då medlemmen blev Studentmarknadsförare</inlineHelpText>
+    <label>Studentmarknadsförare, första datum</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

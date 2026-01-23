@@ -1,0 +1,404 @@
+<!-- sldsValidatorIgnore -->
+<!--
+  @description       : Enables Members to review and edit their payment options
+  @author            : Håkon Kavli & Jenny Blomberg
+  @group             : Stretch
+  @last modified on  : 2025-03-31
+  @last modified by  : Malin Nilsson (Stretch Customer AB)
+-->
+<template>
+  <div class="slds-grid slds-wrap slds-var-p-horizontal_medium" id="gutters">
+    <header if:true={displayPageHeader} class="
+        slds-col
+        slds-size_1-of-1
+      " id="header1">
+      <h1>{labels.Billecta_PP_PageHeader}</h1>
+    </header>
+    <div class="
+        slds-col
+        slds-size_1-of-1
+        slds-medium-size_2-of-3
+        article-text__body
+      ">
+      <h3 if:true={displayPageSubheader} id="IntroText" class="article-text__body slds-var-p-top_medium">
+        {labels.Billecta_PP_PageSubHeader}
+      </h3>
+      <p if:true={displayPageIngress} class="article-text__body preamble">
+        {labels.Billecta_PP_PageParagraph}
+      </p>
+    </div>
+  </div>
+  <div class="slds-grid slds-wrap slds-var-p-around_medium" id="gutters2">
+    <header class="
+        slds-col
+        slds-size_1-of-1
+        slds-medium-size_1-of-3
+        slds-large-size_1-of-4
+      " id="header2">
+      <h2>{labels.PM_PaymentMethod}</h2>
+    </header>
+
+    <div id="paymentTable" class="
+        slds-col
+        slds-size_1-of-1
+        slds-medium-size_2-of-3
+        slds-large-size_3-of-4
+      ">
+
+      <table class=" sortable slds-wrap">
+        <caption></caption>
+        <tr class="sortable slds-wrap">
+          <th scope="col" class="slds-wrap">
+            <h5 class="tableHeader">{labels.PM_YourCurrentPaymentMethod}</h5>
+          </th>
+          <th if:true={actualBG} scope="col" class="slds-wrap">
+            <h5 class="tableHeader">{labels.PM_DistributionMethod}</h5>
+          </th>
+          <th if:false={bankHeaderIsHidden} scope="col" class="slds-wrap">
+            <h5 class="tableHeader">{labels.PM_YourBank}</h5>
+          </th>
+          <!-- A column to take up space in order to have button aligned with buttons in Unpaid Invoices table from component "Invoices Overview". -->
+          <th if:true={useEmptyColumn} scope="col" class="slds-show_medium slds-wrap emptyCol">
+            <h5 class="tableHeader"></h5>
+          </th>
+          <th class="slds-show_medium buttonCol" scope="col">
+
+          </th>
+        </tr>
+        <tr class="sortable slds-wrap">
+          <td class="sortable 1">
+            <template if:true={account}>
+              {account.fields.PaymentMethod__c.displayValue}
+            </template>
+          </td>
+          <td if:true={actualBG} class="sortable 2">
+            <template if:true={account}>
+              {account.fields.DistributionMethod__c.displayValue}
+            </template>
+          </td>
+          <td if:true={actualAG} class="sortable 3">
+            {account.fields.AutogiroBank__c.displayValue}
+          </td>
+          <td if:true={actualEinvoice} class="sortable 4">
+            {account.fields.EinvoiceBank__c.displayValue}
+          </td>
+          <!-- A column to take up space in order to have button aligned with buttons in Unpaid Invoices table from component "Invoices Overview". -->
+          <td if:true={useEmptyColumn} scope="col" class="slds-show_medium slds-wrap emptyCol sortable 5">
+          </td>
+          <td class="slds-show_medium sortable 6">
+            <a class="button button--default bg--black" onclick={openModal}>{labels.PM_ChangePaymentMethod}</a>
+          </td>
+        </tr>
+      </table>
+      <button class="
+                      slds-hide_medium
+                      slds-align_absolute-center
+                      button button--default
+                      bg--black
+                    " onclick={openModal}>
+        {labels.PM_ChangePaymentMethod}
+      </button>
+    </div>
+  </div>
+
+  <template if:true={isModalOpen}>
+    <!-- Modal/Popup Box LWC starts here -->
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+      aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header slds-modal__header_empty">
+          <button class="
+              slds-button slds-button_icon
+              slds-modal__close
+              slds-button_icon-inverse
+              slds-text-heading_large
+            " title="Close" onclick={closeModal}>
+            &#10006;
+            <span class="slds-assistive-text">Close</span>
+          </button>
+        </header>
+
+        <!-- Modal/Popup Box LWC body starts here -->
+        <div class="
+            slds-modal__content
+            slds-var-p-around_medium
+            slds-scrollable_none
+            slds-is-expanded
+          " id="modal-content-id-1">
+          <div class="slds-grid">
+            <div class="slds-col slds-size_1-of-1">
+
+              <template if:true={isFeeCatDubbelSrat}>
+                <div class="slds-var-m-vertical_large slds-var-p-horizontal_medium">
+                  <p style="white-space: pre-line;">{labels.DubbelanslutenSRAT_text}</p>
+                </div>
+              </template>
+              <template if:false={isFeeCatDubbelSrat}>
+                <section id="payment">
+                  <h4 class="slds-var-m-top_medium ak-slds-form-element__legend">
+                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                    {labels.Billecta_ChoosePaymentMethod}
+                  </h4>
+                  <lightning-radio-group class="ak-form-radio" variant="label-hidden"
+                    label={labels.Billecta_ChoosePaymentMethod} name="radioGroup"
+                    options={paymentOptionsPicklistValues.data.values} value={paymentMethodSelectedValue}
+                    onchange={handlePaymentSelectionChange} required type="radio"></lightning-radio-group>
+                </section>
+                <!-- EInvoice Section-->
+                <section id="BankId-section">
+                  <div class="slds-var-m-vertical_large slds-is-expanded" if:true={bankgiroIsSelected}>
+                    <fieldset class="form-group" dropdown-alignment="auto">
+                      <div class="ak-form select">
+                        <!-- Choose Distribution Method-->
+                        <h4 class="ak-slds-form-element__legend">
+                          <abbr title="obligatoriskt" class="slds-required">*</abbr>{labels.Billecta_ChooseDistribution}
+                        </h4>
+                        <lightning-combobox variant="label-hidden" class="hide-element" name="DistributionMethod"
+                          label={labels.Billecta_ChooseDistribution} value={distributionMethod}
+                          options={distributionMethodPicklistValues.data.values} dropdown-alignment="auto"
+                          onchange={handleDistributionMethodChange} required>
+                        </lightning-combobox>
+
+                        <!-- Choose Einvoice Bank-->
+                        <template if:true={eInvoiceIsSelected}>
+                          <h4 class="
+                            ak-slds-form-element__legend
+                            slds-var-m-top_large
+                          ">
+                            <abbr title="obligatoriskt" class="slds-required">*</abbr>{labels.Billecta_ChooseBankEInv}
+                          </h4>
+                          <lightning-combobox dropdown-alignment="auto" variant="label-hidden" name="eInvoiceBank"
+                            label={labels.Billecta_ChooseBankEInv} value={eInvoiceBank}
+                            options={eInvoiceBankPicklistValues.data.values}
+                            onchange={handleEinvoiceBankSelectionChange} required>
+                          </lightning-combobox>
+                        </template>
+                      </div>
+                    </fieldset>
+                  </div>
+                </section>
+                <!-- AutoInvoice Section-->
+                <template if:true={autogiroIsSelected}>
+
+                  <div if:false={hideHelptext} class="slds-var-m-vertical_large">
+                    <i>{labels.Billecta_Autogiro_Helptext}</i>
+                  </div>
+
+                  <!-- Choose Bank and Bank Account -->
+                  <section if:false={isError} id="AutoGiro-Options" class="slds-var-m-vertical_large">
+                    <div id="go">
+                      <fieldset class="form-group">
+                        <div class="ak-form select slds-is-expanded">
+                          <div class="slds-grid slds-wrap" id="AutoGiro-gutters">
+                            <section class="
+                              slds-col
+                              slds-size_1-of-1
+                              slds-medium-size_2-of-3
+                              slds-large-size_2-of-3
+                            ">
+                              <h4 class="ak-slds-form-element__legend">
+                                <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                {labels.Billecta_PaymentMethodChooseBankAutogiro}
+                              </h4>
+                              <lightning-combobox if:true={autoGiroPicklistValues} class="slds-var-p-vertical_small"
+                                variant="label-hidden" name="Bank"
+                                label={labels.Billecta_PaymentMethodChooseBankAutogiro} value={autogiroBank}
+                                options={autoGiroPicklistValues} onchange={handleAGBankChange} disabled={isWaiting}
+                                required>
+                              </lightning-combobox>
+                            </section>
+                            <!--  Get Bank Accounts button (desktop) -->
+                            <section class="
+                              slds-col
+                              slds-show_small
+                              slds-size_1-of-1
+                              slds-medium-size_1-of-3
+                              slds-large-size_1-of-3
+                              slds-var-p-left_large
+                              slds-align-middle
+                              slds-var-m-bottom_large
+                            ">
+                              <div>
+                                <button class="
+                                  slds-button
+                                  slds-button_brand
+                                  slds-button_stretch
+                                  slds-align_absolute-center
+                                " type="submit" onclick={handleGetAccounts} disabled={getBankAccountsButtonIsDisabled}>
+                                  {labels.Billecta_PaymentMethodGetAccounts}
+                                </button>
+                              </div>
+                            </section>
+                            <!--  Get Bank Accounts button (mobile) -->
+                            <section if:true={getBankAccountsButtonIsShowing}
+                              class="slds-col slds-hide_small slds-size_1-of-1 slds-var-m-bottom_large">
+                              <button class="
+                                slds-button
+                                slds-button_brand
+                                slds-button_stretch
+                                slds-align_absolute-center
+                              " type="submit" onclick={handleGetAccounts} disabled={getBankAccountsButtonIsDisabled}>
+                                {labels.Billecta_PaymentMethodGetAccounts}
+                              </button>
+                            </section>
+
+
+                            <!-- Select Bankid on current device or Other Device -->
+                            <section if:true={showVerifyBankidDevice}
+                              class="slds-col slds-size_1-of-1 slds-var-m-bottom_large slds-text-align--center">
+                              <h4 class="ak-slds-form-element__legen slds-var-m-vertical_medium">
+                                Välj vart du vill öppna BankID från
+                              </h4>
+                              <div class="slds-var-m-bottom_small">
+                                <button
+                                  class="slds-button slds-button_brand slds-button_stretch slds-var-m-bottom_medium slds-size_1-of-1 slds-small-size_1-of-3"
+                                  type="submit" onclick={handleBankIdCurrDevice}>
+                                  {labels.Billecta_bankIdThisDevice_ButtonText}
+                                </button>
+                              </div>
+                              <div>
+                                <button
+                                  class="slds-button slds-button_brand slds-button_stretch slds-size_1-of-1 slds-small-size_1-of-3"
+                                  type="submit" onclick={handleBankIdOtherDevice}>
+                                  {labels.Billecta_bankIdOtherDevice_ButtonText}
+                                </button>
+                              </div>
+
+                            </section>
+                            <!--  Choose Bank Account -->
+                            <section if:true={hasMultipleBankAccounts} class="
+                              slds-col
+                              slds-size_1-of-1
+                              slds-medium-size_2-of-3
+                              slds-large-size_2-of-3
+                              slds-var-m-bottom_medium 
+                            ">
+                              <h4 class="ak-slds-form-element__legend">
+                                <abbr title="obligatoriskt"
+                                  class="slds-required">*</abbr>{labels.Billecta_PaymentMethodChooseAccount}
+                              </h4>
+                              <lightning-combobox if:true={bankAccounts} class="slds-var-p-vertical_small"
+                                variant="label-hidden" name="BankAccount" value={selectedBankAccount}
+                                options={bankAccounts} onchange={handleAGBankAccountChange} disabled={isLoading}
+                                required>
+                              </lightning-combobox>
+                            </section>
+                            <!-- Sign with BankId Desktop / Mobile -->
+                            <!-- ... Desktop -->
+                            <section if:false={signButtonIsDisabled} class="
+                                slds-col
+                                slds-size_1-of-1
+                                slds-align_absolute-center
+                              ">
+                              <div class="slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <button class="
+                                  slds-button
+                                  slds-button_brand
+                                  slds-button_stretch
+                                " type="submit" onclick={startBankIdSign} disabled={signButtonIsDisabled}>
+                                  {labels.Billecta_Autogiro_ButtonText}
+                                  <!-- <img src={BANKIDLOGOWHITE} alt="White BankId logo" width="15%" /> -->
+                                </button>
+                              </div>
+                            </section>
+                            <!-- QR Code to open BankID app (Desktop) / Button to open app (mobile)  -->
+                            <section if:true={doShowQr} class="slds-col">
+                              <div id="QRLabel" class="slds-var-m-bottom_medium slds-text-align_center">
+                                <h4 class="
+                                  ak-slds-form-element__legend
+                                  slds-var-m-top_medium
+                                ">
+                                  {labels.Billecta_ScanQRCode}
+                                </h4>
+                              </div>
+                              <div>
+                                <div id="QRCode" class="slds-align_absolute-center">
+                                  <img src={QR} alt="QR Code picture to be scanned" style="width:200px;" />
+                                </div>
+                              </div>
+                            </section>
+                            <section if:true={doShowBankIdRedirectBtn}
+                              class="slds-align_absolute-center slds-size_1-of-1 slds-small-size_2-of-5 slds-var-m-top_medium">
+                              <!-- MOBILE  -->
+                              <a class="
+                                  slds-button
+                                  slds-button_brand
+                                  slds-button_stretch
+                                " type="submit" href={redirectURL} target="blank" rel="noopener noreferrer"
+                                onclick={setLoading} disabled={openBankIdButtonIsDisabled}>
+                                {labels.Billecta_ClickToOpenBankID}<img src={BANKIDLOGOWHITE} width="15%"
+                                  alt="White BankId logo" />
+                              </a>
+                            </section>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
+                  </section>
+
+                  <!--loading spinner start-->
+                  <div if:true={doShowOpenBankId}
+                    class="bankIdText slds-align_absolute-center slds-col slds-size_1-of-1 slds-small-size_1-of-3 slds-var-p-around_small slds-m-vertical_x-small">
+                    <p class="slds-align_absolute-center ">
+                      {labels.Billecta_OpenBankID}
+                    </p>
+                  </div>
+                  <template if:true={isLoading}>
+                    <div class="slds-is-relative slds-var-m-top_large" style="height: 5rem">
+                      <div if:true={isLoading} class="
+                        slds-spinner--brand
+                        slds-spinner slds-spinner--large
+                        slds-is-relative
+                      " role="alert">
+                        <span class="slds-assistive-text">Loading...</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                      </div>
+                    </div>
+
+                  </template>
+
+                  <!-- Display error message if something goes wrong -->
+                  <template if:true={isError}>
+                    <p class="slds-var-m-around_medium slds-text-color_error">
+                      {labels.PP_UpdatePaymentInfoError1}&nbsp;
+                      <a href="/minasidor/s/arende" target="blank"
+                        rel="noopener noreferrer">{labels.PP_UpdatePaymentInfoError2}</a>
+                      &nbsp;{labels.PP_UpdatePaymentInfoError3}
+                    </p>
+                  </template>
+                </template>
+
+                <template if:true={isSuccess}>
+                  <p class="
+                    slds-var-p-around_medium
+                    slds-text-color_success
+                    slds-align_absolute-center
+                    slds-text-heading_medium
+                  ">
+                    {labels.PP_PMChangeSuccess} &#10003;
+                  </p>
+                </template>
+
+                <div class="slds-var-m-around_medium slds-var-m-top_large">
+                  <button class="slds-float_right slds-var-m-around_medium" id="Save" name="submit" type="submit"
+                    data-f-is-finalized="false" data-f-is-progressive-submit="true" data-f-type="submitbutton"
+                    onclick={closeModalWithUpdate} if:true={showChangeButton}>
+                    {labels.PM_Change}
+                  </button>
+                  <button class="slds-float_right slds-var-m-around_medium" id="Close" name="submit" type="submit"
+                    data-f-is-finalized="false" data-f-is-progressive-submit="true" data-f-type="submitbutton"
+                    onclick={closeModal} if:true={showCloseButton}>
+                    {cancelCloseLabel}
+                  </button>
+
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

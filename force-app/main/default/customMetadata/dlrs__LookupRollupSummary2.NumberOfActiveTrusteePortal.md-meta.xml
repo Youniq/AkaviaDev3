@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Antal Förtroendeuppdrag (Portal)</label>
+    <protected>false</protected>
+    <values>
+        <field>dlrs__Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>dlrs__AggregateAllRows__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>dlrs__AggregateOperation__c</field>
+        <value xsi:type="xsd:string">Count</value>
+    </values>
+    <values>
+        <field>dlrs__AggregateResultField__c</field>
+        <value xsi:type="xsd:string">NumberOfActiveTrusteePortal__c</value>
+    </values>
+    <values>
+        <field>dlrs__CalculationMode__c</field>
+        <value xsi:type="xsd:string">Process Builder</value>
+    </values>
+    <values>
+        <field>dlrs__CalculationSharingMode__c</field>
+        <value xsi:type="xsd:string">System</value>
+    </values>
+    <values>
+        <field>dlrs__ChildObject__c</field>
+        <value xsi:type="xsd:string">Assignment__c</value>
+    </values>
+    <values>
+        <field>dlrs__ConcatenateDelimiter__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dlrs__Description__c</field>
+        <value xsi:type="xsd:string">Where:
+IsPersonAccount = true</value>
+    </values>
+    <values>
+        <field>dlrs__FieldToAggregate__c</field>
+        <value xsi:type="xsd:string">Id</value>
+    </values>
+    <values>
+        <field>dlrs__FieldToOrderBy__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dlrs__ParentObject__c</field>
+        <value xsi:type="xsd:string">Account</value>
+    </values>
+    <values>
+        <field>dlrs__RelationshipCriteriaFields__c</field>
+        <value xsi:type="xsd:string">Status__c
+Role__c
+AssignmentAssociation__c</value>
+    </values>
+    <values>
+        <field>dlrs__RelationshipCriteria__c</field>
+        <value xsi:type="xsd:string">Status__c = &apos;Aktiv&apos; AND (Role__c = &apos;Ordförande&apos; OR Role__c = &apos;Ordförande, vice&apos; OR Role__c = &apos;Medlemsadministratör&apos; )AND AssignmentAssociation__c &lt;&gt; null</value>
+    </values>
+    <values>
+        <field>dlrs__RelationshipField__c</field>
+        <value xsi:type="xsd:string">Person__c</value>
+    </values>
+    <values>
+        <field>dlrs__RowLimit__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dlrs__TestCode2__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dlrs__TestCodeParent__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>dlrs__TestCodeSeeAllData__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>dlrs__TestCode__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

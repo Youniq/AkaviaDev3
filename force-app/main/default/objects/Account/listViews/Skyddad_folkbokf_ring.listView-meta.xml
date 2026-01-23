@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Skyddad_folkbokf_ring</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>PC_EMAIL</columns>
+    <columns>SocialSecurityNumber__c</columns>
+    <columns>MembershipCategory__c</columns>
+    <columns>MembershipStatus__c</columns>
+    <columns>CRMSource__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ProtectedIdentity__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>MembershipStatus__c</field>
+        <operation>equals</operation>
+        <value>Aktiv,kommande,begärt utträde</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.NAME</field>
+        <operation>startsWith</operation>
+        <value>Skatteverket</value>
+    </filters>
+    <label>Skyddad folkbokföring</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

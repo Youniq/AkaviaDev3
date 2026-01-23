@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UnemploymentFundThroughAkavia__c</fullName>
+    <description>Om medlemmen har a-kassa eller via Akavia</description>
+    <formula>IF( 
+	AND(
+		NOT(ISBLANK(EntryDateUnemploymentFund__c)),
+		EntryDateUnemploymentFund__c &lt;= TODAY(),
+			OR(
+		        ISBLANK(ExitDateUnemploymentFund__c),
+                ExitDateUnemploymentFund__c &gt; TODAY()
+                )
+                ), TRUE, FALSE)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Om ibockad så är medlemmen medlem i a-kassan via akvia.</inlineHelpText>
+    <label>A-kassa via Akavia</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

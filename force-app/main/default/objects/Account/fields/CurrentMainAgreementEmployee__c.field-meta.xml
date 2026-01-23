@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CurrentMainAgreementEmployee__c</fullName>
+    <description>Shows Current Main Agreement on Employee, via CurrentEmployer</description>
+    <externalId>false</externalId>
+    <formula>IF( CurrentEmployer__r.CurrentMainAgreementEmployer__c != null,
+CurrentEmployer__r.CurrentMainAgreementEmployer__r.Name &amp;&apos; - &apos;&amp; CurrentEmployer__r.CurrentMainAgreementEmployer__r.SystemfaltTyp__c,
+&apos;&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Aktuellt Huvudavtal Anställd</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

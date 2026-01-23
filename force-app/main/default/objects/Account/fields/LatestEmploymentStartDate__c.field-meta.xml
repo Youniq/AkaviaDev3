@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LatestEmploymentStartDate__c</fullName>
+    <description>Systemfält. Används för att kunna avgöra i flow för flytt av anställningar att det enbart flyttas anställningar som är de senaste.</description>
+    <label>Senaste anställningens Startdatum</label>
+    <summarizedField>Employment__c.StartDate__c</summarizedField>
+    <summaryForeignKey>Employment__c.Person__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

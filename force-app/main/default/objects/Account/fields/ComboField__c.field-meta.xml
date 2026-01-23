@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ComboField__c</fullName>
+    <description>Systemfält. Används för att sammanfatta flera fält i en flow picklist. Community - Förtroendevalda.</description>
+    <externalId>false</externalId>
+    <formula>Name &amp;  &quot; - &quot; &amp;  RecordType.Name  &amp; &quot; - &quot;  &amp; ShippingCity</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Kombofält</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

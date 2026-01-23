@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Medlemsmatchning_A_kassan_vs_Akavia</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>AkassaComments__c</columns>
+    <columns>UnemploymentFundThroughAkavia__c</columns>
+    <columns>MembershipStatus__c</columns>
+    <columns>MembershipCategory__c</columns>
+    <columns>ACCOUNT.TYPE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>AkassaComments__c</field>
+        <operation>notEqual</operation>
+    </filters>
+    <filters>
+        <field>SendToAkassa__c</field>
+        <operation>equals</operation>
+        <value>0</value>
+    </filters>
+    <label>Medlemsmatchning - A-kassan vs Akavia</label>
+    <sharedTo>
+        <group>MedlemsserviceEkonomi</group>
+    </sharedTo>
+</ListView>

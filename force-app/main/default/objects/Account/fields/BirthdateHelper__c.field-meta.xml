@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BirthdateHelper__c</fullName>
+    <description>Used for ticket ACF-244</description>
+    <formula>AND(
+				!ISBLANK(SocialSecurityNumber__c),
+				!ISBLANK(DateOfBirth__c),
+				!CONTAINS(SocialSecurityNumber__c, SUBSTITUTE(TEXT(DateOfBirth__c), &quot;-&quot;, &quot;&quot;) ),
+				VALUE(MID(SocialSecurityNumber__c, 7, 1))  &lt;= 3
+				)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>BirthdateHelper</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Yrk1CanRegretCancellation__c</fullName>
+    <description>system field. used to filter action on flexipage</description>
+    <formula>AND(MembershipCategory__c = &apos;Yrkesverksam första året&apos;,
+				OR(CancellationDate__c  &gt;= TODAY(),
+					NoOfPayedInvoicesAsEmployed__c  &gt; 0)
+				)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Yrk1CanRegretCancellation</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

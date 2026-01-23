@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExitDateUnemploymentFundByAkassa__c</fullName>
+    <description>Utträdesdatum a-kassan enligt a-kassan själva</description>
+    <label>Utträdesdatum för a-kassa enligt a-kassa</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

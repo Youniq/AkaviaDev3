@@ -1,0 +1,63 @@
+<template>
+    <table class="sortable slds-wrap">
+        <caption></caption>
+        <tr class="sortable slds-wrap">
+            <th scope="col" class="slds-wrap">
+                <h5 class="tableHeader">
+                    <a class="tableHeader" data-id="Name" onclick={sort}>{labels.IO_InvoiceNumber}</a>
+                </h5>
+            </th>
+            <th scope="col" class="slds-wrap">
+                <h5 class="tableHeader">
+                    <a class="tableHeader" data-id="ExpirationDate__c" onclick={sortDateColumn}>
+                        {labels.IO_ExpirationDate}
+                    </a>
+                </h5>
+            </th>
+            <th scope="col" class="slds-wrap">
+                <h5 class="tableHeader">
+                    <a class="tableHeader" data-id="PaymentStatus__c" onclick={sort}>
+                        {labels.IO_PaymentStatus}
+                    </a>
+                </h5>
+            </th>
+            <th scope="col" class="slds-wrap slds-show_medium">
+                <h5 class="tableHeader"></h5>
+            </th>
+        </tr>
+        <template for:each={compInvoices} for:item="inv">
+            <tr key={inv.Id}>
+                <td class="sortable">
+                    <a href={inv.InvoiceLink__c} target="_blank" rel="noopener noreferrer">{inv.Name}</a>
+                </td>
+                <td class="sortable">
+                    <lightning-formatted-date-time value={inv.ExpirationDate__c} year="numeric" month="numeric"
+                        day="numeric">
+                    </lightning-formatted-date-time>
+                </td>
+
+                <td class="slds-hide_medium sortable">
+                    <button if:true={inv.displayPaymentButton} class="slds-var-m-around_medium" type="submit"
+                        onclick={openModal} value={inv.Id}>
+                        {labels.IO_Pay}
+                    </button>
+                    <span if:false={inv.displayPaymentButton}>
+                        {inv.PaymentStatus__c}
+                    </span>
+                </td>
+                <!-- <td if:false={inv.displayPaymentButton} class="slds-hide_small sortable">
+                    
+                </td> -->
+
+                <!-- We show payment Status for desktop -->
+                <td class="slds-show_medium sortable">
+                    {inv.PaymentStatus__c}</td>
+                <td if:true={inv.displayPaymentButton} class="slds-show_medium sortable">
+                    <button class="button--default bg--black" value={inv.Id} onclick={openModal}>
+                        {labels.IO_PaySwish}
+                    </button>
+                </td>
+            </tr>
+        </template>
+    </table>
+</template>

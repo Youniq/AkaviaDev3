@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BottomInformationSV__c</fullName>
+    <description>Swedish translation of some text that will be displayed at the bottom of the form, before the send button.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Swedish translation of some text that will be displayed at the bottom of the form, before the send button. It is useful if some clarification needs to be added.</inlineHelpText>
+    <label>Bottom Information SV</label>
+    <length>2000</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

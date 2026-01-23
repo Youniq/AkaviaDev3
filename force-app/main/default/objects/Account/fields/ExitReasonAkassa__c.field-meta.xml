@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExitReasonAkassa__c</fullName>
+    <description>Hämtas från Utträdeskoden</description>
+    <externalId>false</externalId>
+    <formula>CASE(Text(ExitCodeAkassa__c),
+					&quot;1&quot;, &quot;Bristande betalning&quot;,
+					&quot;2&quot;, &quot;Avliden&quot;,
+					&quot;3&quot;, &quot;Pensionär&quot;,
+					&quot;4&quot;, &quot;Byte av Sacoförbund, direktansluten&quot;,
+					&quot;5&quot;, &quot;Övrigt&quot;,
+					&quot;6&quot;, &quot;Giltigt skäl, egen begäran&quot;,
+					&quot;7&quot;, &quot;Utesluten&quot;,
+					
+					
+					&quot;&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>1 = Bristande betalning
+2 = Avliden
+3 = Pensionär
+4 = Byte av Sacoförbund, direktansluten
+5 = Övrigt
+6 = Giltigt skäl, egen begäran
+7 = Utesluten</inlineHelpText>
+    <label>Utträdesorsak A-kassa</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

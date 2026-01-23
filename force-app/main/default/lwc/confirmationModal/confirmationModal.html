@@ -1,0 +1,72 @@
+<template>
+  <section
+    role="dialog"
+    tabindex="-1"
+    class="slds-modal slds-fade-in-open slds-modal_small"
+    aria-labelledby="modal-heading-01"
+    aria-modal="true"
+  >
+    <div class="slds-modal__container">
+      <button
+        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-text-heading_large"
+        title={labels.EP_btnClose}
+        onclick={handleCloseModal}
+        disabled={loading}
+      >
+        <label>✖</label>
+        <span class="slds-assistive-text">{labels.EP_btnClose}</span>
+      </button>
+      <div class="slds-modal__header slds-modal__header_empty slds-hide"></div>
+      <div
+        class="slds-modal__content slds-var-p-around_medium slds-is-relative"
+      >
+        <template if:true={loading}>
+          <div class="spinner">
+            <lightning-spinner
+              variant="brand"
+              alternative-text="Loading"
+              size="medium"
+            ></lightning-spinner>
+          </div>
+        </template>
+
+        <!-- *** SLOTS *** -->
+        <section class="slds-var-m-around_medium">
+          <template if:false={confirmed}>
+            <slot name="beforeConfirm"></slot>
+          </template>
+          <template if:true={confirmed}>
+            <slot name="afterConfirm"></slot>
+          </template>
+        </section>
+
+        <!-- *** BUTTONS *** -->
+        <section class="slds-grid slds-grid_reverse slds-var-m-top_large">
+          <div class="slds-var-m-left_small">
+            <button
+              type="button"
+              title={labels.EP_btnClose}
+              onclick={handleCloseModal}
+              class="ak-button-base ak-button-black"
+              disabled={loading}
+            >
+              <label>{labels.EP_btnClose}</label>
+            </button>
+          </div>
+          <div if:false={confirmed}>
+            <button
+              type="button"
+              title={labels.EP_btnOk}
+              onclick={handleConfirm}
+              class="ak-button-base ak-button-black"
+              disabled={loading}
+            >
+              <label>{labels.EP_btnOk}</label>
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

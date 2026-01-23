@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Section__c</fullName>
+    <description>Sektion för Arbetsmarknadsektor</description>
+    <externalId>false</externalId>
+    <formula>TEXT(LabourMarketSector__r.Section__c)</formula>
+    <label>Sektion</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

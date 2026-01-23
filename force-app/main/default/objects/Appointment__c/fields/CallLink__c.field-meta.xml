@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CallLink__c</fullName>
+    <externalId>false</externalId>
+    <formula>HYPERLINK(&quot;https://teams.microsoft.com/l/call/0/0?users=&quot;&amp;LOWER(Account__r.PersonEmail)&amp;&quot;&amp;withVideo=false&amp;source=Samtal med Akavia&quot;, &quot;Samtalslänk&quot;, &quot;_blank&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Samtalslänk</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

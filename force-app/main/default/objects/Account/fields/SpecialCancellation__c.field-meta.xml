@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SpecialCancellation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Behövs i &apos;Account - Scheduled - Cancellation of Membership&apos; för att hitta rätt urval och sist checkas den ur så att inte samma accounts hanteras om och om igen. (Accounts som processas för att CancellationDate__c har passerat)</description>
+    <inlineHelpText>Det här utträdet hände inte med hjälp av en ansökan om utträde. Istället kan det ha handlat om en medlem som ångrade att hen blev Yrkesverksam 1a året. Ett screenflow har då körts för att dra tillbaka medlemmen till Student och sedan göra ett utträde.</inlineHelpText>
+    <label>Systemfält: Specialutträde</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

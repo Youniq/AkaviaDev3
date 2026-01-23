@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CancellationDateGDPR__c</fullName>
+    <description>Systemfält för att trigga Schedule delete flow X dagar eller Y år efter utträdesdatum.</description>
+    <externalId>false</externalId>
+    <formula>IF(ADDMONTHS(CancellationDate__c, 120) &lt;= TODAY(), &quot;10 Year&quot;,
+IF(ADDMONTHS(CancellationDate__c, 84) &lt;= TODAY(), &quot;7 Year&quot;,
+IF(ADDMONTHS(CancellationDate__c, 60) &lt;= TODAY(), &quot;5 Year&quot;,
+IF(ADDMONTHS(CancellationDate__c, 36) &lt;= TODAY(), &quot;3 Year&quot;,
+IF(ADDMONTHS(CancellationDate__c, 12) &lt;= TODAY(), &quot;1 Year&quot;,
+IF(CancellationDate__c + 30 &lt;= TODAY(), &quot;30 Days&quot;, null
+)
+)
+)
+)
+)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>CancellationDateGDPR</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExcludeFromUpdate__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Genom att sätta fältet till sann undantas kontot från att uppdateras från BASUN integrationern som sker månatligen</description>
+    <inlineHelpText>Bocka i om kontot skall undantas från BASUNS månatliga uppdatering.</inlineHelpText>
+    <label>Undanta från Bisnode uppdatering</label>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

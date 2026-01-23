@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ContactAssociation__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>kontaktförbund för arbetsgivaren e.g. akavia</description>
+    <label>Kontaktförbund</label>
+    <lookupFilter>
+        <active>true</active>
+        <filterItems>
+            <field>Association__c.Type__c</field>
+            <operation>equals</operation>
+            <value>Förbund</value>
+        </filterItems>
+        <isOptional>true</isOptional>
+    </lookupFilter>
+    <referenceTo>Association__c</referenceTo>
+    <relationshipLabel>Accounts (Kontaktförbund)</relationshipLabel>
+    <relationshipName>AccountsForContactAssociation</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Lookup</type>
+</CustomField>

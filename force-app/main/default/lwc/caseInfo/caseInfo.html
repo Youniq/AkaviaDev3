@@ -1,0 +1,269 @@
+<template>
+    <div class="akavia">
+        <section>
+            <h1>{labels.CP_detailsPageHeader}</h1>
+            <p class="preamble">
+                {labels.CP_detailsPreamble1}
+            </p>
+        </section>
+        <div class="slds-is-relative">
+            <template if:true={showSpinnerOnPage}>
+                <div class="spinner">
+                    <lightning-spinner variant="brand" alternative-text="Loading" size="large"></lightning-spinner>
+                </div>
+            </template>
+
+
+            <template if:true={caseObj}>
+                <section class="slds-var-m-top_xx-large slds-var-m-bottom_large">
+                    <header class="slds-var-m-bottom_large">
+                        <h2>
+                            {caseObj.CaseNumber}
+                        </h2>
+                        <p class="slds-var-m-vertical_medium">
+                            {caseObj.Subject}
+                        </p>
+                    </header>
+                    <!-- Building case info as a grid instead of table in order to display them in another way on small devices. -->
+                    <!-- Container -->
+                    <div class="slds-grid slds-wrap">
+                        <!-- First column -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12 slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-large-size_1-of-1 ak-tableHeader ak-cell">
+                                {labels.CP_labelCategory}</div>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-1 ak-cell">
+                                {caseObj.CategoryCommunity__c}</div>
+                        </div>
+                        <!-- Second column  -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12 slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-large-size_1-of-1 ak-tableHeader ak-cell">Posttyp
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-1 ak-cell">
+                                {caseObj.RecordTypeName}</div>
+                        </div>
+                        <!-- Third column -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-12 slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-large-size_1-of-1 ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseType}</div>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-1 ak-cell">{caseObj.Type}</div>
+                        </div>
+
+                        <!-- Fourth column -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-12 slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-large-size_1-of-1 ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseStatus}</div>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-1 ak-cell">{caseObj.Status}</div>
+                        </div>
+                        <!-- Fifth column -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_1-of-12 slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-large-size_1-of-1 ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseCreatedDate}</div>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-1 ak-cell">
+                                {caseObj.formatedCreatedDate}</div>
+                        </div>
+                        <!-- Sixth column -->
+                        <div class="slds-col slds-size_1-of-1 slds-large-size_3-of-12 slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-3 slds-large-size_1-of-1 ak-tableHeader ak-cell">
+                                {labels.CP_labelCaseOwner}</div>
+                            <div class="slds-col slds-size_1-of-2 slds-large-size_1-of-1 ak-cell">{caseObj.ownerName}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="slds-var-m-top_xx-large">
+                    <header class="slds-var-m-bottom_large">
+                        <h2>{labels.CP_headerComments}</h2>
+                    </header>
+                    <template if:true={caseObj.ownerIsOoo}>
+                        <div class="slds-grid slds-wrap slds-col slds-size_1-of-1 slds-medium-size_1-of-2 
+slds-var-m-bottom_large slds-var-p-around_large akavia-oooContainer" style="">
+                            <p>
+                                {oooMsg}
+                            </p>
+                        </div>
+                    </template>
+                    <template if:true={hasComments}>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th aria-sort={sortedState.CreatedDate.sortOrder} data-field="CreatedDate"
+                                        style="min-width:140px">
+                                        <span tabindex="0" role="button" onclick={handleSortDateField}
+                                            class="ak-tableHeader ak-cell">
+                                            {labels.CP_labelCommentCreatedDate}
+                                        </span>
+                                    </th>
+                                    <th aria-sort={sortedState.createdByName.sortOrder} data-field="createdByName"
+                                        class="slds-show_medium">
+                                        <span tabindex="0" role="button" onclick={handleSortTextField}
+                                            class="ak-tableHeader ak-cell">
+                                            {labels.CP_labelCommentCreatedBy}
+                                        </span>
+                                    </th>
+                                    <th aria-sort={sortedState.Body.sortOrder} data-field="Body" style="width: 640px">
+                                        <span tabindex="0" role="button" onclick={handleSortTextField}
+                                            class="ak-tableHeader ak-cell">
+                                            {labels.CP_labelCommentBody}
+                                        </span>
+                                    </th>
+                                </tr>
+                                <template for:each={caseComments} for:item="comment">
+                                    <tr key={comment.Id}>
+                                        <td class="ak-cell slds-align-top">
+                                            <span>{comment.formattedCreatedDateTimeString}</span>
+                                        </td>
+                                        <td class="ak-cell slds-align-top slds-show_medium">
+                                            <span>{comment.createdByName}</span>
+                                        </td>
+                                        <td class="ak-cell slds-align-top" style="white-space: pre-wrap;">
+                                            <lightning-accordion allow-multiple-sections-open
+                                                onsectiontoggle={handleSectionToggle} active-section-name={openComments}
+                                                class="akavia-commentAccordion">
+                                                <lightning-accordion-section class="slds-show_medium" name={comment.Id}
+                                                    label={comment.shortBody}>
+                                                    <lightning-formatted-rich-text value={comment.Body}>
+                                                    </lightning-formatted-rich-text>
+                                                    <!-- <p>{comment.Body}</p> -->
+                                                </lightning-accordion-section>
+                                                <lightning-accordion-section class="slds-hide_medium ak-border-reset"
+                                                    name={comment.CreatedDate}
+                                                    label={comment.combinedAuthorAndShortBody}>
+                                                    <lightning-formatted-rich-text value={comment.Body}>
+                                                    </lightning-formatted-rich-text>
+                                                    <!-- <p>{comment.Body}</p> -->
+                                                </lightning-accordion-section>
+                                            </lightning-accordion>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                    <template if:true={noComments}>
+                        <p>{labels.CP_labelNoComments}</p>
+                    </template>
+                    <template if:true={hasCommentsError}>
+                        <p class="slds-text-color_error">
+                            {labels.CP_errorGeneral} <a href="https://www.akavia.se/om-akavia/kontakt/" target="_blank"
+                                title="Link to contact page"><span>{labels.CP_errorContact1}</span></a>
+                            {labels.CP_errorContact2}
+                        </p>
+                    </template>
+
+                    <div
+                        class="slds-grid slds-wrap slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-m-top_large">
+                        <!-- BUTTON, only show if there's no errors with comments and if case is not in state 'Avslutad' -->
+                        <template if:true={isOpen}>
+                            <div if:false={hasCommentsError} class="slds-col slds-size_1-of-1">
+                                <button type="button" title={labels.CP_btnNewComment} onclick={handleCommentBtnClick}
+                                    disabled={loading} class="ak-button-base ak-button-large ak-button-black">
+                                    <label>{labels.CP_btnNewComment}</label>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+                <section class="slds-var-m-vertical_xx-large">
+                    <header class="slds-var-m-bottom_large">
+                        <h2>{labels.CP_headerFiles}</h2>
+                    </header>
+                    <template if:true={hasFiles}>
+                        <ul>
+                            <template for:each={caseFiles} for:item="file">
+                                <li key={file.Id} class="slds-var-m-bottom_x-small">
+                                    <a href={file.fileDownloadPath}>
+                                        <span>{file.Title}.{file.FileExtension}</span>
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                    <template if:true={noFiles}>
+                        <p>{labels.CP_labelNoFiles}</p>
+                    </template>
+                    <template if:true={hasFilesError}>
+                        <p class="slds-text-color_error">
+                            {labels.CP_errorGeneral} <a href="https://www.akavia.se/om-akavia/kontakt/" target="_blank"
+                                title="Link to contact page"><span>{labels.CP_errorContact1}</span></a>
+                            {labels.CP_errorContact2}
+                        </p>
+                    </template>
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-var-m-top_large">
+                            <lightning-file-upload label={labels.CP_labelFormFileUpload} name="fileUploader"
+                                accept={acceptedFormats} onuploadfinished={handleUploadFinished} record-id={caseObj.Id}
+                                multiple class="akavia-fileupload" disabled={loading}>
+                            </lightning-file-upload>
+                        </div>
+                    </div>
+                </section>
+            </template>
+            <template if:true={hasCaseError}>
+                <p class="slds-text-color_error">
+                    {labels.CP_errorGeneral} <a href="https://www.akavia.se/om-akavia/kontakt/" target="_blank"
+                        title="Link to contact page"><span>{labels.CP_errorContact1}</span></a>
+                    {labels.CP_errorContact2}
+                </p>
+            </template>
+        </div>
+
+        <!--******* MODAL *******-->
+        <template if:true={showCommentInput}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small"
+                aria-labelledby="modal-heading-01" aria-modal="true">
+                <div class="slds-modal__container">
+                    <button
+                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse slds-text-heading_large"
+                        title={labels.CP_btnClose} onclick={handleCloseModal} disabled={loading}>
+                        <label>✖</label>
+                        <span class="slds-assistive-text">{labels.CP_btnClose}</span>
+                    </button>
+                    <div class="slds-modal__header slds-modal__header_empty slds-hide"></div>
+                    <div class="slds-modal__content slds-var-p-around_medium slds-is-relative">
+                        <template if:true={loading}>
+                            <div class="spinner">
+                                <lightning-spinner variant="brand" alternative-text="Loading" size="medium">
+                                </lightning-spinner>
+                            </div>
+                        </template>
+
+                        <section>
+                            <div class="slds-var-m-top_medium slds-col slds-size_1-of-1">
+                                <h4 class="ak-formLabel">
+                                    <abbr title="obligatoriskt" class="slds-required">*</abbr>
+                                    {labels.CP_labelNewComment}
+                                </h4>
+                                <lightning-textarea name="commentInput" required label="Comment" variant="label-hidden"
+                                    maxlength="4000" class="input" focus>
+                                </lightning-textarea>
+                            </div>
+                            <div if:true={showError}>
+                                <p class="slds-text-color_error">
+                                    {labels.CP_errorGeneral} <a href="https://www.akavia.se/om-akavia/kontakt/"
+                                        target="_blank"
+                                        title="Link to contact page"><span>{labels.CP_errorContact1}</span></a>
+                                    {labels.CP_errorContact2}
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- *** BUTTONS *** -->
+                        <section class="slds-clearfix slds-var-m-top_x-large">
+                            <div class="slds-float_right">
+                                <button type="button" title={labels.CP_btnSend} onclick={handleSaveNewComment}
+                                    class="ak-button-base ak-button-black" disabled={loading}>
+                                    <label>{labels.CP_btnSend}</label>
+                                </button>
+                                <button type="button" title={labels.CP_btnClose} onclick={handleCloseModal}
+                                    class="ak-button-base ak-button-black slds-var-m-left_small" disabled={loading}>
+                                    <label>{labels.CP_btnClose}</label>
+                                </button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+    </div>
+</template>

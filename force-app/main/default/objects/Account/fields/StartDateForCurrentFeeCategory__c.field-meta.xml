@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>StartDateForCurrentFeeCategory__c</fullName>
+    <description>Systemfält för MC populeras med startdatum för den aktiva avgiftsklassen. Nyttjas i Journeys i MC.</description>
+    <formula>IF(LatestMembership__r.CurrentFeeCategory__r.Status__c = &quot;Aktiv&quot;, LatestMembership__r.CurrentFeeCategory__r.StartDate__c, null)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Systemfält: Startdatum för avgiftsklass</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

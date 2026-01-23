@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="employerId" type="String" label="Employer ID" description="The Account ID of the employer to export members for" required="false"/>
+             <property name="associationId" type="String" label="Association ID" description="The Association ID connected to the employers to export members for" required="false"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

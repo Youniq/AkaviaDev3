@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Personkonton_Medlemmar_Yrkesverksam</fullName>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>SocialSecurityNumber__c</columns>
+    <columns>MemberNumber__c</columns>
+    <columns>MembershipCategory__c</columns>
+    <columns>FeeCategory__c</columns>
+    <columns>MembershipStatus__c</columns>
+    <columns>MemberPhase__c</columns>
+    <columns>FirstMemberDate__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>ACCOUNT.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>PersonAccount.PersonAccount</value>
+    </filters>
+    <filters>
+        <field>ACCOUNT.TYPE</field>
+        <operation>equals</operation>
+        <value>Medlem</value>
+    </filters>
+    <filters>
+        <field>MembershipStatus__c</field>
+        <operation>equals</operation>
+        <value>Aktiv</value>
+    </filters>
+    <filters>
+        <field>MembershipCategory__c</field>
+        <operation>notEqual</operation>
+        <value>Studerande</value>
+    </filters>
+    <filters>
+        <field>MembershipCategory__c</field>
+        <operation>notEqual</operation>
+        <value>Pensionär</value>
+    </filters>
+    <label>Personkonton - Medlemmar - Yrkesverksam</label>
+</ListView>

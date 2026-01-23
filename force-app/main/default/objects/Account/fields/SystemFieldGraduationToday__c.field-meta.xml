@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SystemFieldGraduationToday__c</fullName>
+    <description>Used in Scheduled flow to check if students have their graduation date today</description>
+    <formula>AND(
+				MembershipStatus__c = &apos;Aktiv&apos;,
+				FeeCategory__c = &apos;Studerande&apos;,
+				Today()=AutoGraduationDate__c
+				)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Systemfält: Examen idag</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

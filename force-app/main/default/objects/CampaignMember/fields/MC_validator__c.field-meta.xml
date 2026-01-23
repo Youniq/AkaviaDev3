@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MC_validator__c</fullName>
+    <formula>NOT(ISBLANK(ContactId)) &amp;&amp; NOT(ISBLANK(Contact.AccountId)) &amp;&amp; Contact.Account.MCSynkValidator__c = true &amp;&amp; Contact.Account.SyncWithMc__c = true</formula>
+    <label>Synkad med Marketing Cloud</label>
+    <type>Checkbox</type>
+</CustomField>

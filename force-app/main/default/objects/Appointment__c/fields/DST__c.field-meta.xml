@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DST__c</fullName>
+    <formula>(MONTH(StartDate__c) &gt; 3 || 
+(MONTH(StartDate__c)=3 &amp;&amp; MONTH(StartDate__c-WEEKDAY(StartDate__c)+7) &lt;&gt; MONTH(StartDate__c))) &amp;&amp;
+
+NOT(
+MONTH(StartDate__c) &gt; 10 ||
+(MONTH(StartDate__c)=10 &amp;&amp; MONTH(StartDate__c-WEEKDAY(StartDate__c)+7) &lt;&gt; MONTH(StartDate__c)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Sommartid</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

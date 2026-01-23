@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>UnemploymentFundThroughUnemploymentFund__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Visar om medlem är direktansluten till a-kassan</description>
+    <inlineHelpText>Visar om medlem är direktansluten till a-kassan</inlineHelpText>
+    <label>Direktansluten via Akademikernas a-kassa</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

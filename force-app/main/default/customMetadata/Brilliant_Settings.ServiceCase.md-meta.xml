@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ServiceCase</label>
+    <protected>false</protected>
+    <values>
+        <field>CompanyRefCode__c</field>
+        <value xsi:type="xsd:string">Akavia</value>
+    </values>
+    <values>
+        <field>DefaultAgentRefCode__c</field>
+        <value xsi:type="xsd:string">medlemsservice@akavia.se</value>
+    </values>
+    <values>
+        <field>DefaultLanguageCode__c</field>
+        <value xsi:type="xsd:string">SE</value>
+    </values>
+    <values>
+        <field>DefaultSurveyRefCode__c</field>
+        <value xsi:type="xsd:string">medlemsservice_epost</value>
+    </values>
+    <values>
+        <field>EnableDebugLog__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>MaxRetries__c</field>
+        <value xsi:type="xsd:double">3.0</value>
+    </values>
+    <values>
+        <field>Password__c</field>
+        <value xsi:type="xsd:string">n9XbF9Q63p6!QL6</value>
+    </values>
+    <values>
+        <field>Username__c</field>
+        <value xsi:type="xsd:string">Akavia_CRM_WS</value>
+    </values>
+</CustomMetadata>

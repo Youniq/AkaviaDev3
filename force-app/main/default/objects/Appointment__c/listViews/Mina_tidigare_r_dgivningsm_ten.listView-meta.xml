@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Mina_tidigare_r_dgivningsm_ten</fullName>
+    <columns>NAME</columns>
+    <columns>MeetingType__c</columns>
+    <columns>StartDateTime__c</columns>
+    <columns>Status__c</columns>
+    <columns>Sektor__c</columns>
+    <columns>Account__c</columns>
+    <columns>Comments__c</columns>
+    <filterScope>Mine</filterScope>
+    <filters>
+        <field>StartDateTime__c</field>
+        <operation>equals</operation>
+        <value>THIS_YEAR</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>notEqual</operation>
+        <value>Klar,No Show</value>
+    </filters>
+    <filters>
+        <field>EndDateTime__c</field>
+        <operation>lessThan</operation>
+        <value>TODAY</value>
+    </filters>
+    <label>Mina tidigare rådgivningsmöten</label>
+    <sharedTo>
+        <group>Negotiation</group>
+    </sharedTo>
+</ListView>

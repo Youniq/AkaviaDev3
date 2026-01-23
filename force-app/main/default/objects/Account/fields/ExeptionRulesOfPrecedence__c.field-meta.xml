@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExeptionRulesOfPrecedence__c</fullName>
+    <formula>IF( NOT( ISBLANK( DateExeptionRulesOfPrecedence__c ) ), TRUE, FALSE )</formula>
+    <inlineHelpText>Är sant om det finns datum för brott i turordnignen</inlineHelpText>
+    <label>Brott mot turordningen har skett</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

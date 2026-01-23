@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NumberStudentMember__c</fullName>
+    <description>Används för att rulla upp ifall personen varit medlem sedan student eller kommer som första gången som yrkesverksam.</description>
+    <inlineHelpText>Är eller har varit student och medlem i Akavia</inlineHelpText>
+    <label>Antal studentmedlemskap</label>
+    <summaryFilterItems>
+        <field>Membership__c.IncludesStudentMembership__c</field>
+        <operation>greaterThan</operation>
+        <value>0</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Membership__c.Person__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

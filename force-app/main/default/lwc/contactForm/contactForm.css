@@ -1,0 +1,9 @@
+.akavia .infoBox {
+  background: #0f21c2;
+  color: #ffffff;
+  padding: 30px;
+  white-space: pre-wrap;
+}
+.caseInput::placeholder {
+  color: grey;
+}

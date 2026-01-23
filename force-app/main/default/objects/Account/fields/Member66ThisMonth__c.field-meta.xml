@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Member66ThisMonth__c</fullName>
+    <description>Is true if member turns 66 this month or when they switch over to pensionär in their category</description>
+    <formula>IF(
+AND(
+MembershipStatus__c = &apos;Aktiv&apos;,
+OR(
+AND(
+Age__c = 66,
+MONTH(DateOfBirth__c) = MONTH(TODAY()),
+OR(
+MembershipCategory__c = &apos;Yrkesverksam&apos;,
+MembershipCategory__c = &apos;Egenföretagare&apos;)
+),
+AND(
+Age__c = 66,
+DAY(DateOfBirth__c) = DAY(TODAY()),
+OR(
+MembershipCategory__c = &apos;Yrkesverksam&apos;,
+MembershipCategory__c = &apos;Egenföretagare&apos;)),
+AND(
+MembershipStatus__c = &apos;Aktiv&apos;,
+MembershipCategory__c = &apos;Pensionär&apos;)
+)
+),
+TRUE,
+FALSE
+)</formula>
+    <label>Systemfält: Member 66 This Month</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

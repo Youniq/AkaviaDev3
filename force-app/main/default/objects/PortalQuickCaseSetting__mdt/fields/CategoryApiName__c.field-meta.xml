@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CategoryApiName__c</fullName>
+    <caseSensitive>true</caseSensitive>
+    <description>Den Ärendekategori medlemmen väljer för sitt ärende. Värde sparas ner till Case.CategoryCommunity__c.
+Ange exakt API Name för ett picklist-alternativ från fältet Case.CategoryCommunity__c (Kategori).</description>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Den Ärendekategori medlemmen väljer för sitt ärende. Måste matcha API Name för ett picklist option på Case -&gt; Kategori (CategoryCommunity__c). 
+
+Glöm inte att Case Kategorin måste vara valbar för angiven Artikeltyp (Record Type).</inlineHelpText>
+    <label>Category Api Name</label>
+    <length>255</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

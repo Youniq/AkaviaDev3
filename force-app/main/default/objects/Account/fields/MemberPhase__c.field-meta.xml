@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MemberPhase__c</fullName>
+    <description>Edit 2 feb 23:
+&quot;Sista terminen&quot; utgår från examens-termin för att räkna ut när medlemmen påbörjar sista terminen. För VT är det 7 månader mellan 1 feb - 31 aug; För HT är det 5 månader mellan 1 sep - 31 jan.
+&quot;3 terminer kvar&quot; utgår från samma logik som exemplet ovan men examen under VT har 19 månader och HT har 17.</description>
+    <externalId>false</externalId>
+    <formula>IF(OR(LatestMembership__r.CurrentFeeCategory__r.Status__c  = &quot;Avslutad&quot;,
+ISBLANK(LatestMembership__r.CurrentFeeCategory__c))      
+   , &quot;Avslutad&quot;, 
+IF(ISPICKVAL(LatestMembership__r.CurrentFeeCategory__r.MembershipCategory__c,&quot;Pensionär&quot;),
+&quot;Pensionär&quot;,
+IF(
+   AND(LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;,
+        AutoGraduationDate__c &lt; TODAY()
+       ), &quot;Examinerad, ej konverterad&quot;, 
+IF(
+OR(
+	AND(
+		LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;,
+		ISPICKVAL(GraduationSemester__c, &quot;VT&quot;),
+		ADDMONTHS(AutoGraduationDate__c, -7) &lt;= TODAY()
+	),
+	AND(
+		LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;,
+		ISPICKVAL(GraduationSemester__c, &quot;HT&quot;),
+		ADDMONTHS(AutoGraduationDate__c, -5) &lt;= TODAY()
+	)), &quot;Sista terminen&quot;, 
+IF(
+   AND(LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;,
+        ADDMONTHS(AutoGraduationDate__c, -12) &lt;= TODAY()
+       ), &quot;2 terminer kvar&quot;, 
+IF(OR(
+	AND(
+		LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;,
+		ISPICKVAL(GraduationSemester__c, &quot;VT&quot;),
+		ADDMONTHS(AutoGraduationDate__c, -19) &lt;= TODAY()
+	),
+	AND(
+		LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;,
+		ISPICKVAL(GraduationSemester__c, &quot;HT&quot;),
+		ADDMONTHS(AutoGraduationDate__c, -17) &lt;= TODAY()
+	)), &quot;3 terminer kvar&quot;, 
+IF(
+   LatestMembership__r.MembershipCategory__c = &quot;Studerande&quot;
+       , &quot;Student&quot;, 
+IF(
+   AND(LatestMembership__r.MembershipCategory__c &lt;&gt; &quot;Studerande&quot;,
+       LatestMembership__r.MembershipCategory__c &lt;&gt; &quot;Pensionär&quot;,
+       ADDMONTHS(LatestMembership__r.CurrentFeeCategory__r.StartDate__c, 12) &gt; TODAY(),
+        NumberStudentMember__c = 0
+       ), &quot;Onboarding&quot;, 
+ &quot;Yrkesverksam&quot;
+))))))))</formula>
+    <inlineHelpText>För studenter finns följande värden: &quot;Student&quot;, &quot;3 terminer kvar&quot;, &quot;2 terminer kvar&quot;, &quot;Sista terminen&quot;, &quot;Examinerad, ej konverterad&quot;
+
+För yrkesverksamma finns följande värden: &quot;Yrkesverksam&quot;, &quot;Onboarding&quot;</inlineHelpText>
+    <label>Medlemsfas</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

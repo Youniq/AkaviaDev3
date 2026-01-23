@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <inlineHelpText>Typ av event/utbildning, t.ex. digital, fysisk, hybrid</inlineHelpText>
+    <label>Typ</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Digital</fullName>
+                <default>false</default>
+                <label>Digital</label>
+            </value>
+            <value>
+                <fullName>E-utbildning</fullName>
+                <default>false</default>
+                <label>E-utbildning</label>
+            </value>
+            <value>
+                <fullName>Fysisk</fullName>
+                <default>false</default>
+                <label>Fysisk</label>
+            </value>
+            <value>
+                <fullName>Hybrid</fullName>
+                <default>false</default>
+                <label>Hybrid</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OtherAddressEndDateWasYesterday__c</fullName>
+    <description>This filed is used to filter out which accounts should be sent to Billecta to update with new current address</description>
+    <formula>TODAY() - EndDateOtherAddress__c = 1</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>OtherAddressEndDateWasYesterday</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

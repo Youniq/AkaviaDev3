@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FirstMemberDate__c</fullName>
+    <label>Första medlemsdatum</label>
+    <summarizedField>Membership__c.StartDate__c</summarizedField>
+    <summaryForeignKey>Membership__c.Person__c</summaryForeignKey>
+    <summaryOperation>min</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

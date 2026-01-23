@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SelfemployedEvaluating__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Checkbox to keep track of if member has ongoing case regarding being registered as self-employed. Needed for a user friendly message on the Portal Employment page.</description>
+    <inlineHelpText>Medlem har ett pågående ärende om att bli markerad som egenföretagare.</inlineHelpText>
+    <label>Egenföretagare behandlas</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

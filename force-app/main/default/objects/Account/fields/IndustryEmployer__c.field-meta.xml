@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IndustryEmployer__c</fullName>
+    <description>Replacing the formula field Indutry__c. Now populating this from trigger flow to reduce the anmont of spanning relationships</description>
+    <externalId>false</externalId>
+    <label>Bransch - Arbetsgivare</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

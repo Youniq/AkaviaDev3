@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PersonAccount</fullName>
+    <fields>Name</fields>
+    <fields>MembershipStatus__c</fields>
+    <fields>LatestMembershipDate__c</fields>
+    <fields>MembershipCategory__c</fields>
+    <fields>FeeCategory__c</fields>
+    <fields>EmployerFormula__c</fields>
+    <fields>IsManager__c</fields>
+    <fields>ActiveNegotiationCase__c</fields>
+    <label>Personkonto</label>
+</CompactLayout>

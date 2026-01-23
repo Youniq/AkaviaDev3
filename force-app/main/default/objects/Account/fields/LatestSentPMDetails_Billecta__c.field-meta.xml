@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LatestSentPMDetails_Billecta__c</fullName>
+    <description>Fältet uppdateras av APEX, integrationen som uppdaterar debtor hos Billecta.
+Fältet skapas för att kunna validera vilket betalsätt som senast skickades till Billecta från CRM. 
+Det användas i flow för att undvika trigga ytterligare ett callout till Billecta om tex. distributionssätt uppdateras av integrationen (apex).
+
+Format:
+[betalsätt-distributionsssätt]
+BG-Post
+BG-DefaultKivra
+AG-Ingen leverans</description>
+    <externalId>false</externalId>
+    <label>Senast betal uppdatering till Billecta</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

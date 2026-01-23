@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prevent_Deletion</fullName>
+    <active>true</active>
+    <description>förhindrar konton att raderas om det finns relaterade poster</description>
+    <errorConditionFormula>RelatedRecordExist__c</errorConditionFormula>
+    <errorMessage>Kontot kan inte raderas när det finns relaterade poster på kontot, för att radera kontot behöver alla relationer raderas.</errorMessage>
+</ValidationRule>

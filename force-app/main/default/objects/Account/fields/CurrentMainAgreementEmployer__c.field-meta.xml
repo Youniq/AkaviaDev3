@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CurrentMainAgreementEmployer__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Only used för Employers - used to set CurrentMainAgreement on Person Accounts via CurrentEmployer</description>
+    <label>Aktuellt Huvudavtal Arbetsgivare</label>
+    <referenceTo>Agreement__c</referenceTo>
+    <relationshipLabel>Arbetsgivarparter</relationshipLabel>
+    <relationshipName>Arbetsgivarparter</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

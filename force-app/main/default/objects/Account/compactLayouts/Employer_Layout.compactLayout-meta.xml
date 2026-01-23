@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Employer_Layout</fullName>
+    <fields>Name</fields>
+    <fields>RecordTypeId</fields>
+    <fields>OrganisationNumber__c</fields>
+    <fields>LabourMarketSector__c</fields>
+    <fields>Industry__c</fields>
+    <fields>TotalActiveEmployments__c</fields>
+    <label>Employer Layout</label>
+</CompactLayout>

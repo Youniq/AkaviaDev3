@@ -1,0 +1,60 @@
+/* Datatable styling */
+.slds-card__body {
+    padding: 1rem;
+}
+
+/* Filter input styling */
+.slds-form-element {
+    margin-bottom: 1rem;
+}
+
+/* Datatable container */
+.slds-form-element__control {
+    margin-top: 0.5rem;
+}
+
+/* Button spacing */
+.slds-form-element .slds-button + .slds-button {
+    margin-left: 0.5rem;
+}
+
+/* Info message styling */
+.slds-notify {
+    margin-bottom: 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .slds-card__body {
+        padding: 0.5rem;
+    }
+    
+    .slds-form-element {
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Custom datatable styling */
+:host .slds-table {
+    font-size: 0.875rem;
+}
+
+:host .slds-table th {
+    background-color: #f3f2f2;
+    font-weight: 600;
+}
+
+:host .slds-table td {
+    vertical-align: middle;
+}
+
+/* Selection styling */
+:host .slds-is-selected {
+    background-color: #e8f4fd;
+}
+
+/* Filter input focus */
+:host .slds-input:focus {
+    border-color: #0176d3;
+    box-shadow: 0 0 0 1px #0176d3;
+}
