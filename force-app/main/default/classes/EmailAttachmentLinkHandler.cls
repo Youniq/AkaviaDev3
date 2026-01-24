@@ -226,8 +226,8 @@ public with sharing class EmailAttachmentLinkHandler {
     }
 
     /**
-     * if still receive legacy Attachment records on EmailMessage
-     * and want to convert them to Files + link to EmailMessage + Case.
+     * if legacy Attachment records on EmailMessage is found
+     * and we want to convert them to Files + link to EmailMessage + Case.
      *
      * NOTE: it's for classic Attachment support.
      */
