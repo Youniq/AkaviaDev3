@@ -86,7 +86,7 @@ private class EmailAttachmentLinkHandlerTest {
         );
         Test.stopTest();
 
-        // Verifiera att ingen länk skapats till vårt kontroll-case
+        // Verifiera att ingen länk skapats till kontroll-case
         List<ContentDocumentLink> linksToControlCase = [
             SELECT Id
             FROM ContentDocumentLink

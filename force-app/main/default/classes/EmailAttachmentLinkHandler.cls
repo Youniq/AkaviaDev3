@@ -5,7 +5,7 @@
  */
 public with sharing class EmailAttachmentLinkHandler {
 
-    // Recursion guard (cleaner + avoids repeated work/log noise)
+    // Recursion guard (avoids repeated work/log noise)
     private static Boolean isProcessing = false;
 
     /**
@@ -103,8 +103,8 @@ public with sharing class EmailAttachmentLinkHandler {
         ContentDocumentLink link = new ContentDocumentLink();
         link.ContentDocumentId = contentDocumentId;
         link.LinkedEntityId = linkedEntityId;
-        link.ShareType = DEFAULT_SHARE_TYPE;     // V = Viewer
-        link.Visibility = DEFAULT_VISIBILITY;    // AllUsers/InternalUsers/SharedUsers depending on org needs
+        link.ShareType = DEFAULT_SHARE_TYPE;
+        link.Visibility = DEFAULT_VISIBILITY;
         return link;
     }
 
@@ -163,7 +163,6 @@ public with sharing class EmailAttachmentLinkHandler {
     }
 
     /**
-     * Core fix for the issue:
      * When a File is linked to EmailMessage, also link same File to related Case.
      */
     public static void linkEmailFilesToCases(List<ContentDocumentLink> contentDocumentLinks) {
@@ -226,10 +225,7 @@ public with sharing class EmailAttachmentLinkHandler {
     }
 
     /**
-     * if legacy Attachment records on EmailMessage is found
-     * and we want to convert them to Files + link to EmailMessage + Case.
-     *
-     * NOTE: it's for classic Attachment support.
+     * if legacy Attachment records on EmailMessage is found, convert to File and link to Case as well.
      */
     public static void linkEmailAttachmentsToCases(List<Attachment> attachments) {
         if (attachments == null || attachments.isEmpty()) return;
