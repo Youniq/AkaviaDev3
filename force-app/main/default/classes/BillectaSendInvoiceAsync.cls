@@ -147,7 +147,7 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
         credentials.Creditor__c
       );
 
-      System.debug(JSON.serializePretty(jsonPayload));
+      System.debug(jsonPayload.toString());
 
       request = BillectaUtils.initBillectaRequest(request);
       request = BillectaUtils.CreateInvoice(request, jsonPayload);
