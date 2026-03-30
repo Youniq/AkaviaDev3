@@ -53,9 +53,9 @@ public with sharing class BillectaDebtorInvoiceInvocable {
 
             invoiceInfo.DueDate = calculateDueDate(Date.today());
 
-            if (invoiceInfo.UseDebtorBalance == null) {
+            //if (invoiceInfo.UseDebtorBalance == null) {
                 invoiceInfo.UseDebtorBalance = true;
-            }
+            //}
 
             BillectaDebtorStatusUpdateHelper.sendRetroactiveInvoice(
                 r.accountId,
