@@ -19,73 +19,94 @@ public with sharing class BillectaDebtorInvoiceInvocable {
     public BillectaCreateInvoice retroactiveInvoiceInfo;
   }
 
-  @invocableMethod(label='Create Invoice in Billecta')
-  public static void createInvoice(List<Request> requests) {
-    for (Request r : requests) {
-      System.debug('Input request: ' + r);
+  @InvocableMethod(label='Create Invoice in Billecta')
+    public static void createInvoice(List<Request> requests) {
+        for (Request r : requests) {
+            System.debug('Input request: ' + r);
 
-      if (
-        r.retroactiveInvoiceInfo == null ||
-        r.retroactiveInvoiceInfo.PeriodStart == null
-      ) {
-        BillectaDebtorStatusUpdateHelper.sendInvoice(r.accountId);
-      } else if (
-        r.retroactiveInvoiceInfo != null &&
-        r.retroactiveInvoiceInfo.PeriodStart != null
-      ) {
-        // Validera datum så att de är från 6-1 månad sedan.
-        if (isDateWithinSixMonths(r.retroactiveInvoiceInfo.PeriodStart)) {
-          Date startDate = Date.newInstance(
-            r.retroactiveInvoiceInfo.PeriodStart.year(),
-            r.retroactiveInvoiceInfo.PeriodStart.month(),
-            1
-          );
+            if (r.retroactiveInvoiceInfo == null || r.retroactiveInvoiceInfo.PeriodStart == null) {
+                BillectaDebtorStatusUpdateHelper.sendInvoice(r.accountId);
+                continue;
+            }
 
-          // End date shall always be the last day of the month, same month as the startDate.
-          Date endDate = Date.newInstance(
-              startDate.year(),
-              startDate.month() + 1,
-              1
-            )
-            .addDays(-1);
-          r.retroactiveInvoiceInfo.PeriodEnd = endDate;
-          r.retroactiveInvoiceInfo.PeriodStart = startDate;
+            if (!isDateWithinSixMonths(r.retroactiveInvoiceInfo.PeriodStart)) {
+                throw new CustomException(
+                    'Bad Period Start Date. It must be between one month ago - 6 months ago.'
+                );
+            }
 
-          BillectaDebtorStatusUpdateHelper.sendRetroactiveInvoice(
-            r.accountId,
-            r.retroactiveInvoiceInfo
-          );
-        } else {
-          throw new CustomException(
-            'Bad Period Start Date. It must be between one month ago - 6 months ago.'
-          );
+            BillectaCreateInvoice invoiceInfo = r.retroactiveInvoiceInfo;
+
+            Date startDate = Date.newInstance(
+                invoiceInfo.PeriodStart.year(),
+                invoiceInfo.PeriodStart.month(),
+                1
+            );
+
+            invoiceInfo.PeriodStart = startDate;
+
+            if (isPensionerCategory(invoiceInfo.MembershipCategory)) {
+                invoiceInfo.PeriodEnd = startDate.addMonths(12).addDays(-1);
+            } else {
+                invoiceInfo.PeriodEnd = startDate.addMonths(1).addDays(-1);
+            }
+
+            invoiceInfo.DueDate = calculateDueDate(Date.today());
+
+            if (invoiceInfo.UseDebtorBalance == null) {
+                invoiceInfo.UseDebtorBalance = true;
+            }
+
+            BillectaDebtorStatusUpdateHelper.sendRetroactiveInvoice(
+                r.accountId,
+                invoiceInfo
+            );
         }
-      }
     }
-  }
 
-  private static Boolean isDateWithinSixMonths(Date startDate) {
-    // Get the current date
-    Date currentDate = Date.today();
+    private static Boolean isPensionerCategory(String membershipCategory) {
+        if (String.isBlank(membershipCategory)) {
+            return false;
+        }
 
-    // Calculate the date 6 months ago
-    Date sixMonthsAgo = currentDate.addMonths(-6);
+        String value = membershipCategory.trim().toLowerCase();
+        return value.contains('pension');
+    }
 
-    // First day of current month
-    Date currMonth = Date.newInstance(
-      currentDate.year(),
-      currentDate.month(),
-      1
-    );
+    private static Date calculateDueDate(Date baseDate) {
+        Date current28 = Date.newInstance(baseDate.year(), baseDate.month(), 28);
 
-    // Adjust sixMonthsAgo to the first day of the month
-    sixMonthsAgo = Date.newInstance(
-      sixMonthsAgo.year(),
-      sixMonthsAgo.month(),
-      1
-    );
+        if (baseDate > current28) {
+            Date nextMonth = baseDate.addMonths(1);
+            return Date.newInstance(nextMonth.year(), nextMonth.month(), 28);
+        }
 
-    // Check if the incoming date is within 6 months ago - current month. (Don't accept future invoices or inv older than 6 months)
-    return startDate >= sixMonthsAgo && startDate <= currMonth;
+        Integer daysUntil28 = baseDate.daysBetween(current28);
+
+        if (daysUntil28 < 14) {
+            Date nextMonth = baseDate.addMonths(1);
+            return Date.newInstance(nextMonth.year(), nextMonth.month(), 28);
+        }
+
+        return current28;
+    }
+
+    private static Boolean isDateWithinSixMonths(Date startDate) {
+      Date currentDate = Date.today();
+      Date sixMonthsAgo = currentDate.addMonths(-6);
+
+      Date currentMonthStart = Date.newInstance(
+          currentDate.year(),
+          currentDate.month(),
+          1
+      );
+
+      Date sixMonthsAgoMonthStart = Date.newInstance(
+          sixMonthsAgo.year(),
+          sixMonthsAgo.month(),
+          1
+      );
+
+      return startDate >= sixMonthsAgoMonthStart && startDate <= currentMonthStart;
   }
 }

@@ -161,51 +161,44 @@ public class BillectaEncodeJSON {
         }
     }
 
-  public static blob encodeAkaviaInvoiceActionView(
-    Account acc,
-    Boolean incomeInsurance,
-    String creditorId
-  ) {
-    BillectaCreateInvoice.AkaviaInvoiceActionView newInvoice = new BillectaCreateInvoice.AkaviaInvoiceActionView();
+  public static Blob encodeAkaviaInvoiceActionView(
+        Account acc,
+        Boolean incomeInsurance,
+        String creditorId
+    ) {
+        BillectaCreateInvoice newInvoice = new BillectaCreateInvoice();
 
-    newInvoice.CreditorPublicId = creditorId;
-    newInvoice.ExternalId = acc.Id;
-    newInvoice.SocialSecurityNumber =
-      acc.SocialSecurityNumber__c.left(8) +
-      '-' +
-      acc.SocialSecurityNumber__c.right(4);
-    newInvoice.MemberNumber = acc.MemberNumber__c;
-    newInvoice.MembershipCategory = acc.MembershipCategory__c;
-    newInvoice.FeeCategory = acc.FeeCategory__c;
-    newInvoice.HaveAkassa = acc.UnemploymentFundThroughAkavia__c;
-    newInvoice.IsCreditInvoice = false;
-    newInvoice.HaveIncomeInsurance = incomeInsurance;
+        newInvoice.CreditorPublicId = creditorId;
+        newInvoice.ExternalId = acc.Id;
+        newInvoice.SocialSecurityNumber =
+            acc.SocialSecurityNumber__c.left(8) + '-' + acc.SocialSecurityNumber__c.right(4);
+        newInvoice.MemberNumber = acc.MemberNumber__c;
+        newInvoice.MembershipCategory = acc.MembershipCategory__c;
+        newInvoice.FeeCategory = acc.FeeCategory__c;
+        newInvoice.HaveAkassa = acc.UnemploymentFundThroughAkavia__c;
+        newInvoice.IsCreditInvoice = false;
+        newInvoice.HaveIncomeInsurance = incomeInsurance;
 
-    String jsonBody = json.serialize(newInvoice, true);
-    Blob jsonAsBlob = blob.valueOf(jsonBody);
-    return jsonAsBlob;
-  }
+        String jsonBody = JSON.serialize(newInvoice, true);
+        return Blob.valueOf(jsonBody);
+    }
 
-  public static blob encodeAkaviaRetroactiveInvoice(
+  public static Blob encodeAkaviaRetroactiveInvoice(
     Account acc,
     BillectaCreateInvoice newRetroActiveInv,
     String creditorId
-  ) {
-    // Most fee-related invoice information is populated from screen flow.
-    //Below we fill person related info and creditorId for Billecta
-    newRetroActiveInv.CreditorPublicId = creditorId;
-    newRetroActiveInv.ExternalId = acc.Id;
-    newRetroActiveInv.SocialSecurityNumber =
-      acc.SocialSecurityNumber__c.left(8) +
-      '-' +
-      acc.SocialSecurityNumber__c.right(4);
-    newRetroActiveInv.MemberNumber = acc.MemberNumber__c;
-    newRetroActiveInv.IsCreditInvoice = false;
+    ) {
+        // Person- och creditor-data fylls från Salesforce
+        newRetroActiveInv.CreditorPublicId = creditorId;
+        newRetroActiveInv.ExternalId = acc.Id;
+        newRetroActiveInv.SocialSecurityNumber =
+            acc.SocialSecurityNumber__c.left(8) + '-' + acc.SocialSecurityNumber__c.right(4);
+        newRetroActiveInv.MemberNumber = acc.MemberNumber__c;
+        newRetroActiveInv.IsCreditInvoice = false;
 
-    String jsonBody = json.serialize(newRetroActiveInv, true);
-    Blob jsonAsBlob = blob.valueOf(jsonBody);
-    return jsonAsBlob;
-  }
+        String jsonBody = JSON.serialize(newRetroActiveInv, true);
+        return Blob.valueOf(jsonBody);
+    }
 
   public static blob encodeSMS(Account acc, String creditorId) {
     BillectaCreateSMS.SMS newSMS = new BillectaCreateSMS.SMS();

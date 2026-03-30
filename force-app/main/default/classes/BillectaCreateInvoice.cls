@@ -2,31 +2,34 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2024-05-27
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-03-23
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 global class BillectaCreateInvoice {
-  public string CreditorPublicId;
-  public String ExternalId;
+    @AuraEnabled public String CreditorPublicId;
+    @AuraEnabled public String ExternalId;
+    @AuraEnabled public String SocialSecurityNumber;
+    @AuraEnabled public String MemberNumber;
+    @AuraEnabled public String MembershipCategory;
+    @AuraEnabled public String FeeCategory;
+    @AuraEnabled public Boolean HaveAkassa;
+    @AuraEnabled public Boolean IsCreditInvoice;
+    @AuraEnabled public Boolean HaveIncomeInsurance;
+    @AuraEnabled public Boolean UseDebtorBalance;
+    @AuraEnabled public Date PeriodStart;
+    @AuraEnabled public Date PeriodEnd;
+    @AuraEnabled public Date DueDate;
 
-  @AuraEnabled
-  public String SocialSecurityNumber;
-  @AuraEnabled
-  public String MemberNumber;
-  @AuraEnabled
-  public String MembershipCategory;
-  @AuraEnabled
-  public String FeeCategory;
-  @AuraEnabled
-  public Boolean HaveAkassa;
-  public Boolean IsCreditInvoice;
-  @AuraEnabled
-  public boolean HaveIncomeInsurance;
-  @AuraEnabled
-  public Date PeriodStart; // First day of a month, to use if creating retroactive invoices
-  public Date PeriodEnd; // Akavia implements this like periodStart-periodEnd is always one month
+    global class CreatedView {
+        public String PublicId;
+    }
+
+    global static CreatedView parse(String json) {
+        return (CreatedView) System.JSON.deserialize(json, CreatedView.class);
+    }
 
   // TODO - Replace with above in order to have them @aurahandled and be able to populate them from flow
+  /** Are this still active somewhere?
   global class AkaviaInvoiceActionView {
     public string CreditorPublicId;
     public String ExternalId;
@@ -38,7 +41,9 @@ global class BillectaCreateInvoice {
     public Boolean IsCreditInvoice;
     public boolean HaveIncomeInsurance;
   }
+    */
 
+  /** 
   global class CreatedView {
     public string PublicId;
   }
@@ -49,6 +54,7 @@ global class BillectaCreateInvoice {
       BillectaCreateInvoice.CreatedView.class
     );
   }
+    */
   /*    {
   "typeName": "AkaviaInvoiceActionView",
   "additionalProperties": false,

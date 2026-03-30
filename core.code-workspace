@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "c:/Users/StefanTrieton/OneDrive/Work/Stretch/AkaviaDev3"
+    }
+  ],
+  "settings": {
+    "eslint.workingDirectories": [
+      "c:/Users/StefanTrieton/OneDrive/Work/Stretch/AkaviaDev3"
+    ],
+    "eslint.validate": [
+      "javascript",
+      "typescript"
+    ],
+    "eslint.options": {
+      "overrideConfigFile": "c:\\Users\\StefanTrieton\\OneDrive\\Work\\Stretch\\AkaviaDev3\\.eslintrc.json"
+    }
+  }
+}
