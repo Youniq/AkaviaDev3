@@ -16,9 +16,11 @@ public with sharing class NewBillectaBankAccountService {
             return testConfig;
         }
 
-        Billecta_Settings__mdt cfg = Billecta_Settings__mdt.getInstance('Default');
+        String configName = 'Api_Test'; // Api_Prod
+        Billecta_Settings__mdt cfg = Billecta_Settings__mdt.getInstance(configName);
+
         if (cfg == null) {
-            throw new AuraHandledException('Billecta settings saknas.');
+            throw new AuraHandledException('Billecta settings saknas. Hittade inte metadata: ' + configName);
         }
 
         Config c = new Config();
@@ -64,8 +66,16 @@ public with sharing class NewBillectaBankAccountService {
         Http http = new Http();
         HttpResponse res = http.send(req);
 
+        System.debug('Billecta status code: ' + res.getStatusCode());
+        System.debug('Billecta status: ' + res.getStatus());
+        System.debug('Billecta response body: ' + res.getBody());
+
         if (res.getStatusCode() < 200 || res.getStatusCode() >= 300) {
-            throw new AuraHandledException('Billecta initiate failed: ' + res.getBody());
+            throw new AuraHandledException(
+                'Billecta initiate failed. Status=' + res.getStatusCode() +
+                ', StatusText=' + res.getStatus() +
+                ', Body=' + res.getBody()
+            );
         }
 
         Map<String, Object> parsed = (Map<String, Object>)JSON.deserializeUntyped(res.getBody());

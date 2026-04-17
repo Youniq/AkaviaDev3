@@ -1,7 +1,7 @@
 <template>
-    <lightning-card title="Billecta bankkontohämtning" icon-name="standard:account">
+    <lightning-card title="Byt till autogiro" icon-name="utility:moneybag">
         <div class="slds-p-around_medium">
-            <div class="slds-m-bottom_small">
+            <div class="slds-m-bottom_medium">
                 <lightning-button
                     label="Starta kontohämtning"
                     variant="brand"
@@ -11,7 +11,7 @@
 
                 <lightning-button
                     class="slds-m-left_small"
-                    label="Avbryt"
+                    label="Stoppa"
                     onclick={handleStop}>
                 </lightning-button>
             </div>
@@ -21,14 +21,18 @@
             </template>
 
             <template if:true={statusMessage}>
-                <div class="slds-text-color_success slds-m-bottom_small">{statusMessage}</div>
+                <div class="slds-text-color_success slds-m-bottom_small">
+                    {statusMessage}
+                </div>
             </template>
 
             <template if:true={errorMessage}>
-                <div class="slds-text-color_error slds-m-bottom_small">{errorMessage}</div>
+                <div class="slds-text-color_error slds-m-bottom_small">
+                    {errorMessage}
+                </div>
             </template>
 
-            <div id="bank-account-iframe"></div>
+            <div id="bank-account-iframe" class="bank-account-iframe"></div>
         </div>
     </lightning-card>
 </template>
