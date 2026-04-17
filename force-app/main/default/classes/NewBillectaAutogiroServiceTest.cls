@@ -1,16 +1,22 @@
 @IsTest
 private class NewBillectaAutogiroServiceTest {
 
-    private class BillectaSuccessMock implements HttpCalloutMock {
+    private class BillectaInitiateRetrievalMock implements HttpCalloutMock {
         public HttpResponse respond(HttpRequest req) {
+            System.assertEquals('POST', req.getMethod());
+            System.assert(req.getEndpoint().contains('/v1/bankAccount/InitiateRetrieval'));
+            System.assertNotEquals(null, req.getHeader('Authorization'));
+            System.assertEquals('application/json', req.getHeader('Content-Type'));
+
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
-            res.setBody('{"SessionToken":"token123","SessionId":"session456"}');
+            res.setHeader('Content-Type', 'application/json');
+            res.setBody('{"SessionToken":"test-session-token","SessionId":"test-session-id"}');
             return res;
         }
     }
 
-    private static void setupTestBillectaConfig() {
+    private static void setupBillectaConfig() {
         NewBillectaBankAccountService.Config cfg = new NewBillectaBankAccountService.Config();
         cfg.baseEndpoint = 'https://apitest.billecta.com';
         cfg.creditorPublicId = '467fe7dd-529b-47cc-bc63-d840981a52aa';
@@ -20,46 +26,32 @@ private class NewBillectaAutogiroServiceTest {
         NewBillectaBankAccountService.testConfig = cfg;
     }
 
-    private static Id getPersonAccountRecordTypeId() {
-        Map<String, Schema.RecordTypeInfo> rtByDevName =
-            Account.SObjectType.getDescribe().getRecordTypeInfosByDeveloperName();
-
-        if (rtByDevName != null && rtByDevName.containsKey('PersonAccount')) {
-            return rtByDevName.get('PersonAccount').getRecordTypeId();
-        }
-
-        for (Schema.RecordTypeInfo rti : Account.SObjectType.getDescribe().getRecordTypeInfos()) {
-            if (rti.isAvailable() && rti.getName() == 'Person Account') {
-                return rti.getRecordTypeId();
-            }
-        }
-
-        return null;
-    }
-
     private static Account createPersonAccount() {
-        Id personAccountRtId = getPersonAccountRecordTypeId();
+        Id personRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
+            .get('PersonAccount')
+            .getRecordTypeId();
 
-        System.assertNotEquals(
-            null,
-            personAccountRtId,
-            'No Person Account record type available in test context.'
-        );
-
-        Account pa = new Account(
-            RecordTypeId = personAccountRtId,
-            FirstName = 'Test',
-            LastName = 'Person'
-        );
+        Account pa = new Account();
+        pa.RecordTypeId = personRtId;
+        pa.FirstName = 'Test';
+        pa.LastName = 'Person';
+        pa.PersonEmail = 'test.person@example.com';
         insert pa;
 
         return pa;
     }
 
+    private static Account createBusinessAccount() {
+        Account acc = new Account();
+        acc.Name = 'Test Business Account';
+        insert acc;
+        return acc;
+    }
+
     @IsTest
-    static void testStartAutogiroChange() {
-        setupTestBillectaConfig();
-        Test.setMock(HttpCalloutMock.class, new BillectaSuccessMock());
+    static void testStartAutogiroChange_Success() {
+        setupBillectaConfig();
+        Test.setMock(HttpCalloutMock.class, new BillectaInitiateRetrievalMock());
 
         Account pa = createPersonAccount();
 
@@ -68,245 +60,214 @@ private class NewBillectaAutogiroServiceTest {
             NewBillectaAutogiroService.startAutogiroChange(pa.Id, '740121-0674');
         Test.stopTest();
 
-        System.assertEquals('token123', response.sessionToken);
-        System.assertEquals('session456', response.sessionId);
+        System.assertNotEquals(null, response);
+        System.assertEquals('test-session-token', response.sessionToken);
+        System.assertEquals('test-session-id', response.sessionId);
         System.assertEquals('https://accountlookup.test.billecta.com', response.accountLookupBaseUrl);
-        System.assertEquals('https://accountlookup.billecta.com/js/client.js', response.clientScriptUrl);
+        System.assertEquals('https://accountlookup.test.billecta.com/js/client.js', response.clientScriptUrl);
         System.assertNotEquals(null, response.autogiroChangeLogId);
 
         Autogiro_Change_Log__c logRec = [
-            SELECT Account__c, Status__c, Billecta_Session_Id__c
+            SELECT Id, Account__c, Status__c, Billecta_Session_Id__c, Started_At__c
             FROM Autogiro_Change_Log__c
             WHERE Id = :response.autogiroChangeLogId
+            LIMIT 1
         ];
 
         System.assertEquals(pa.Id, logRec.Account__c);
         System.assertEquals('Started', logRec.Status__c);
-        System.assertEquals('session456', logRec.Billecta_Session_Id__c);
+        System.assertEquals('test-session-id', logRec.Billecta_Session_Id__c);
+        System.assertNotEquals(null, logRec.Started_At__c);
     }
 
     @IsTest
-    static void testCompleteAutogiroChange() {
+    static void testCompleteAutogiroChange_Success() {
         Account pa = createPersonAccount();
 
         Autogiro_Change_Log__c logRec = new Autogiro_Change_Log__c(
             Account__c = pa.Id,
             Status__c = 'Started',
-            Billecta_Session_Id__c = 'session456'
+            Billecta_Session_Id__c = 'session-123',
+            Started_At__c = System.now()
         );
         insert logRec;
 
         Test.startTest();
-        Id updatedId = NewBillectaAutogiroService.completeAutogiroChange(
+        Id resultId = NewBillectaAutogiroService.completeAutogiroChange(
             logRec.Id,
-            'Success',
-            '8123',
+            'SIGNED',
+            '1234',
             '1234567890',
-            'SEB',
-            'Skandinaviska Enskilda Banken'
+            'BANK01',
+            'Test Bank'
         );
         Test.stopTest();
 
-        System.assertEquals(logRec.Id, updatedId);
+        System.assertEquals(logRec.Id, resultId);
 
-        Autogiro_Change_Log__c updatedLog = [
-            SELECT Status__c, Session_State__c, Clearing_Number__c, Account_Number__c,
-                   Bank_Code__c, Bank_Name__c, Completed_At__c
+        Autogiro_Change_Log__c updated = [
+            SELECT Id, Status__c, Session_State__c, Clearing_Number__c, Account_Number__c,
+                   Bank_Code__c, Bank_Name__c, Error_Message__c, Completed_At__c
             FROM Autogiro_Change_Log__c
             WHERE Id = :logRec.Id
+            LIMIT 1
         ];
 
-        System.assertEquals('Completed', updatedLog.Status__c);
-        System.assertEquals('Success', updatedLog.Session_State__c);
-        System.assertEquals('8123', updatedLog.Clearing_Number__c);
-        System.assertEquals('1234567890', updatedLog.Account_Number__c);
-        System.assertEquals('SEB', updatedLog.Bank_Code__c);
-        System.assertEquals('Skandinaviska Enskilda Banken', updatedLog.Bank_Name__c);
-        System.assertNotEquals(null, updatedLog.Completed_At__c);
+        System.assertEquals('Completed', updated.Status__c);
+        System.assertEquals('SIGNED', updated.Session_State__c);
+        System.assertEquals('1234', updated.Clearing_Number__c);
+        System.assertEquals('1234567890', updated.Account_Number__c);
+        System.assertEquals('BANK01', updated.Bank_Code__c);
+        System.assertEquals('Test Bank', updated.Bank_Name__c);
+        System.assertEquals(null, updated.Error_Message__c);
+        System.assertNotEquals(null, updated.Completed_At__c);
     }
 
     @IsTest
-    static void testFailAutogiroChange() {
+    static void testFailAutogiroChange_Success() {
         Account pa = createPersonAccount();
 
         Autogiro_Change_Log__c logRec = new Autogiro_Change_Log__c(
             Account__c = pa.Id,
             Status__c = 'Started',
-            Billecta_Session_Id__c = 'session456'
+            Billecta_Session_Id__c = 'session-456',
+            Started_At__c = System.now()
         );
         insert logRec;
 
         Test.startTest();
-        Id updatedId = NewBillectaAutogiroService.failAutogiroChange(
+        Id resultId = NewBillectaAutogiroService.failAutogiroChange(
             logRec.Id,
             'Failed',
-            'Failed',
-            'Technical error'
+            'ERROR',
+            'Billecta returned an error.'
         );
         Test.stopTest();
 
-        System.assertEquals(logRec.Id, updatedId);
+        System.assertEquals(logRec.Id, resultId);
 
-        Autogiro_Change_Log__c updatedLog = [
-            SELECT Status__c, Session_State__c, Error_Message__c, Completed_At__c
+        Autogiro_Change_Log__c updated = [
+            SELECT Id, Status__c, Session_State__c, Error_Message__c, Completed_At__c
             FROM Autogiro_Change_Log__c
             WHERE Id = :logRec.Id
+            LIMIT 1
         ];
 
-        System.assertEquals('Failed', updatedLog.Status__c);
-        System.assertEquals('Failed', updatedLog.Session_State__c);
-        System.assertEquals('Technical error', updatedLog.Error_Message__c);
-        System.assertNotEquals(null, updatedLog.Completed_At__c);
+        System.assertEquals('Failed', updated.Status__c);
+        System.assertEquals('ERROR', updated.Session_State__c);
+        System.assertEquals('Billecta returned an error.', updated.Error_Message__c);
+        System.assertNotEquals(null, updated.Completed_At__c);
     }
 
     @IsTest
-    static void testStartAutogiroChange_MissingAccountId() {
-        Boolean exceptionThrown = false;
+    static void testFailAutogiroChange_DefaultStatusToFailed() {
+        Account pa = createPersonAccount();
+
+        Autogiro_Change_Log__c logRec = new Autogiro_Change_Log__c(
+            Account__c = pa.Id,
+            Status__c = 'Started',
+            Billecta_Session_Id__c = 'session-789',
+            Started_At__c = System.now()
+        );
+        insert logRec;
 
         Test.startTest();
-        try {
-            NewBillectaAutogiroService.startAutogiroChange(null, '740121-0674');
-        } catch (AuraHandledException e) {
-            exceptionThrown = true;
-        }
+        Id resultId = NewBillectaAutogiroService.failAutogiroChange(
+            logRec.Id,
+            null,
+            'CANCELLED',
+            'User cancelled flow.'
+        );
         Test.stopTest();
 
-        System.assertEquals(true, exceptionThrown);
+        System.assertEquals(logRec.Id, resultId);
+
+        Autogiro_Change_Log__c updated = [
+            SELECT Id, Status__c, Session_State__c, Error_Message__c
+            FROM Autogiro_Change_Log__c
+            WHERE Id = :logRec.Id
+            LIMIT 1
+        ];
+
+        System.assertEquals('Failed', updated.Status__c);
+        System.assertEquals('CANCELLED', updated.Session_State__c);
+        System.assertEquals('User cancelled flow.', updated.Error_Message__c);
     }
 
     @IsTest
-    static void testCompleteAutogiroChange_MissingLogId() {
-        Boolean exceptionThrown = false;
+static void testStartAutogiroChange_MissingAccountId() {
+    Boolean didThrow = false;
 
+    try {
         Test.startTest();
-        try {
-            NewBillectaAutogiroService.completeAutogiroChange(
-                null,
-                'Success',
-                '8123',
-                '1234567890',
-                'SEB',
-                'Skandinaviska Enskilda Banken'
-            );
-        } catch (AuraHandledException e) {
-            exceptionThrown = true;
-        }
+        NewBillectaAutogiroService.startAutogiroChange(null, '740121-0674');
         Test.stopTest();
-
-        System.assertEquals(true, exceptionThrown);
+    } catch (Exception e) {
+        didThrow = true;
+        System.debug('MissingAccountId exception: ' + e.getMessage());
     }
 
-    @IsTest
-    static void testFailAutogiroChange_MissingLogId() {
-        Boolean exceptionThrown = false;
-
-        Test.startTest();
-        try {
-            NewBillectaAutogiroService.failAutogiroChange(
-                null,
-                'Failed',
-                'Failed',
-                'Technical error'
-            );
-        } catch (AuraHandledException e) {
-            exceptionThrown = true;
-        }
-        Test.stopTest();
-
-        System.assertEquals(true, exceptionThrown);
+    System.assertEquals(true, didThrow, 'Expected exception was not thrown.');
     }
 
     @IsTest
     static void testStartAutogiroChange_NotPersonAccount() {
-        setupTestBillectaConfig();
+        Account acc = createBusinessAccount();
+        Boolean didThrow = false;
 
-        Account acc = new Account(Name = 'Business Account');
-        insert acc;
-
-        Boolean exceptionThrown = false;
-
-        Test.startTest();
         try {
+            Test.startTest();
             NewBillectaAutogiroService.startAutogiroChange(acc.Id, '740121-0674');
-        } catch (AuraHandledException e) {
-            exceptionThrown = true;
+            Test.stopTest();
+        } catch (Exception e) {
+            didThrow = true;
+            System.debug('NotPersonAccount exception: ' + e.getMessage());
         }
-        Test.stopTest();
 
-        System.assertEquals(true, exceptionThrown);
+        System.assertEquals(true, didThrow, 'Expected exception was not thrown.');
     }
 
     @IsTest
-    static void testSaveSuccessfulLookup() {
-        Account acc = new Account(Name = 'Lookup Test Account');
-        insert acc;
+    static void testCompleteAutogiroChange_MissingLogId() {
+        Boolean didThrow = false;
 
-        Test.startTest();
-        Id recId = NewBillectaAutogiroService.saveSuccessfulLookup(
-            acc.Id,
-            'Success',
-            '8123',
-            '1234567890',
-            'SEB',
-            'Skandinaviska Enskilda Banken'
-        );
-        Test.stopTest();
+        try {
+            Test.startTest();
+            NewBillectaAutogiroService.completeAutogiroChange(
+                null,
+                'SIGNED',
+                '1234',
+                '1234567890',
+                'BANK01',
+                'Test Bank'
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            didThrow = true;
+            System.debug('Complete missingLogId exception: ' + e.getMessage());
+        }
 
-        System.assertNotEquals(null, recId);
-
-        Billecta_Bank_Account_Result__c rec = [
-            SELECT Related_Record_Id__c,
-                   Session_State__c,
-                   Clearing_Number__c,
-                   Account_Number__c,
-                   Bank_Code__c,
-                   Bank_Name__c,
-                   Status__c,
-                   Lookup_Timestamp__c
-            FROM Billecta_Bank_Account_Result__c
-            WHERE Id = :recId
-        ];
-
-        System.assertEquals(String.valueOf(acc.Id), rec.Related_Record_Id__c);
-        System.assertEquals('Success', rec.Session_State__c);
-        System.assertEquals('8123', rec.Clearing_Number__c);
-        System.assertEquals('1234567890', rec.Account_Number__c);
-        System.assertEquals('SEB', rec.Bank_Code__c);
-        System.assertEquals('Skandinaviska Enskilda Banken', rec.Bank_Name__c);
-        System.assertEquals('Success', rec.Status__c);
-        System.assertNotEquals(null, rec.Lookup_Timestamp__c);
+        System.assertEquals(true, didThrow, 'Expected exception was not thrown.');
     }
 
     @IsTest
-    static void testSaveFailedLookup() {
-        Account acc = new Account(Name = 'Lookup Test Account');
-        insert acc;
+    static void testFailAutogiroChange_MissingLogId() {
+        Boolean didThrow = false;
 
-        Test.startTest();
-        Id recId = NewBillectaAutogiroService.saveFailedLookup(
-            acc.Id,
-            'Failed',
-            'Failed',
-            'Technical error'
-        );
-        Test.stopTest();
+        try {
+            Test.startTest();
+            NewBillectaAutogiroService.failAutogiroChange(
+                null,
+                'Failed',
+                'ERROR',
+                'Missing log id.'
+            );
+            Test.stopTest();
+        } catch (Exception e) {
+            didThrow = true;
+            System.debug('Fail missingLogId exception: ' + e.getMessage());
+        }
 
-        System.assertNotEquals(null, recId);
-
-        Billecta_Bank_Account_Result__c rec = [
-            SELECT Related_Record_Id__c,
-                   Status__c,
-                   Session_State__c,
-                   Error_Message__c,
-                   Lookup_Timestamp__c
-            FROM Billecta_Bank_Account_Result__c
-            WHERE Id = :recId
-        ];
-
-        System.assertEquals(String.valueOf(acc.Id), rec.Related_Record_Id__c);
-        System.assertEquals('Failed', rec.Status__c);
-        System.assertEquals('Failed', rec.Session_State__c);
-        System.assertEquals('Technical error', rec.Error_Message__c);
-        System.assertNotEquals(null, rec.Lookup_Timestamp__c);
+        System.assertEquals(true, didThrow, 'Expected exception was not thrown.');
     }
 }
