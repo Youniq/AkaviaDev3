@@ -10,11 +10,9 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <property
-                name="personalIdNumber"
-                type="String"
-                label="Personal identity number"
-                description="Optional personal identity number passed to Billecta" />
+            <objects>
+                <object>Account</object>
+            </objects>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

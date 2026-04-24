@@ -9,16 +9,13 @@ public with sharing class NewBillectaAutogiroService {
     }
 
     @AuraEnabled
-    public static StartAutogiroBankChangeResponse startAutogiroChange(
-        Id accountId,
-        String personalIdNumber
-    ) {
+    public static StartAutogiroBankChangeResponse startAutogiroChange(Id accountId) {
         if (accountId == null) {
             throw new AuraHandledException('AccountId is required.');
         }
 
         Account pa = [
-            SELECT Id, Name, IsPersonAccount, PersonContactId
+            SELECT Id, Name, IsPersonAccount, SocialSecurityNumber__c
             FROM Account
             WHERE Id = :accountId
             LIMIT 1
@@ -26,6 +23,12 @@ public with sharing class NewBillectaAutogiroService {
 
         if (!pa.IsPersonAccount) {
             throw new AuraHandledException('Record is not a Person Account.');
+        }
+
+        String personalIdNumber = formatPersonalIdNumberForBillecta(pa.SocialSecurityNumber__c);
+
+        if (String.isBlank(personalIdNumber)) {
+            throw new AuraHandledException('Personnummer saknas på personkontot.');
         }
 
         NewBillectaDtos.ClientConfigResponse billectaResponse =
@@ -45,6 +48,31 @@ public with sharing class NewBillectaAutogiroService {
         response.clientScriptUrl = billectaResponse.clientScriptUrl;
         response.autogiroChangeLogId = logRec.Id;
         return response;
+    }
+
+    private static String formatPersonalIdNumberForBillecta(String value) {
+        if (String.isBlank(value)) {
+            return null;
+        }
+
+        String digits = value.replaceAll('[^0-9]', '');
+
+        // yyyyMMddxxxx -> yyMMdd-xxxx
+        if (digits.length() == 12) {
+            return digits.substring(2, 8) + '-' + digits.substring(8, 12);
+        }
+
+        // yyMMddxxxx -> yyMMdd-xxxx
+        if (digits.length() == 10) {
+            return digits.substring(0, 6) + '-' + digits.substring(6, 10);
+        }
+
+        // Already formatted yyMMdd-xxxx
+        if (Pattern.matches('^[0-9]{6}-[0-9]{4}$', value.trim())) {
+            return value.trim();
+        }
+
+        throw new AuraHandledException('Personnummer har fel format. Förväntat format är yyMMdd-xxxx.');
     }
 
     @AuraEnabled
@@ -105,5 +133,9 @@ public with sharing class NewBillectaAutogiroService {
 
         update logRec;
         return logRec.Id;
+    }
+
+    private static String clean(String value) {
+        return String.isBlank(value) ? null : value.trim();
     }
 }

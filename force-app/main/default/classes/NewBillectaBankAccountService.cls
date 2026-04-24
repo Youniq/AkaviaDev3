@@ -24,12 +24,16 @@ public with sharing class NewBillectaBankAccountService {
         }
 
         Config c = new Config();
-        c.baseEndpoint = cfg.Base_Endpoint__c;
-        c.creditorPublicId = cfg.Creditor_Public_Id__c;
-        c.secureToken = cfg.Secure_Token__c;
-        c.accountLookupBaseUrl = cfg.Account_Lookup_Base_Url__c;
-        c.clientScriptUrl = cfg.Client_Script_Url__c;
+        c.baseEndpoint = clean(cfg.Base_Endpoint__c);
+        c.creditorPublicId = clean(cfg.Creditor_Public_Id__c);
+        c.secureToken = clean(cfg.Secure_Token__c);
+        c.accountLookupBaseUrl = clean(cfg.Account_Lookup_Base_Url__c);
+        c.clientScriptUrl = clean(cfg.Client_Script_Url__c);
         return c;
+    }
+
+    private static String clean(String value) {
+        return String.isBlank(value) ? null : value.trim();
     }
 
     private static void validateConfig(Config cfg) {
@@ -48,9 +52,12 @@ public with sharing class NewBillectaBankAccountService {
         Config cfg = getConfig();
         validateConfig(cfg);
 
+        String cleanedPersonalIdNumber = clean(personalIdNumber);
+
         HttpRequest req = new HttpRequest();
         req.setMethod('POST');
-        req.setEndpoint(cfg.baseEndpoint + '/v1/bankAccount/InitiateRetrieval');
+        req.setEndpoint(cfg.baseEndpoint.removeEnd('/') + '/v1/bankAccount/InitiateRetrieval');
+        req.setTimeout(30000);
         req.setHeader('Content-Type', 'application/json');
         req.setHeader('Accept', 'application/json');
         req.setHeader('Authorization', buildSecureTokenHeader(cfg.secureToken));
@@ -58,14 +65,17 @@ public with sharing class NewBillectaBankAccountService {
         Map<String, Object> body = new Map<String, Object>{
             'CreditorPublicId' => cfg.creditorPublicId
         };
-        if (String.isNotBlank(personalIdNumber)) {
-            body.put('PersonalIdNumber', personalIdNumber);
+
+        if (String.isNotBlank(cleanedPersonalIdNumber)) {
+            body.put('PersonalIdNumber', cleanedPersonalIdNumber);
         }
+
         req.setBody(JSON.serialize(body));
 
         Http http = new Http();
         HttpResponse res = http.send(req);
 
+        System.debug('Billecta endpoint: ' + req.getEndpoint());
         System.debug('Billecta status code: ' + res.getStatusCode());
         System.debug('Billecta status: ' + res.getStatus());
         System.debug('Billecta response body: ' + res.getBody());
@@ -78,7 +88,7 @@ public with sharing class NewBillectaBankAccountService {
             );
         }
 
-        Map<String, Object> parsed = (Map<String, Object>)JSON.deserializeUntyped(res.getBody());
+        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
 
         NewBillectaDtos.ClientConfigResponse response = new NewBillectaDtos.ClientConfigResponse();
         response.sessionToken = (String) parsed.get('SessionToken');

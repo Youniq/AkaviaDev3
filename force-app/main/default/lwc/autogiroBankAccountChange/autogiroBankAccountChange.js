@@ -5,7 +5,6 @@ import failAutogiroChange from '@salesforce/apex/NewBillectaAutogiroService.fail
 
 export default class AutogiroBankAccountChange extends LightningElement {
     @api recordId;
-    @api personalIdNumber;
 
     @track isLoading = false;
     @track statusMessage;
@@ -22,8 +21,7 @@ export default class AutogiroBankAccountChange extends LightningElement {
 
         try {
             const session = await startAutogiroChange({
-                accountId: this.recordId,
-                personalIdNumber: this.personalIdNumber
+                accountId: this.recordId
             });
 
             this.autogiroChangeLogId = session.autogiroChangeLogId;
@@ -144,7 +142,8 @@ export default class AutogiroBankAccountChange extends LightningElement {
                 reject(new Error('Kunde inte ladda Billectas klientscript.'));
             };
 
-            this.template.appendChild(script);
+            const container = this.template.querySelector('.script-container');
+            container.appendChild(script);
         });
     }
 
