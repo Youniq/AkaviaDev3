@@ -121,17 +121,9 @@ export default class AutogiroBankAccountChange extends LightningElement {
                 return;
             }
 
-            const existing = this.template.querySelector('script[data-billecta-script="true"]');
-            if (existing) {
-                this.scriptAlreadyLoaded = true;
-                resolve();
-                return;
-            }
-
             const script = document.createElement('script');
             script.src = scriptUrl;
             script.async = true;
-            script.dataset.billectaScript = 'true';
 
             script.onload = () => {
                 this.scriptAlreadyLoaded = true;
@@ -142,8 +134,7 @@ export default class AutogiroBankAccountChange extends LightningElement {
                 reject(new Error('Kunde inte ladda Billectas klientscript.'));
             };
 
-            const container = this.template.querySelector('.script-container');
-            container.appendChild(script);
+            document.body.appendChild(script);
         });
     }
 
