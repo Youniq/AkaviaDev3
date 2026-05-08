@@ -2,6 +2,8 @@ import { LightningElement, api, track } from 'lwc';
 import startAutogiroChange from '@salesforce/apex/NewBillectaAutogiroService.startAutogiroChange';
 import completeAutogiroChange from '@salesforce/apex/NewBillectaAutogiroService.completeAutogiroChange';
 import failAutogiroChange from '@salesforce/apex/NewBillectaAutogiroService.failAutogiroChange';
+import { loadScript } from 'lightning/platformResourceLoader';
+import BILLECTA_CLIENT from '@salesforce/resourceUrl/BillectaAccountlookupClientJS';
 
 export default class AutogiroBankAccountChange extends LightningElement {
     @api recordId;
@@ -39,8 +41,10 @@ export default class AutogiroBankAccountChange extends LightningElement {
                 options
             );
 
+            const container = this.template.querySelector('.bank-account-iframe');
+
             this.billectaClient.start({
-                selector: '#bank-account-iframe',
+                container: container,
                 onSuccessful: async (data) => {
                     try {
                         await completeAutogiroChange({
@@ -114,6 +118,22 @@ export default class AutogiroBankAccountChange extends LightningElement {
         }
     }
 
+    // Load Billecta's client script using Salesforce's static resource loader
+    loadBillectaScript() {
+        if (this.scriptAlreadyLoaded) {
+            return Promise.resolve();
+        }
+
+        return loadScript(this, BILLECTA_CLIENT)
+            .then(() => {
+                this.scriptAlreadyLoaded = true;
+            })
+            .catch(error => {
+                throw new Error('Unable to load Billecta script: ' + error.message);
+            });
+    }
+    /** Fetch from Billecta's CDN instead of using static resources. Note! Gives CORS sameorigin policy issue 
+     * and is blocked by browser extensions.
     loadBillectaScript(scriptUrl) {
         return new Promise((resolve, reject) => {
             if (this.scriptAlreadyLoaded && window.Billecta) {
@@ -131,12 +151,13 @@ export default class AutogiroBankAccountChange extends LightningElement {
             };
 
             script.onerror = () => {
-                reject(new Error('Kunde inte ladda Billectas klientscript.'));
+                reject(new Error('Unable to load Billecta script.'));
             };
 
             document.body.appendChild(script);
         });
     }
+         */
 
     normalizeError(error) {
         if (!error) {

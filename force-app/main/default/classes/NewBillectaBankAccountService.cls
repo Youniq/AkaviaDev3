@@ -28,7 +28,8 @@ public with sharing class NewBillectaBankAccountService {
         c.creditorPublicId = clean(cfg.Creditor_Public_Id__c);
         c.secureToken = clean(cfg.Secure_Token__c);
         c.accountLookupBaseUrl = clean(cfg.Account_Lookup_Base_Url__c);
-        c.clientScriptUrl = clean(cfg.Client_Script_Url__c);
+        //c.clientScriptUrl = clean(cfg.Client_Script_Url__c); 
+        // Fetched from static resource instead to avoid CORS issues
         return c;
     }
 
@@ -41,8 +42,8 @@ public with sharing class NewBillectaBankAccountService {
             String.isBlank(cfg.baseEndpoint) ||
             String.isBlank(cfg.creditorPublicId) ||
             String.isBlank(cfg.secureToken) ||
-            String.isBlank(cfg.accountLookupBaseUrl) ||
-            String.isBlank(cfg.clientScriptUrl)) {
+            String.isBlank(cfg.accountLookupBaseUrl))            //|| String.isBlank(cfg.clientScriptUrl))
+        {
             throw new AuraHandledException('Billecta settings are not fully configured.');
         }
     }
@@ -94,7 +95,8 @@ public with sharing class NewBillectaBankAccountService {
         response.sessionToken = (String) parsed.get('SessionToken');
         response.sessionId = (String) parsed.get('SessionId');
         response.accountLookupBaseUrl = cfg.accountLookupBaseUrl;
-        response.clientScriptUrl = cfg.clientScriptUrl;
+        //response.clientScriptUrl = cfg.clientScriptUrl;
+        // Fetched from static resource instead to avoid CORS issues
         return response;
     }
 
