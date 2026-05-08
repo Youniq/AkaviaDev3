@@ -3,7 +3,7 @@
   @description       : Enables Members to review and edit their payment options
   @author            : Håkon Kavli & Jenny Blomberg
   @group             : Stretch
-  @last modified on  : 2025-03-31
+  @last modified on  : 2026-01-30
   @last modified by  : Malin Nilsson (Stretch Customer AB)
 -->
 <template>
@@ -110,8 +110,7 @@
           <button class="
               slds-button slds-button_icon
               slds-modal__close
-              slds-button_icon-inverse
-              slds-text-heading_large
+              slds-text-heading_medium
             " title="Close" onclick={closeModal}>
             &#10006;
             <span class="slds-assistive-text">Close</span>
@@ -155,7 +154,7 @@
                         </h4>
                         <lightning-combobox variant="label-hidden" class="hide-element" name="DistributionMethod"
                           label={labels.Billecta_ChooseDistribution} value={distributionMethod}
-                          options={distributionMethodPicklistValues.data.values} dropdown-alignment="auto"
+                          options={distributionMethodPicklistValues} dropdown-alignment="auto"
                           onchange={handleDistributionMethodChange} required>
                         </lightning-combobox>
 
@@ -380,7 +379,7 @@
                   </p>
                 </template>
 
-                <div class="slds-var-m-around_medium slds-var-m-top_large">
+                <div class="slds-var-m-top_large">
                   <button class="slds-float_right slds-var-m-around_medium" id="Save" name="submit" type="submit"
                     data-f-is-finalized="false" data-f-is-progressive-submit="true" data-f-type="submitbutton"
                     onclick={closeModalWithUpdate} if:true={showChangeButton}>

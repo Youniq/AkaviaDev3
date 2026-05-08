@@ -162,6 +162,9 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
       co.path__c = request.getEndpoint();
     }
 
+    System.debug('Billecta endpoint: ' + request.getEndpoint());
+    System.debug('Billecta body: ' + request.getBody());
+
     try {
       response = http.send(request);
     } catch (Exception e) {

@@ -74,6 +74,9 @@ public with sharing class BillectaDebtorInvoiceInvocable {
     }
 
     private static Date calculateDueDate(Date baseDate) {
+
+        
+
         Date current28 = Date.newInstance(baseDate.year(), baseDate.month(), 28);
 
         if (baseDate > current28) {

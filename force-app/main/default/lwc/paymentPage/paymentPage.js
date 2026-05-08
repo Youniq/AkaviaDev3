@@ -2,7 +2,7 @@
  * @description       :
  * @author            : Håkon Kavli
  * @group             : Stretch
- * @last modified on  : 2025-03-31
+ * @last modified on  : 2026-01-30
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
  **/
 import { LightningElement, api, track, wire } from "lwc";
@@ -282,8 +282,19 @@ export default class PaymentPage extends LightningElement {
   @wire(getPicklistValues, {
     recordTypeId: "$recordTypeId",
     fieldApiName: DISTRIBUTIONMETHOD_FIELD
-  })
-  distributionMethodPicklistValues;
+  }) wiredDistributionMethodPicklistValues({ data, error }) {
+    if (data) {
+      this.distributionMethodPicklistValues = data.values;
+      // Remove the option "Ingen leverans", it's only available for autogiro and will be set automatically
+      this.distributionMethodPicklistValues = this.distributionMethodPicklistValues.filter(option => option.value !== "Ingen leverans");
+      this.error = undefined;
+    }
+    if (error) {
+      this.error = error;
+      this.distributionMethodPicklistValues = undefined;
+    }
+  }
+  
 
   updateAccount() {
     const fields = {};
