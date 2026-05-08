@@ -7,6 +7,11 @@ import BILLECTA_CLIENT from '@salesforce/resourceUrl/BillectaAccountlookupClient
 
 export default class AutogiroBankAccountChange extends LightningElement {
     @api recordId;
+    @api accountId;
+
+    get effectiveAccountId() {
+        return this.recordId || this.accountId;
+    }
 
     @track isLoading = false;
     @track statusMessage;
@@ -16,6 +21,22 @@ export default class AutogiroBankAccountChange extends LightningElement {
     billectaClient;
     scriptAlreadyLoaded = false;
 
+    hasStarted = false;
+
+    renderedCallback() {
+        if (this.hasStarted) {
+            return;
+        }
+
+        const container = this.template.querySelector('.bank-account-iframe');
+        if (!container) {
+            return;
+        }
+
+        this.hasStarted = true;
+        this.handleStart();
+    }
+
     async handleStart() {
         this.isLoading = true;
         this.statusMessage = null;
@@ -23,12 +44,13 @@ export default class AutogiroBankAccountChange extends LightningElement {
 
         try {
             const session = await startAutogiroChange({
-                accountId: this.recordId
+                accountId: this.effectiveAccountId
             });
 
             this.autogiroChangeLogId = session.autogiroChangeLogId;
 
-            await this.loadBillectaScript(session.clientScriptUrl);
+            await this.loadBillectaScript();
+            //await this.loadBillectaScript(session.clientScriptUrl);
 
             const options = {};
             if (session.accountLookupBaseUrl) {
@@ -58,6 +80,9 @@ export default class AutogiroBankAccountChange extends LightningElement {
 
                         this.statusMessage = 'Autogiroändringen är klar.';
                         this.errorMessage = null;
+
+                        this.dispatchEvent(new CustomEvent('success'));
+
                     } catch (e) {
                         this.errorMessage = this.normalizeError(e);
                     }
@@ -112,6 +137,8 @@ export default class AutogiroBankAccountChange extends LightningElement {
             if (this.billectaClient && typeof this.billectaClient.stop === 'function') {
                 this.billectaClient.stop();
                 this.statusMessage = 'Kontohämtningen har stoppats.';
+
+                this.dispatchEvent(new CustomEvent('close'));
             }
         } catch (e) {
             this.errorMessage = this.normalizeError(e);

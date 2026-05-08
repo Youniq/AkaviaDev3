@@ -264,3 +264,46 @@ button.button {
 .bankIdText {
   border: 2px solid #000000;
 }
+
+/* =========================
+   Modal sizing / scrolling
+   ========================= */
+
+.slds-modal {
+  align-items: flex-start;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.slds-modal__container {
+  width: min(95vw, 900px);
+  max-width: 95vw;
+  max-height: calc(100vh - 2rem);
+  margin: 0 auto;
+}
+
+.slds-modal__content {
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Mobile */
+@media screen and (max-width: 767px) {
+  .slds-modal {
+    padding: 0;
+  }
+
+  .slds-modal__container {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    margin: 0;
+  }
+
+  .slds-modal__content {
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+}

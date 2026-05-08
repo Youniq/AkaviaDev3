@@ -75,7 +75,10 @@ public with sharing class BillectaDebtorInvoiceInvocable {
 
     private static Date calculateDueDate(Date baseDate) {
 
-        
+        //baseDate = baseDate.addDays(22); // TEST, REMOVE! if we are within 14 days from 28th, 
+                                        // if so we set due date to 28th of next month, 
+                                        //otherwise we set it to 28th of current month
+        System.debug('Invoice date: ' + baseDate);
 
         Date current28 = Date.newInstance(baseDate.year(), baseDate.month(), 28);
 

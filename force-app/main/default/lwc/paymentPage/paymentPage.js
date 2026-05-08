@@ -27,6 +27,8 @@ import FEECATEGORY_FIELD from "@salesforce/schema/Account.FeeCategory__c";
 import Id from "@salesforce/user/Id";
 import ACCOUNTID_FIELD from "@salesforce/schema/User.AccountId";
 
+import SOCIALSECURITYNUMBER_FIELD from "@salesforce/schema/Account.SocialSecurityNumber__c";
+
 // Apex Methods
 import initBankIDSign from "@salesforce/apex/BillectaBankAccountHelper.initBankIDSign";
 import initData from "@salesforce/apex/BillectaBankAccountHelper.initData";
@@ -116,8 +118,12 @@ export default class PaymentPage extends LightningElement {
     this.cancelCloseLabel = this.labels.PP_Cancel;
   }
 
+  get personalIdNumber() {
+    return this.account?.fields?.SocialSecurityNumber__c?.value;
+  }
+
   get isFeeCatDubbelSrat() {
-    return this.account.fields.FeeCategory__c.value === "Dubbelansluten SRAT";
+    return this.account?.fields?.FeeCategory__c?.value === "Dubbelansluten SRAT";
   }
 
   connectedCallback() {
@@ -160,7 +166,8 @@ export default class PaymentPage extends LightningElement {
       AUTOGIROCLEARING_FIELD,
       EINVOICEBANK_FIELD,
       PERSONMOBILEPHONE_FIELD,
-      BANKIDSIGNTOKEN_FIELD
+      BANKIDSIGNTOKEN_FIELD,
+      SOCIALSECURITYNUMBER_FIELD
     ]
   })
   wiredAccount({ data, error }) {
