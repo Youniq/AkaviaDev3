@@ -302,7 +302,6 @@ export default class PaymentPage extends LightningElement {
     }
   }
   
-
   updateAccount() {
     const fields = {};
     console.log("update");

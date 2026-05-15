@@ -27,12 +27,16 @@ export default class AutogiroBankAccountChange extends LightningElement {
         if (this.hasStarted) {
             return;
         }
-
+    
+        if (!this.effectiveAccountId) {
+            return;
+        }
+    
         const container = this.template.querySelector('.bank-account-iframe');
         if (!container) {
             return;
         }
-
+    
         this.hasStarted = true;
         this.handleStart();
     }
@@ -75,7 +79,8 @@ export default class AutogiroBankAccountChange extends LightningElement {
                             clearingNo: data ? data.clearingNo : null,
                             accountNo: data ? data.accountNo : null,
                             bank: data ? data.bank : null,
-                            bankName: data ? data.bankName : null
+                            bankName: data ? data.bankName : null,
+                            autogiroJson: data ? data.autogiroJson : null
                         });
 
                         this.statusMessage = 'Autogiroändringen är klar.';
