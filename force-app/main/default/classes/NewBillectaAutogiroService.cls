@@ -69,6 +69,13 @@ public with sharing class NewBillectaAutogiroService {
             LIMIT 1
         ];
 
+        Account currentAcc = [
+            SELECT Id, PaymentMethod__c, DistributionMethod__c
+            FROM Account
+            WHERE Id = :logRec.Account__c
+            LIMIT 1
+        ];
+
         Map<String, Object> autogiro = parseAutogiroJson(autogiroJson);
 
         String finalAccountNo = getStringValue(autogiro, 'AccountNo', accountNo);
@@ -87,22 +94,55 @@ public with sharing class NewBillectaAutogiroService {
         logRec.Completed_At__c = System.now();
         logRec.AutogiroJson__c = autogiroJson;
 
+        update logRec;
+
         Account acc = new Account(Id = logRec.Account__c);
-        acc.AG_BankAccountNumber__c = finalAccountNo;
-        acc.AG_BankClearingNumber__c = finalClearingNo;
-        acc.AutogiroApprovalStatus__c = finalStage;
 
-        // Resolve bank code to picklist value, check both label and api name
-        String resolvedBank = resolvePicklistValue(
-            Account.AutogiroBank__c,
-            finalBank
-        );
-
-        if (resolvedBank != null) {
-            acc.AutogiroBank__c = resolvedBank;
+        if (String.isNotBlank(finalAccountNo)) {
+            acc.AG_BankAccountNumber__c = finalAccountNo;
         }
 
-        update new List<SObject>{ logRec, acc };
+        if (String.isNotBlank(finalClearingNo)) {
+            acc.AG_BankClearingNumber__c = finalClearingNo;
+        }
+
+        if (String.isNotBlank(finalStage)) {
+            acc.AutogiroApprovalStatus__c = finalStage;
+        }
+
+        String resolvedBank = resolvePicklistValue(Account.AutogiroBank__c, finalBank);
+        if (String.isNotBlank(resolvedBank)) {
+            acc.AutogiroBank__c = resolvedBank;
+        } else if (String.isNotBlank(finalBank)) {
+            logRec.Error_Message__c = 'Unknown bank picklist value from Billecta: ' + finalBank;
+            update logRec;
+        }
+
+        // Sätt endast spärrfältet om vi har komplett betalinfo.
+        // Använd resolvedBank så det matchar faktisk picklist/API value.
+        if (
+            String.isNotBlank(finalAccountNo) &&
+            String.isNotBlank(finalClearingNo) &&
+            String.isNotBlank(resolvedBank)
+        ) {
+            acc.LatestSentPMDetails_Billecta__c =
+                buildLatestSentPMDetails('AG', resolvedBank, finalClearingNo, finalAccountNo);
+        }
+
+        Database.SaveResult accResult = Database.update(acc, false);
+
+        if (!accResult.isSuccess()) {
+            String msg = '';
+            for (Database.Error err : accResult.getErrors()) {
+                msg += err.getStatusCode() + ': ' + err.getMessage() + ' ';
+            }
+
+            logRec.Status__c = 'Completed_With_Account_Error';
+            logRec.Error_Message__c = 'Account update failed: ' + msg;
+            update logRec;
+
+            throw new AuraHandledException('Account kunde inte uppdateras: ' + msg);
+        }
 
         return logRec.Id;
     }
@@ -189,18 +229,33 @@ public with sharing class NewBillectaAutogiroService {
         String normalizedIncoming = incomingValue.trim().toLowerCase();
 
         for (Schema.PicklistEntry entry : field.getDescribe().getPicklistValues()) {
-
-            String value = entry.getValue();
+            String apiValue = entry.getValue();
             String label = entry.getLabel();
 
             if (
-                (value != null && value.trim().toLowerCase() == normalizedIncoming) ||
+                (apiValue != null && apiValue.trim().toLowerCase() == normalizedIncoming) ||
                 (label != null && label.trim().toLowerCase() == normalizedIncoming)
             ) {
-                return value;
+                return apiValue;
             }
         }
 
         return null;
     }
+
+    private static String buildLatestSentPMDetails(
+        String paymentMethod,
+        String bank,
+        String clearingNo,
+        String accountNo
+        ) {
+            List<String> parts = new List<String>();
+
+            if (String.isNotBlank(paymentMethod)) parts.add(paymentMethod);
+            if (String.isNotBlank(bank)) parts.add(bank);
+            if (String.isNotBlank(clearingNo)) parts.add(clearingNo);
+            if (String.isNotBlank(accountNo)) parts.add(accountNo);
+
+            return String.join(parts, ' : ');
+        }
 }

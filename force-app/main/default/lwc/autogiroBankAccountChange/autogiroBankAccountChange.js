@@ -6,7 +6,7 @@ import { loadScript } from 'lightning/platformResourceLoader';
 import BILLECTA_CLIENT from '@salesforce/resourceUrl/BillectaAccountlookupClientJS';
 
 export default class AutogiroBankAccountChange extends LightningElement {
-    @api recordId;
+    @api recordId;v
     @api accountId;
 
     get effectiveAccountId() {
@@ -80,7 +80,7 @@ export default class AutogiroBankAccountChange extends LightningElement {
                             accountNo: data ? data.accountNo : null,
                             bank: data ? data.bank : null,
                             bankName: data ? data.bankName : null,
-                            autogiroJson: data ? data.autogiroJson : null
+                            autogiroJson: data ? JSON.stringify(data) : null
                         });
 
                         this.statusMessage = 'Autogiroändringen är klar.';

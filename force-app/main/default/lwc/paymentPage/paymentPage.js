@@ -6,7 +6,8 @@
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
  **/
 import { LightningElement, api, track, wire } from "lwc";
-import { getRecord, updateRecord } from "lightning/uiRecordApi";
+//import { getRecord, updateRecord } from "lightning/uiRecordApi";
+import { getRecord, updateRecord, notifyRecordUpdateAvailable } from "lightning/uiRecordApi";
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { loadStyle } from "lightning/platformResourceLoader";
@@ -109,6 +110,8 @@ export default class PaymentPage extends LightningElement {
   showVerifyBankidDevice = false;
   useBankidOnOtherDevice;
 
+  wiredAccountResult;
+
   labels;
   cancelCloseLabel;
 
@@ -170,57 +173,37 @@ export default class PaymentPage extends LightningElement {
       SOCIALSECURITYNUMBER_FIELD
     ]
   })
-  wiredAccount({ data, error }) {
+  wiredAccount(result) {
+    this.wiredAccountResult = result;
+  
+    const { data, error } = result;
+  
     if (error) {
-      let message = "Unknown error";
-      if (Array.isArray(error.body)) {
-        message = error.body.map((e) => e.message).join(", ");
-      } else if (typeof error.body.message === "string") {
-        message = error.body.message;
-      }
-      this.dispatchEvent(
-        new ShowToastEvent({
-          title: "Error loading Account",
-          message,
-          variant: "error"
-        })
-      );
+      // befintlig error-kod
     } else if (data) {
       this.account = { ...data };
       this.recordTypeId = this.account.fields.RecordTypeId.value;
-      if (this.account.fields.DistributionMethod__c.value) {
-        console.log(this.account.fields.DistributionMethod__c.value);
-        this.distributionMethod =
-          this.account.fields.DistributionMethod__c.value;
-        if (this.account.fields.DistributionMethod__c.value === "E-faktura") {
-          this.actualEinvoice = true;
-        } else {
-          this.actualEinvoice = false;
-        }
-      }
-      if (this.account.fields.PaymentMethod__c.value) {
-        console.log(this.account.fields.PaymentMethod__c.value);
-        this.paymentMethodSelectedValue =
-          this.account.fields.PaymentMethod__c.value;
-        this.paymentMethodDisplayValue =
-          this.account.fields.PaymentMethod__c.displayValue; //Picklist Label (displayValue) is descriptive and more intutive to show the User frontend, then value (AG/ BG) is
-      }
-
-      //Set active Payment Method selection
+  
+      this.distributionMethod = this.account.fields.DistributionMethod__c?.value;
+      this.paymentMethodSelectedValue = this.account.fields.PaymentMethod__c?.value;
+      this.paymentMethodDisplayValue = this.account.fields.PaymentMethod__c?.displayValue;
+  
+      this.autogiroBank = this.account.fields.AutogiroBank__c?.value;
+      this.autogiroBankDisplayValue = this.account.fields.AutogiroBank__c?.displayValue;
+  
+      this.selectedBankAccount =
+        this.account.fields.AG_BankClearingNumber__c?.value &&
+        this.account.fields.AG_BankAccountNumber__c?.value
+          ? `${this.account.fields.AG_BankClearingNumber__c.value}-${this.account.fields.AG_BankAccountNumber__c.value}`
+          : null;
+  
+      this.eInvoiceBank = this.account.fields.EinvoiceBank__c?.value;
+      this.eInvoiceBankDisplayValue = this.account.fields.EinvoiceBank__c?.displayValue;
+  
       this.setActivePaymentMethod();
       this.setEinvoiceIsSelected();
-
-      if (this.account.fields.AutogiroBank__c.value) {
-        this.autogiroBank = this.account.fields.AutogiroBank__c.value;
-        this.autogiroBankDisplayValue =
-          this.account.fields.AutogiroBank__c.displayValue;
-        this.getBankAccountsButtonIsDisabled = false;
-      }
-      if (this.account.fields.EinvoiceBank__c.value) {
-        this.eInvoiceBank = this.account.fields.EinvoiceBank__c.value;
-        this.eInvoiceBankDisplayValue =
-          this.account.fields.EinvoiceBank__c.displayValue;
-      }
+  
+      this.getBankAccountsButtonIsDisabled = !this.autogiroBank;
     }
   }
 
@@ -253,6 +236,16 @@ export default class PaymentPage extends LightningElement {
         break;
       default:
         break;
+    }
+  }
+
+  async refreshAccountData() {
+    if (this.userAccountId) {
+      await notifyRecordUpdateAvailable([{ recordId: this.userAccountId }]);
+    }
+  
+    if (this.wiredAccountResult) {
+      await refreshApex(this.wiredAccountResult);
     }
   }
 
@@ -339,10 +332,8 @@ export default class PaymentPage extends LightningElement {
     }
     const recordInput = { fields };
     updateRecord(recordInput)
-      .then(() => {
-        // Display fresh data in the form
-        console.log("then");
-        return refreshApex(this.userAccountId);
+      .then(async () => {
+        await this.refreshAccountData();
       })
       .catch((error) => {
         console.log(error);
@@ -382,14 +373,18 @@ export default class PaymentPage extends LightningElement {
     this.isModalOpen = true;
     this.isSuccess = false;
   }
-  closeModal() {
+  async closeModal() {
     this.isModalOpen = false;
     this.showOpenBankId = false;
     this.hasQR = false;
     this.QR = null;
-    this.resetBank();
+  
     clearInterval(this.progressAccounts);
     clearInterval(this.progressSign);
+  
+    await this.refreshAccountData();
+  
+    this.resetBank();
   }
   closeModalWithUpdate() {
     this.updateAccount();
