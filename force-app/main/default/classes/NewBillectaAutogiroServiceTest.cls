@@ -67,7 +67,7 @@ private class NewBillectaAutogiroServiceTest {
     static void testCompleteAutogiroChange() {
 
         Account pa = [
-            SELECT Id
+            SELECT Id, DistributionMethod__c
             FROM Account
             LIMIT 1
         ];
@@ -109,6 +109,19 @@ private class NewBillectaAutogiroServiceTest {
         System.assertEquals('1234', updatedLog.Clearing_Number__c);
         System.assertEquals('1234567890', updatedLog.Account_Number__c);
         System.assertEquals('SEB', updatedLog.Bank_Code__c);
+
+        Account updatedAcc = [
+            SELECT PaymentMethod__c,
+                DistributionMethod__c,
+                LatestSentPMDetails_Billecta__c
+            FROM Account
+            WHERE Id = :pa.Id
+        ];
+        System.assertEquals('AG', updatedAcc.PaymentMethod__c);
+        System.assertEquals(
+            'AG : ' + updatedAcc.DistributionMethod__c,
+            updatedAcc.LatestSentPMDetails_Billecta__c
+        );
     }
 
     @IsTest

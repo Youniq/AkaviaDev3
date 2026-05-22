@@ -103,30 +103,33 @@ public class BillectaEncodeJSON {
     * @param acc - Account from SF  
     **/
     private static void configureAutogiro(BillectaCreateDebtor.DebtorView debtor, Account acc) {
-        debtor.EInvoiceBank = null; // clean
-        if (debtor.DefaultActionConfig != null) {
+      debtor.EInvoiceBank = null; // clean
+  
+      if (debtor.DefaultActionConfig != null) {
           debtor.DefaultActionConfig.ActivateDefaultActionConfigOverride = false; // clean
-        }
-        // If Autogiro is not set, set it
-        if (debtor.Autogiro == null) {
+      }
+  
+      if (debtor.Autogiro == null) {
           debtor.Autogiro = new BillectaCreateDebtor.Autogiro();
-        }
-
-        debtor.Autogiro.Active = true;
-        debtor.Autogiro.Stage = 'Pending';
-
-        // If bank account and clearing number are set, set them
-         if (
+      }
+  
+      debtor.Autogiro.Active = true;
+  
+      debtor.Autogiro.Stage =
+          String.isNotBlank(acc.AutogiroApprovalStatus__c)
+              ? acc.AutogiroApprovalStatus__c
+              : 'Pending';
+  
+      if (
           acc.AG_BankAccountNumber__c != null &&
           acc.AG_BankClearingNumber__c != null
-        ) {
+      ) {
           debtor.Autogiro.AccountNo = acc.AG_BankAccountNumber__c;
           debtor.Autogiro.ClearingNo = acc.AG_BankClearingNumber__c;
           debtor.Autogiro.PayerNumber = acc.SocialSecurityNumber__c;
           debtor.Autogiro.PaymentServiceSupplier = acc.AutogiroBank__c;
-        }
-    }
-
+      }
+  }
 
     /**
     * @description Configure non-Autogiro delivery method (E-Faktura, Kivra or Postal)

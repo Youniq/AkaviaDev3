@@ -301,7 +301,10 @@ export default class PaymentPage extends LightningElement {
     if (this.userAccountId) {
       fields[ID_FIELD.fieldApiName] = this.userAccountId;
     }
-    if (this.autogiroBank !== undefined) {
+    if (
+      (this.paymentMethodSelectedValue === "AG" || this.paymentMethodSelectedValue === "Autogiro") &&
+      this.autogiroBank
+    ) {
       fields[AUTOGIROBANK_FIELD.fieldApiName] = this.autogiroBank;
     }
     if (this.selectedBankAccount && this.selectedBankAccount.indexOf("-") > 0) {
@@ -309,17 +312,15 @@ export default class PaymentPage extends LightningElement {
         this.selectedBankAccount.split("-")[1];
       fields[AUTOGIROCLEARING_FIELD.fieldApiName] =
         this.selectedBankAccount.split("-")[0];
-    } else if (this.selectedBankAccount === null) {
-      fields[AUTOGIROBANKACCOUNT_FIELD.fieldApiName] = null;
-      fields[AUTOGIROCLEARING_FIELD.fieldApiName] = null;
     }
-    if (this.eInvoiceBank !== undefined) {
+
+    if (this.eInvoiceBank) {
       fields[EINVOICEBANK_FIELD.fieldApiName] = this.eInvoiceBank;
     }
-    if (this.distributionMethod !== undefined) {
+    if (this.distributionMethod) {
       fields[DISTRIBUTIONMETHOD_FIELD.fieldApiName] = this.distributionMethod;
     }
-    if (this.paymentMethodSelectedValue !== undefined) {
+    if (this.paymentMethodSelectedValue) {
       fields[PAYMENTMETHOD_FIELD.fieldApiName] =
         this.paymentMethodSelectedValue;
     }
@@ -891,14 +892,16 @@ export default class PaymentPage extends LightningElement {
   @api
   handleDistributionMethodChange(event) {
     this.distributionMethod = event.target.value;
+  
     if (this.distributionMethod === "Post") {
-      //this.paymentMethodSelectedValue = 'PI';
-      console.log("handleDistributionChange");
       this.autogiroIsSelected = false;
       this.bankgiroIsSelected = true;
     }
+  
     this.setEinvoiceIsSelected();
-    this.resetAutoGiroInformation();
+  
+    // Rensa INTE autogiroinformation bara för att distributionssätt ändras.
+    // Annars skickas AG-fälten som null vid updateRecord().
   }
 
   setEinvoiceIsSelected() {

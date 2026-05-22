@@ -102,9 +102,15 @@ public class BillectaDebtorStatusUpdateHelper {
             jsonResponse.LatestPaymentDate_c.left(10)
           );
         }
-        Acc.PaymentMethod__c = jsonResponse.PaymentMethod_c;
-        Acc.DistributionMethod__c = jsonResponse.DistributionMethod_c;
-        Acc.AutogiroApprovalStatus__c = jsonResponse.AutogiroApprovalStatus_c;
+        if (String.isNotBlank(jsonResponse.PaymentMethod_c)) {
+          Acc.PaymentMethod__c = jsonResponse.PaymentMethod_c;
+        }
+        if (String.isNotBlank(jsonResponse.DistributionMethod_c)) {
+          Acc.DistributionMethod__c = jsonResponse.DistributionMethod_c;
+        }
+        if (String.isNotBlank(jsonResponse.AutogiroApprovalStatus_c)) {
+          Acc.AutogiroApprovalStatus__c = jsonResponse.AutogiroApprovalStatus_c;
+        }
         Acc.PaymentStatusUpdated__c = System.now();
 
         try {

@@ -111,38 +111,75 @@ public with sharing class NewBillectaAutogiroService {
         }
 
         String resolvedBank = resolvePicklistValue(Account.AutogiroBank__c, finalBank);
+
+        System.debug('Updating Account: ' + JSON.serialize(acc));
+        System.debug('finalAccountNo=' + finalAccountNo);
+        System.debug('finalClearingNo=' + finalClearingNo);
+        System.debug('finalBank=' + finalBank);
+        System.debug('resolvedBank=' + resolvedBank);
+        System.debug('finalStage=' + finalStage);
+
         if (String.isNotBlank(resolvedBank)) {
             acc.AutogiroBank__c = resolvedBank;
         } else if (String.isNotBlank(finalBank)) {
-            logRec.Error_Message__c = 'Unknown bank picklist value from Billecta: ' + finalBank;
+            logRec.Error_Message__c =
+                'Unknown bank picklist value from Billecta: ' + finalBank;
             update logRec;
         }
 
-        // Sätt endast spärrfältet om vi har komplett betalinfo.
-        // Använd resolvedBank så det matchar faktisk picklist/API value.
+        // Endast sätt betalmetod om vi faktiskt fått komplett AG-info
         if (
             String.isNotBlank(finalAccountNo) &&
             String.isNotBlank(finalClearingNo) &&
             String.isNotBlank(resolvedBank)
         ) {
-            acc.LatestSentPMDetails_Billecta__c =
-                buildLatestSentPMDetails('AG', resolvedBank, finalClearingNo, finalAccountNo);
-        }
+            acc.PaymentMethod__c = 'AG';
+            acc.DistributionMethod__c = 'Ingen leverans';
 
-        Database.SaveResult accResult = Database.update(acc, false);
+            // Same format as BillectaSendDebtorAsync (used by Account flows to detect sync state)
+            /** 
+            acc.LatestSentPMDetails_Billecta__c = buildLatestSentPMDetails(
+                acc.PaymentMethod__c,
+                currentAcc.DistributionMethod__c
+            );
+            */
 
-        if (!accResult.isSuccess()) {
-            String msg = '';
-            for (Database.Error err : accResult.getErrors()) {
-                msg += err.getStatusCode() + ': ' + err.getMessage() + ' ';
+            Database.SaveResult accResult = Database.update(acc, false);
+
+            if (!accResult.isSuccess()) {
+                String msg = '';
+    
+                for (Database.Error err : accResult.getErrors()) {
+                    msg += err.getStatusCode() + ': ' + err.getMessage() + ' ';
+                }
+    
+                logRec.Status__c = 'Failed';
+                logRec.Error_Message__c = 'Account update failed: ' + msg;
+    
+                update logRec;
+    
+                throw new AuraHandledException(
+                    'Account kunde inte uppdateras: ' + msg
+                );
             }
-
-            logRec.Status__c = 'Completed_With_Account_Error';
-            logRec.Error_Message__c = 'Account update failed: ' + msg;
-            update logRec;
-
-            throw new AuraHandledException('Account kunde inte uppdateras: ' + msg);
         }
+
+        // just to log the account after update for debugging purposes. can be removed.
+        Account afterAcc = [
+            SELECT Id,
+                PaymentMethod__c,
+                DistributionMethod__c,
+                AG_BankAccountNumber__c,
+                AG_BankClearingNumber__c,
+                AutogiroBank__c,
+                AutogiroApprovalStatus__c,
+                LatestSentPMDetails_Billecta__c
+            FROM Account
+            WHERE Id = :logRec.Account__c
+            LIMIT 1
+        ];
+
+        System.debug('Account AFTER update: ' + JSON.serialize(afterAcc));
 
         return logRec.Id;
     }
@@ -245,17 +282,8 @@ public with sharing class NewBillectaAutogiroService {
 
     private static String buildLatestSentPMDetails(
         String paymentMethod,
-        String bank,
-        String clearingNo,
-        String accountNo
-        ) {
-            List<String> parts = new List<String>();
-
-            if (String.isNotBlank(paymentMethod)) parts.add(paymentMethod);
-            if (String.isNotBlank(bank)) parts.add(bank);
-            if (String.isNotBlank(clearingNo)) parts.add(clearingNo);
-            if (String.isNotBlank(accountNo)) parts.add(accountNo);
-
-            return String.join(parts, ' : ');
-        }
+        String distributionMethod
+    ) {
+        return paymentMethod + ' : ' + distributionMethod;
+    }
 }
