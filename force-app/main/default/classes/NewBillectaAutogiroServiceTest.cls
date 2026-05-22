@@ -118,8 +118,9 @@ private class NewBillectaAutogiroServiceTest {
             WHERE Id = :pa.Id
         ];
         System.assertEquals('AG', updatedAcc.PaymentMethod__c);
+        System.assertEquals('Ingen leverans', updatedAcc.DistributionMethod__c);
         System.assertEquals(
-            'AG : ' + updatedAcc.DistributionMethod__c,
+            'AG : Ingen leverans',
             updatedAcc.LatestSentPMDetails_Billecta__c
         );
     }

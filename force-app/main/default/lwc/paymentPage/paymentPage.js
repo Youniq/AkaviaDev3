@@ -387,6 +387,23 @@ export default class PaymentPage extends LightningElement {
   
     this.resetBank();
   }
+
+  // Autogiro bank/account is already saved by NewBillectaAutogiroService.completeAutogiroChange.
+  // Do not call updateAccount() here — stale wire state would overwrite the new bank.
+  async handleAutogiroChangeSuccess() {
+    this.isModalOpen = false;
+    this.showOpenBankId = false;
+    this.hasQR = false;
+    this.QR = null;
+
+    clearInterval(this.progressAccounts);
+    clearInterval(this.progressSign);
+
+    await this.refreshAccountData();
+    this.setSuccess();
+    this.resetBank();
+  }
+
   closeModalWithUpdate() {
     this.updateAccount();
     this.isModalOpen = false;

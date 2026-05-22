@@ -137,12 +137,10 @@ public with sharing class NewBillectaAutogiroService {
             acc.DistributionMethod__c = 'Ingen leverans';
 
             // Same format as BillectaSendDebtorAsync (used by Account flows to detect sync state)
-            /** 
             acc.LatestSentPMDetails_Billecta__c = buildLatestSentPMDetails(
                 acc.PaymentMethod__c,
-                currentAcc.DistributionMethod__c
+                acc.DistributionMethod__c
             );
-            */
 
             Database.SaveResult accResult = Database.update(acc, false);
 
