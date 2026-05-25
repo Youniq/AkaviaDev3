@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>DEC_Invoices_to_delete</name>
+        <label>DEC - Invoices to delete</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>DEC_Invoice_older_than_1_year</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GET_Invoices</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>DELETE_Invoices</targetReference>
+            </connector>
+            <label>DEC - Invoice older than 1 year</label>
+        </rules>
+    </decisions>
+    <description>2024-07-24: Trigger for returning members that has payed an invoice older than one year. Flow deletes payed invoices (regular flow does not update paymentstatus as invoice is older than one year.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Find invoices that are older than one year, should not exit i Salesforce.</description>
+        <name>form_D_OlderThanOneYear</name>
+        <dataType>Date</dataType>
+        <expression>TODAY () -365</expression>
+    </formulas>
+    <interviewLabel>Account - Trigger - Invoices Older Than One Year {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - Trigger - Invoices Older Than One Year</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <description>Delete invoices older than 1 year if invoice is payed</description>
+        <name>DELETE_Invoices</name>
+        <label>DELETE Invoices</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <inputReference>GET_Invoices</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <description>Get invoices that are older than a year that at payed, and set to be deleted</description>
+        <name>GET_Invoices</name>
+        <label>GET - Invoices older than one year</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>DEC_Invoices_to_delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>PaymentStatus__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Betald</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>PaymentStatus__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Makulerad</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ExpirationDate__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>form_D_OlderThanOneYear</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Invoice__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>GET_Invoices</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OverdueAmount__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </filters>
+        <filters>
+            <field>MembershipStatus__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Aktiv</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>NumberOfMembership__c</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </filters>
+        <object>Account</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

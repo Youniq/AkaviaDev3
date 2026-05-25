@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_errorMsg1</name>
+        <label>Set errorMsg</label>
+        <locationX>842</locationX>
+        <locationY>242</locationY>
+        <assignmentItems>
+            <assignToReference>errorMsg</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Submit values for &quot;pnr&quot; and &quot;status&quot;. Make sure that &quot;pnr&quot; is 12 figures [YYYYMMDDNNNN].</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_debugLog</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Return error message about that there was no matching member for the given pnr.</description>
+        <name>Set_errorMsg2</name>
+        <label>Set errorMsg</label>
+        <locationX>578</locationX>
+        <locationY>458</locationY>
+        <assignmentItems>
+            <assignToReference>errorMsg</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Could not find a matching entity for this pnr.</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_debugLog</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Member_found</name>
+        <label>Member found?</label>
+        <locationX>314</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Set_errorMsg2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not found</defaultConnectorLabel>
+        <rules>
+            <name>Yes_found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Member</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_BankId_Auth_Log</targetReference>
+            </connector>
+            <label>Yes found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks that we have input data and that pnr length is 12 chars long. YYYYMMDDNNNN</description>
+        <name>Validate_input</name>
+        <label>Validate input</label>
+        <locationX>578</locationX>
+        <locationY>134</locationY>
+        <defaultConnector>
+            <targetReference>Set_errorMsg1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not ok</defaultConnectorLabel>
+        <rules>
+            <name>ValidateOK</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>pnr</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>status</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>validate_ssnLength</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Member</targetReference>
+            </connector>
+            <label>Is ok</label>
+        </rules>
+    </decisions>
+    <description>To be used as an API endpoint for logging bankid identifications</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Makes sure that we always have a input pnr without dash.</description>
+        <name>ssn_withoutDash</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE({!pnr}, &quot;-&quot;, &quot;&quot;)</expression>
+    </formulas>
+    <formulas>
+        <name>validate_ssnLength</name>
+        <dataType>Boolean</dataType>
+        <expression>LEN({!ssn_withoutDash}) = 12</expression>
+    </formulas>
+    <interviewLabel>API Endpoint - {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>API Endpoint - Create BankId AuthLog</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_BankId_Auth_Log</name>
+        <label>Create BankId Auth Log</label>
+        <locationX>50</locationX>
+        <locationY>458</locationY>
+        <faultConnector>
+            <targetReference>Create_debugLog2</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Person__c</field>
+            <value>
+                <elementReference>Get_Member.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <elementReference>status</elementReference>
+            </value>
+        </inputAssignments>
+        <object>BankIdAuthLog__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Create_debugLog</name>
+        <label>Create debugLog</label>
+        <locationX>578</locationX>
+        <locationY>974</locationY>
+        <inputAssignments>
+            <field>ExtraMessage__c</field>
+            <value>
+                <stringValue>Telia Ace Integration</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Flow_Name__c</field>
+            <value>
+                <stringValue>API_CreateBankIdAuthLog</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Flow_log__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Input__c</field>
+            <value>
+                <stringValue>Pnr: {!pnr} Status: {!status}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <stringValue>Validation error: {!errorMsg}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type__c</field>
+            <value>
+                <stringValue>Error</stringValue>
+            </value>
+        </inputAssignments>
+        <object>DebugLog__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Create_debugLog2</name>
+        <label>Create debugLog</label>
+        <locationX>314</locationX>
+        <locationY>566</locationY>
+        <inputAssignments>
+            <field>ExtraMessage__c</field>
+            <value>
+                <stringValue>Telia Ace Integration</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Flow_Name__c</field>
+            <value>
+                <stringValue>API_CreateBankIdAuthLog</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Flow_log__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Input__c</field>
+            <value>
+                <stringValue>Pnr: {!pnr} Status: {!status}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <stringValue>Error: {!$Flow.FaultMessage}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type__c</field>
+            <value>
+                <stringValue>Error</stringValue>
+            </value>
+        </inputAssignments>
+        <object>DebugLog__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <name>Get_Member</name>
+        <label>Get Member</label>
+        <locationX>314</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Member_found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SocialSecurityNumber__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>ssn_withoutDash</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>SocialSecurityNumber__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>452</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Validate_input</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>The error message to return in case of errors</description>
+        <name>errorMsg</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <description>API input value for pnr (social security number)</description>
+        <name>pnr</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>API input varianble for status</description>
+        <name>status</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

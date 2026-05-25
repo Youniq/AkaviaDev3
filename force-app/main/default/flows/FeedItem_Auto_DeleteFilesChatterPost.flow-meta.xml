@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Add_Chatter_Target</name>
+        <label>Add Chatter Target</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>chatterTargetIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>chatterTargetId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Target_Ids</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_combined_file_names</name>
+        <label>Assign combined file names</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_txt_combinedFileDeletions</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_f_fileDeletedLine</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>File_Names</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign Feed Items, this can be used in the output.</description>
+        <name>Assign_Feed_Items_to_create</name>
+        <label>Assign Feed Items</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>FeedItemsToCreate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_sObj_feedItemToInsert</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_coll_targetsAlreadyChecked</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Target_Ids</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Target_Ids</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign the feed item variables</description>
+        <name>AssignFeedItem</name>
+        <label>Assign Feed Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_sObj_feedItemToInsert.Body</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_txt_feedItemBody</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_feedItemToInsert.ParentId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Target_Ids</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_feedItemToInsert.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Published</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_feedItemToInsert.Type</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>TextPost</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_feedItemToInsert.Visibility</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>InternalUsers</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_feedItemToInsert.IsRichText</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_Feed_Items_to_create</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Check if this flow should insert the feed items, or if the main flow should insert them instead.</description>
+        <name>Check_Create_in_Subflow</name>
+        <label>Check Create in Subflow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Create_Feed_item</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ceateFeedItemsinSubflow</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CreateFeedItem</targetReference>
+            </connector>
+            <label>Create Feed item</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Duplicates</name>
+        <label>Check Duplicates</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Target_Ids</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Target_not_in_list</name>
+            <conditionLogic>NOT 1</conditionLogic>
+            <conditions>
+                <leftValueReference>var_coll_targetsAlreadyChecked</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>Target_Ids</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>AssignFeedItem</targetReference>
+            </connector>
+            <label>Target not in list</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Targets</name>
+        <label>Check Targets</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Target_Ids</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Single_Target_used</name>
+            <conditionLogic>1 AND NOT 2</conditionLogic>
+            <conditions>
+                <leftValueReference>chatterTargetId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>chatterTargetIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>chatterTargetId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_Chatter_Target</targetReference>
+            </connector>
+            <label>Single Target used</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Is used to build the feed item post. This entry contains the file renamed rext for ONE file.
+Do HTMLENCODE to have it properly published as a feed item record on case. It escapes sensitive characters.
+
+Wrapping post in &lt;p&gt; to have each sentence on separate rows in Feed Item post.  (feed item do not support &lt;br&gt;).</description>
+        <name>var_f_fileDeletedLine</name>
+        <dataType>String</dataType>
+        <expression>&quot;&lt;p&gt;• &lt;i&gt;&quot; + HTMLENCODE({!File_Names}) + &apos;&lt;/i&gt; har tagits bort &lt;i&gt;&apos; + &quot;&lt;/i&gt;&lt;/p&gt;&quot;</expression>
+    </formulas>
+    <interviewLabel>FeedItem_Auto_DeleteFiles {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Feed Item - Auto - Delete Files Chatter Post</label>
+    <loops>
+        <description>Loop the file names to build the entire message to the chatter post</description>
+        <name>File_Names</name>
+        <label>File Names</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>deletedFileNames</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_combined_file_names</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Check_Targets</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop through the targeted records and assign the message to a Feed Item for each record.</description>
+        <name>Target_Ids</name>
+        <label>Target Ids</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>chatterTargetIds</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Check_Duplicates</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Check_Create_in_Subflow</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>CreateFeedItem</name>
+        <label>Create Feed Item</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputReference>FeedItemsToCreate</inputReference>
+    </recordCreates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>File_Names</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>var_txt_feedItemBody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>&lt;p&gt;&lt;b&gt;Följande fil/filer har tagits bort:&lt;/b&gt;&lt;/p&gt;{!var_txt_combinedFileDeletions}</text>
+    </textTemplates>
+    <variables>
+        <name>ceateFeedItemsinSubflow</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Used for a single target id. This is automatically added to the chatterTargetIds</description>
+        <name>chatterTargetId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Collection of Ids for the target.</description>
+        <name>chatterTargetIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The names of the files that were deleted</description>
+        <name>deletedFileNames</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>FeedItemsToCreate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <objectType>FeedItem</objectType>
+    </variables>
+    <variables>
+        <name>var_coll_targetsAlreadyChecked</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_sObj_feedItemToInsert</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>FeedItem</objectType>
+    </variables>
+    <variables>
+        <name>var_txt_combinedFileDeletions</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

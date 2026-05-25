@@ -9,7 +9,7 @@ global class RecordDeletionScheduler implements Schedulable {
     private static String CRON_EXPR1 = '0 30 03 ? * *'; // every day at 03:30 AM
     private static String CRON_EXPR2 = '0 45 03 ? * *'; // every day at 03:45 AM
     private static String CRON_EXPR3 = '0 00 04 ? * *'; // every day at 04:00 AM
-    private static String CRON_EXPR4 = '0 15 04 ? * *'; // every day at 04:15 AM
+    private static String CRON_EXPR4 = '0 15 10 ? * *'; // every day at 04:15 AM
     private String objectApiName;
     private String cronExpression;
     private String jobName; 

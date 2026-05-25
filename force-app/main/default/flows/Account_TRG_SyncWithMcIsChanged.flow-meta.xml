@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>2024-08-21: Send the api name of flow to subflow instead of label. 
+2024-03-21: Inserts a debugLog__c record when SyncWithMc__c is changed
+2023-11-22: Moved logic to subflow so that it can be reused for more than the trigger scenario
+2023-11-20.2: Now all updates has their own error handler in order to be able to continue processing other child objects if one fails.
+2023-11-20: Same logic as with prev update but it is based on the child object formula field instead of in the GET
+2023-11-19: Only updating child records with correct statuses.
+2023-11-09: Updated log message on success. Ps - tested and saw bug is fixed.
+2023-11-09: Buggy behavior seems to be fixed
+Recreated all pinks in hope to resolve some sf buggy behaviour
+Fixed mapping errors
+Now logging on errors to avoid spamming with too many error emails. + being able to take reports.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formula_logText</name>
+        <dataType>String</dataType>
+        <expression>&quot;SyncWithMc__c was updated to: &quot; &amp;  IF($Record.SyncWithMc__c, &quot;true&quot;,&quot;false&quot;)</expression>
+    </formulas>
+    <interviewLabel>Account - TRG - Sync With Mc Is Changed {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - TRG - Sync With Mc Is Changed</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>CreateDebugLog</name>
+        <label>Create Debug Log</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <connector>
+            <targetReference>Set_MC_sync_on_child_records</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Account__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Flow_Name__c</field>
+            <value>
+                <stringValue>Account_TRG_SyncWithMcIsChanged</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Flow_log__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Input__c</field>
+            <value>
+                <elementReference>$Record.SyncWithMc__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <elementReference>formula_logText</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>RecordId__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type__c</field>
+            <value>
+                <stringValue>Information</stringValue>
+            </value>
+        </inputAssignments>
+        <object>DebugLog__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CreateDebugLog</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SyncWithMc__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Account</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>Set_MC_sync_on_child_records</name>
+        <label>Set MC sync on child records</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <flowName>Account_SUB_SetMcSyncStatusOnChildRecords</flowName>
+        <inputAssignments>
+            <name>txt_parentFlowName</name>
+            <value>
+                <stringValue>Account_TRG_SyncWithMcIsChanged</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_sObj_inputAccount</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+</Flow>

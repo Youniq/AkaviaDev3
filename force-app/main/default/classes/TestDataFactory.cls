@@ -276,7 +276,8 @@ public class TestDataFactory {
         new MembershipBenefit__c(
           Person__c = Membership.Person__c,
           StartDate__c = membershipBenefitStartDate,
-          Benefit__c = benefits[0].Id
+          Benefit__c = benefits[0].Id,
+          Status__c = 'Aktiv'
         )
       );
     }

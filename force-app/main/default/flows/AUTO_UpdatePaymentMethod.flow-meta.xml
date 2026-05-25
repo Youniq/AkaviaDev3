@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Assign_correct_Distribution_Method</name>
+        <label>Assign correct Distribution Method</label>
+        <locationX>138</locationX>
+        <locationY>458</locationY>
+        <assignmentItems>
+            <assignToReference>var_R_Account.DistributionMethod__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Ingen leverans</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_R_Account.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_T_RecordId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Valid_AG_information</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_distribution_method_einvoice</name>
+        <label>Assign distribution method</label>
+        <locationX>402</locationX>
+        <locationY>566</locationY>
+        <assignmentItems>
+            <assignToReference>var_R_Account.DistributionMethod__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>E-faktura</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Do_update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Id</name>
+        <label>Assign Id</label>
+        <locationX>578</locationX>
+        <locationY>1142</locationY>
+        <assignmentItems>
+            <assignToReference>var_R_Account.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_T_RecordId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Message</name>
+        <label>Assign Message</label>
+        <locationX>138</locationX>
+        <locationY>758</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_Message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Missing information for Autogiro</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Do_update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_message_ingenleverans</name>
+        <label>Assign message</label>
+        <locationX>1106</locationX>
+        <locationY>458</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_Message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Invalid distribution method for Payment method BG</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Do_update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_message_missing_bank_Einvoice</name>
+        <label>Assign message</label>
+        <locationX>666</locationX>
+        <locationY>566</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_Message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Data not valid. Missing EInvoiceBank__c</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Do_update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_message_missing_Payment_method</name>
+        <label>Assign message</label>
+        <locationX>1370</locationX>
+        <locationY>350</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_Message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Missing Payment Method</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Do_update</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Id is missing</description>
+        <name>Assign_Message_No_Id</name>
+        <label>Assign Message</label>
+        <locationX>1634</locationX>
+        <locationY>242</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_Message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Id is missing</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_Debug_Log</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Distribution_Method</name>
+        <label>Distribution Method</label>
+        <locationX>820</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Assign_message_ingenleverans</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>E_faktura</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.DistributionMethod__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_R_Account.EinvoiceBank__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Valid_E_faktura_Information</targetReference>
+            </connector>
+            <label>E-faktura</label>
+        </rules>
+        <rules>
+            <name>Kivra_Or_Post</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.DistributionMethod__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Kivra</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_R_Account.DistributionMethod__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Post</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Do_update</targetReference>
+            </connector>
+            <label>Kivra Or Post</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Do_update</name>
+        <label>Do update?</label>
+        <locationX>710</locationX>
+        <locationY>1034</locationY>
+        <defaultConnector>
+            <targetReference>Create_Debug_Log</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Do_update</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_T_Message</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Id</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Input_has_Id</name>
+        <label>Input has Id</label>
+        <locationX>1172</locationX>
+        <locationY>134</locationY>
+        <defaultConnector>
+            <targetReference>Assign_Message_No_Id</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Input_has_Id</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_T_RecordId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Payment_Method</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Payment_Method</name>
+        <label>Payment Method</label>
+        <locationX>710</locationX>
+        <locationY>242</locationY>
+        <defaultConnector>
+            <targetReference>Assign_message_missing_Payment_method</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>AutoGiro</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.PaymentMethod__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>AG</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Valid_DistributionMethod</targetReference>
+            </connector>
+            <label>AutoGiro</label>
+        </rules>
+        <rules>
+            <name>BankGiro</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.PaymentMethod__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>BG</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Distribution_Method</targetReference>
+            </connector>
+            <label>BankGiro</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Valid_AG_information</name>
+        <label>Valid AG information</label>
+        <locationX>50</locationX>
+        <locationY>650</locationY>
+        <defaultConnector>
+            <targetReference>Assign_Message</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Valid_AG_information</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.AG_BankAccountNumber__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_R_Account.AG_BankClearingNumber__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_R_Account.AG_BankIDSignReference__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_R_Account.AG_BankIDSignToken__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_R_Account.AutogiroBank__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Do_update</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Valid_DistributionMethod</name>
+        <label>Valid DistributionMethod?</label>
+        <locationX>50</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Assign_correct_Distribution_Method</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Valid_DistributionMethod</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.DistributionMethod__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Ingen leverans</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Valid_AG_information</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Valid_E_faktura_Information</name>
+        <label>Valid E-faktura Information?</label>
+        <locationX>534</locationX>
+        <locationY>458</locationY>
+        <defaultConnector>
+            <targetReference>Assign_message_missing_bank_Einvoice</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Valid_E_faktura_Information</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_R_Account.EinvoiceBank__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_distribution_method_einvoice</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>2025-05-16: Now not cleaning old bank-detail fields. That is handled by account before save flow instead.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>for_T_InputAsText</name>
+        <dataType>String</dataType>
+        <expression>&quot;Id: &quot; + {!var_R_Account.Id} + BR() + 
+&quot;AG_BankAccountNumber__c: &quot; + {!var_R_Account.AG_BankAccountNumber__c} + BR() + 
+&quot;AG_BankClearingNumber__c:  &quot;+ {!var_R_Account.AG_BankClearingNumber__c} + BR() +
+&quot;AG_BankIDSignReference__c:  &quot;+{!var_R_Account.AG_BankIDSignReference__c} + BR() +
+&quot;AG_BankIDSignToken__c:&quot; +  {!var_R_Account.AG_BankIDSignToken__c} + BR() +
+&quot;PaymentMethod__c: &quot;+ TEXT({!var_R_Account.PaymentMethod__c}) + BR() + 
+&quot;AutogiroBank__c: &quot;+ TEXT({!var_R_Account.AutogiroBank__c}) + BR() + 
+&quot;EinvoiceBank__c: &quot;+ TEXT({!var_R_Account.EinvoiceBank__c}) + BR() + 
+&quot;DistributionMethod__c: &quot;+ TEXT({!var_R_Account.DistributionMethod__c})</expression>
+    </formulas>
+    <interviewLabel>AUTO - UpdatePaymentMethod {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>AUTO - UpdatePaymentMethod</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_Debug_Log</name>
+        <label>Create Debug Log</label>
+        <locationX>1172</locationX>
+        <locationY>1634</locationY>
+        <inputAssignments>
+            <field>ApexClass__c</field>
+            <value>
+                <stringValue>FLOW</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>FunctionName__c</field>
+            <value>
+                <stringValue>AUTO - UpdatePaymentMethod</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Input__c</field>
+            <value>
+                <elementReference>for_T_InputAsText</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Message__c</field>
+            <value>
+                <elementReference>var_T_Message</elementReference>
+            </value>
+        </inputAssignments>
+        <object>DebugLog__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordUpdates>
+        <name>Update_Account</name>
+        <label>Update Account</label>
+        <locationX>578</locationX>
+        <locationY>1250</locationY>
+        <inputReference>var_R_Account</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>1046</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Input_has_Id</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>var_R_Account</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+    <variables>
+        <name>var_T_Message</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>var_T_RecordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

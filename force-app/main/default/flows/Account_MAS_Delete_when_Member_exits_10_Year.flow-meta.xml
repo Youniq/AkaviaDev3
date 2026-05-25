@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Delete_Billecta_Debtor</name>
+        <label>Delete Billecta Debtor</label>
+        <locationX>50</locationX>
+        <locationY>1166</locationY>
+        <actionName>BillectaDeleteDebtorInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>accountId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>BillectaDeleteDebtorInvocable</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Disable_Account_IsCustomerPortal</name>
+        <label>Disable Account.IsCustomerPortal</label>
+        <locationX>314</locationX>
+        <locationY>1274</locationY>
+        <actionName>SetAccountIsCustomerPortalInvocable</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Delete_Member</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>accountId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>isCustPortalValue</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>SetAccountIsCustomerPortalInvocable</nameSegment>
+    </actionCalls>
+    <apiVersion>50.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>On successful debtor delete the BillectaId__c is set to null on Account. We only want to delete Account after the Debtor has been deleted in Billecta first. 
+1. day, the  Account debtor in Billecta is deleted using the apex action. 
+2. day, account runs in this flow again and now BillectaId is null - hence attempting to delete the account.</description>
+        <name>BillectaId_c_is_populated</name>
+        <label>BillectaId__c is populated?</label>
+        <locationX>182</locationX>
+        <locationY>1058</locationY>
+        <defaultConnector>
+            <targetReference>Pause_to_start_new_transaction</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No (null)</defaultConnectorLabel>
+        <rules>
+            <name>Yes_billectaIdNotNull</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_current_Account.BillectaID__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Billecta_Debtor</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_Cases_To_Delete</name>
+        <label>Is There Cases To Delete</label>
+        <locationX>182</locationX>
+        <locationY>650</locationY>
+        <defaultConnector>
+            <targetReference>Get_current_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Cases To Delete</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Cases_To_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Cases_To_Delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Found_Cases</targetReference>
+            </connector>
+            <label>Yes, Cases To Delete</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_Membership_To_Delete</name>
+        <label>Is There Membership To Delete</label>
+        <locationX>182</locationX>
+        <locationY>242</locationY>
+        <defaultConnector>
+            <targetReference>Get_Cases_To_Delete</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Membership To Delete</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Membership_To_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Membership_To_Delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Found_Membership</targetReference>
+            </connector>
+            <label>Yes, Membership To Delete</label>
+        </rules>
+    </decisions>
+    <description>2025-01-23: Now sets IsCustomerPortal to false before deleting Account
+2024-12-03: Now deletes the Billecta Debtor prior to deleting Account.
+Triggered from MAS &quot;Account - Delete when Member exits 10 Year&quot;</description>
+    <environments>Default</environments>
+    <interviewLabel>Account - MAS - Delete when Member exits 10 Year {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - MAS - Delete when Member exits 10 Year</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Found_Cases</name>
+        <label>Delete Found Cases</label>
+        <locationX>50</locationX>
+        <locationY>758</locationY>
+        <connector>
+            <targetReference>Get_current_Account</targetReference>
+        </connector>
+        <inputReference>Get_Cases_To_Delete</inputReference>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete_Found_Membership</name>
+        <label>Delete Found Membership</label>
+        <locationX>50</locationX>
+        <locationY>350</locationY>
+        <connector>
+            <targetReference>Get_Cases_To_Delete</targetReference>
+        </connector>
+        <inputReference>Get_Membership_To_Delete</inputReference>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete_Member</name>
+        <label>Delete Member</label>
+        <locationX>314</locationX>
+        <locationY>1382</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>Account</object>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_Cases_To_Delete</name>
+        <label>Get Cases To Delete</label>
+        <locationX>182</locationX>
+        <locationY>542</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_Cases_To_Delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>AccountId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Case</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_current_Account</name>
+        <label>Get current Account</label>
+        <locationX>182</locationX>
+        <locationY>950</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>BillectaId_c_is_populated</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>BillectaID__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Membership_To_Delete</name>
+        <label>Get Membership To Delete</label>
+        <locationX>182</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_Membership_To_Delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Membership__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Membership_To_Delete</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>ContentDocumentId</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocument</objectType>
+    </variables>
+    <variables>
+        <name>ContentDocumentIdCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocument</objectType>
+    </variables>
+    <variables>
+        <description>Input from MAS holding person account id</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <waits>
+        <description>A way to avoid mixed DMLs error (DMLs on both setup and non-setup object, where User is concidered a setup object)</description>
+        <name>Pause_to_start_new_transaction</name>
+        <elementSubtype>WaitDuration</elementSubtype>
+        <label>Pause to start new transaction</label>
+        <locationX>314</locationX>
+        <locationY>1166</locationY>
+        <defaultConnectorLabel>Default Path</defaultConnectorLabel>
+        <waitEvents>
+            <conditionLogic>and</conditionLogic>
+            <connector>
+                <targetReference>Disable_Account_IsCustomerPortal</targetReference>
+            </connector>
+            <label>el_0</label>
+            <offset>1</offset>
+            <offsetUnit>Minutes</offsetUnit>
+        </waitEvents>
+    </waits>
+</Flow>

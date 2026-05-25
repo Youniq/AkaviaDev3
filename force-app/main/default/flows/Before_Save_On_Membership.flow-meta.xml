@@ -1,0 +1,573 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Counts number of records (conflicting memberships) identified by FILTER_MembershipConflicts1</description>
+        <name>SET_ConflictCount1</name>
+        <label>Set Conflict Count 1</label>
+        <locationX>314</locationX>
+        <locationY>1103</locationY>
+        <assignmentItems>
+            <assignToReference>var_N_ConflictCount1</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>FILTER_MembershipConflicts1</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>DEC_EndDate</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Counts number of records (conflicting memberships) identified by FILTER_MembershipConflicts2</description>
+        <name>SET_ConflictCount2</name>
+        <label>Set Conflict Count 2</label>
+        <locationX>50</locationX>
+        <locationY>1427</locationY>
+        <assignmentItems>
+            <assignToReference>var_N_ConflictCount2</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>FILTER_MembershipConflicts2</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_ConflictFound</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Counts number of records (conflicting memberships) identified by FILTER_MembershipConflicts3</description>
+        <name>SET_ConflictCount3</name>
+        <label>Set Conflict Count 3</label>
+        <locationX>314</locationX>
+        <locationY>1427</locationY>
+        <assignmentItems>
+            <assignToReference>var_N_ConflictCount3</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>FILTER_MembershipConflicts3</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_ConflictFound</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Counts number of records (conflicting memberships) identified by FILTER_MembershipConflicts4</description>
+        <name>SET_ConflictCount4</name>
+        <label>Set Conflict Count 4</label>
+        <locationX>578</locationX>
+        <locationY>1427</locationY>
+        <assignmentItems>
+            <assignToReference>var_N_ConflictCount4</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>FILTER_MembershipConflicts4</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_ConflictFound</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SET_MembershipConflictCheckbox</name>
+        <label>Set Conflict checkbox</label>
+        <locationX>182</locationX>
+        <locationY>1727</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.DateConflict__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <description>Sets Exit Orsak on current record Membership to null</description>
+        <name>SET_MembershipExitOrsak</name>
+        <label>Empty Exit Orsak</label>
+        <locationX>380</locationX>
+        <locationY>503</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.ExitReason__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>GET_MembershipsIfUpdated</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>STORE_Existing_Memberships_if_Updated</name>
+        <label>Store Existing Memberships if Updated</label>
+        <locationX>512</locationX>
+        <locationY>803</locationY>
+        <assignmentItems>
+            <assignToReference>var_sObj_Memberships</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>GET_MembershipsIfUpdated</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>FILTER_MembershipConflicts1</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>STORE_ExistingMembershipsIfCreated</name>
+        <label>Store Existing Memberships if Created</label>
+        <locationX>116</locationX>
+        <locationY>503</locationY>
+        <assignmentItems>
+            <assignToReference>var_sObj_Memberships</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>GET_MembershipsIfCreated</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>FILTER_MembershipConflicts1</targetReference>
+        </connector>
+    </assignments>
+    <collectionProcessors>
+        <description>Filters persons Memberships where 
+EndDate &gt;= Current Record StartDate
+AND
+StartDate &lt;= Current Record StartDate</description>
+        <name>FILTER_MembershipConflicts1</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Conflicting Memberships 1</label>
+        <locationX>314</locationX>
+        <locationY>995</locationY>
+        <assignNextValueToReference>currentItem_FILTER_MembershipConflicts4</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>var_sObj_Memberships</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.EndDate__c</leftValueReference>
+            <operator>GreaterThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.StartDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.StartDate__c</leftValueReference>
+            <operator>LessThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.StartDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>SET_ConflictCount1</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Filters persons Memberships where 
+StartDate &gt;= Current Record StartDate AND EndDate &lt;= Current Record EndDate
+OR
+StartDate &lt;= Current Record EndDate AND EndDate &lt;= Current Record EndDate
+OR
+StartDate &lt;= Current Record EndDate AND EndDate is Null</description>
+        <name>FILTER_MembershipConflicts2</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Conflicting Memberships 2</label>
+        <locationX>50</locationX>
+        <locationY>1319</locationY>
+        <assignNextValueToReference>currentItem_FILTER_MembershipConflicts4</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>var_sObj_Memberships</collectionReference>
+        <conditionLogic>(1 AND 2 AND 7) OR (3 AND 4 AND 7) OR (5 AND 6)</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.StartDate__c</leftValueReference>
+            <operator>GreaterThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.StartDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.EndDate__c</leftValueReference>
+            <operator>LessThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.EndDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.StartDate__c</leftValueReference>
+            <operator>LessThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.EndDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.EndDate__c</leftValueReference>
+            <operator>GreaterThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.EndDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.StartDate__c</leftValueReference>
+            <operator>LessThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.EndDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.EndDate__c</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>true</booleanValue>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.EndDate__c</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>false</booleanValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>SET_ConflictCount2</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Filters persons Memberships where 
+StartDate &gt;= Current Record StartDate</description>
+        <name>FILTER_MembershipConflicts3</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Conflicting Memberships 3</label>
+        <locationX>314</locationX>
+        <locationY>1319</locationY>
+        <assignNextValueToReference>currentItem_FILTER_MembershipConflicts4</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>var_sObj_Memberships</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.StartDate__c</leftValueReference>
+            <operator>GreaterThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.StartDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>SET_ConflictCount3</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Filters persons Memberships where 
+StartDate &gt;= Current Record StartDate
+OR
+EndDate is Null</description>
+        <name>FILTER_MembershipConflicts4</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Conflicting Memberships 4</label>
+        <locationX>578</locationX>
+        <locationY>1319</locationY>
+        <assignNextValueToReference>currentItem_FILTER_MembershipConflicts4</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>var_sObj_Memberships</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.StartDate__c</leftValueReference>
+            <operator>GreaterThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>$Record.StartDate__c</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_FILTER_MembershipConflicts4.EndDate__c</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>true</booleanValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>SET_ConflictCount4</targetReference>
+        </connector>
+    </collectionProcessors>
+    <decisions>
+        <name>CHECK_ConflictFound</name>
+        <label>Conflict Found?</label>
+        <locationX>314</locationX>
+        <locationY>1619</locationY>
+        <defaultConnectorLabel>No Conflict</defaultConnectorLabel>
+        <rules>
+            <name>Yes_CHECK_ConflictFound</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>var_N_ConflictCount1</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_N_ConflictCount2</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_N_ConflictCount3</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_N_ConflictCount4</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_MembershipConflictCheckbox</targetReference>
+            </connector>
+            <label>Conflict</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_CreatedOrUpdated</name>
+        <label>Created or Updated?</label>
+        <locationX>314</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_MembershipEndDateChangedToNull</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Updated</defaultConnectorLabel>
+        <rules>
+            <name>Created_CHECK_CreatedOrUpdated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GET_MembershipsIfCreated</targetReference>
+            </connector>
+            <label>Created</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_MembershipEndDateChangedToNull</name>
+        <label>Is End Date changed to null?</label>
+        <locationX>512</locationX>
+        <locationY>395</locationY>
+        <defaultConnector>
+            <targetReference>GET_MembershipsIfUpdated</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_CHECK_MembershipEndDateChangedToNull</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.EndDate__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <connector>
+                <targetReference>SET_MembershipExitOrsak</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>DEC_EndDate</name>
+        <label>End Date?</label>
+        <locationX>314</locationX>
+        <locationY>1211</locationY>
+        <defaultConnector>
+            <targetReference>FILTER_MembershipConflicts4</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No End Date</defaultConnectorLabel>
+        <rules>
+            <name>DEC_EndDateExists</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.EndDate__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>FILTER_MembershipConflicts2</targetReference>
+            </connector>
+            <label>End Date Exists</label>
+        </rules>
+        <rules>
+            <name>DEC_EndDateIsNEW</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>FILTER_MembershipConflicts3</targetReference>
+            </connector>
+            <label>No End Date / IsNEW</label>
+        </rules>
+    </decisions>
+    <description>- Lagt till &quot;Empty Exit orsak&quot; när End Date ändras till null	
+- Rensat bort överflödiga Gets
+- Justerat bugg (flowet funkade inte för Create)
+
+Buggfix</description>
+    <environments>Default</environments>
+    <interviewLabel>Before Save On Membership {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Membership - Trigger - Before Create/Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Gets the rest of the Memberships of the Person</description>
+        <name>GET_MembershipsIfCreated</name>
+        <label>Get Memberships if Created</label>
+        <locationX>116</locationX>
+        <locationY>395</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>STORE_ExistingMembershipsIfCreated</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Person__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Membership__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets the rest of the Memberships of the Person</description>
+        <name>GET_MembershipsIfUpdated</name>
+        <label>Get Memberships if Updated</label>
+        <locationX>512</locationX>
+        <locationY>695</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>STORE_Existing_Memberships_if_Updated</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Person__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Membership__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CHECK_CreatedOrUpdated</targetReference>
+        </connector>
+        <object>Membership__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>currentItem_FILTER_MembershipConflicts4</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Membership__c</objectType>
+    </variables>
+    <variables>
+        <description>Number of records (conflicting memberships) identified by FILTER_MembershipConflicts1</description>
+        <name>var_N_ConflictCount1</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Number of records (conflicting memberships) identified by FILTER_MembershipConflicts2</description>
+        <name>var_N_ConflictCount2</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Number of records (conflicting memberships) identified by FILTER_MembershipConflicts3</description>
+        <name>var_N_ConflictCount3</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Number of records (conflicting memberships) identified by FILTER_MembershipConflicts4</description>
+        <name>var_N_ConflictCount4</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Collection of persons existing Memberships</description>
+        <name>var_sObj_Memberships</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Membership__c</objectType>
+    </variables>
+</Flow>

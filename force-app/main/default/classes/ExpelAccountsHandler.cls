@@ -1,8 +1,8 @@
 /*******************************************************************
 * @author: Jenny Blomberg
 * @date: 2022-05-02
-* @updated: 2023-12-07
-* @updatedBy: Malin Nilsson
+* @updated: 2026-02-19
+* @updatedBy: Shan Mahmood
 * @description: This was first built in flow but due to extensive amount of 
 * SOQL queries (many related records to be hanldled) and Map functionality still
 * not available in flow, limits were reached and the flow was replaced by APEX.  
@@ -12,7 +12,7 @@
 * This helper alters all defined fields on Members and their related records when being expelled 
 * due to lack of payment. 
 *
-* @Jira Tickets : ACF-204, ACF-205, ACF-454, ACF-659 (Update to yrk år1 members)
+* @Jira Tickets : ACF-204, ACF-205, ACF-454, ACF-659 (Update to yrk år1 members), AST-17
 
 ********************************************************************/
 public class ExpelAccountsHandler {
@@ -28,7 +28,7 @@ public class ExpelAccountsHandler {
     //   }
     // }
 
-    //Assignments need enddat
+    //Assignments need end date
     Map<Id, Assignment__c> assignments = assignmentsForAccounts(
       accountsMap.keyset()
     );
@@ -170,14 +170,15 @@ public class ExpelAccountsHandler {
       accountsMap
     );
 
-    Map<Id, Employment__c> employments = employmentsForAccounts(
-      accountsMap.keyset()
-    );
+ 	Map<Id, Employment__c> employments = employmentsForAccounts(
+  	accountsMap.keyset()
+	);
 
-    Database.DeleteResult[] employmentsDRlist = Database.delete(
-      employments.values(),
-      false
-    );
+	Database.DeleteResult[] employmentsDRlist = Database.delete(
+  	employments.values(),
+  	false
+	);
+      
     accountsMap = cleanAccountsMapAfterDelete(
       employmentsDRlist,
       employments,
@@ -318,6 +319,9 @@ public class ExpelAccountsHandler {
         FROM MembershipBenefit__c
         WHERE
           Person__c IN :accountIds
+          AND (Status__c = 'Aktiv' 
+          OR Status__c = 'Aktiverad'
+          OR Status__c = 'Skickad till försäkringsbolag')
           AND (EndDate__c > TODAY
           OR EndDate__c = NULL)
       ]
@@ -337,6 +341,7 @@ public class ExpelAccountsHandler {
         FROM Membership__c
         WHERE Person__c IN :accountIds 
         AND (Expelled__c = false OR Expelled__c = NULL)
+        AND SenasteMedlemskap__c = true  
       ]
     );
   }
@@ -425,7 +430,7 @@ public class ExpelAccountsHandler {
   }
 
   /**
-   * This method is used in the expel process when deleting related records (like Employmentc records). 
+   * This method is used in the expel process when deleting related records (like Employments records). 
    * If the deletion of a related record fails, the associated Account is removed from further processing to maintain data integrity.
    */
   public static Map<Id, Account> cleanAccountsMapAfterDelete(

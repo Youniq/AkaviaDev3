@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Sets critical payment fields. 
+Also removes any values entered to Autogiro fields</description>
+        <name>SET_Account_values</name>
+        <label>SET - Account values</label>
+        <locationX>182</locationX>
+        <locationY>242</locationY>
+        <assignmentItems>
+            <assignToReference>var_sobj_AccountToUpdate.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sobj_AccountToUpdate.PaymentMethod__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>PaymentMethod_Picker</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sobj_AccountToUpdate.DistributionMethod__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>DistributionMethod_Picker</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sobj_AccountToUpdate.IsDistributionPostalPaperOnly__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_f_forcedPaperInvoice</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_Is_E_Invoice</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Sets einvoice picklist field value</description>
+        <name>SET_E_Invoice_Bank</name>
+        <label>SET: E-Invoice Bank</label>
+        <locationX>50</locationX>
+        <locationY>458</locationY>
+        <assignmentItems>
+            <assignToReference>var_sobj_AccountToUpdate.EinvoiceBank__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>EInvoiceBank_Picker</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Account</targetReference>
+        </connector>
+    </assignments>
+    <choices>
+        <description>Distribution method picklist options from Account, but not &quot;ingen leverans&quot;.</description>
+        <name>choice_dstrb_efaktura</name>
+        <choiceText>E-faktura</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>E-faktura</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Distribution method picklist options from Account, but not &quot;ingen leverans&quot;.
+epost is not selectable for PersonAccount.</description>
+        <name>choice_dstrb_epost</name>
+        <choiceText>E-post</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>E-post</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Distribution method picklist options from Account, but not &quot;ingen leverans&quot;.</description>
+        <name>choice_dstrb_kivra</name>
+        <choiceText>Kivra</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Kivra</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Distribution method picklist options from Account, but not &quot;ingen leverans&quot;.</description>
+        <name>choice_dstrb_post</name>
+        <choiceText>Postalt</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Post</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Distribution method picklist options from Account, but not &quot;ingen leverans&quot;.
+sms is not selectable for PersonAccount.</description>
+        <name>choice_dstrb_sms</name>
+        <choiceText>SMS</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>SMS</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <description>Payment method option</description>
+        <name>choice_paym_bankgiro</name>
+        <choiceText>Bankgiro</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>BG</stringValue>
+        </value>
+    </choices>
+    <decisions>
+        <name>CHECK_Is_E_Invoice</name>
+        <label>CHECK: Is E-Invoice?</label>
+        <locationX>182</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Update_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>DistributionMethod_Picker</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>choice_dstrb_efaktura</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_E_Invoice_Bank</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>2025-05-27: Now support for  only paper invoice when selecting postal as distribution method. 
+2025-05-16: Removed parts where bank fields are wiped, this is now done from Account before save triggered flow instead.</description>
+    <dynamicChoiceSets>
+        <name>choices_eInvoiceBank</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>EinvoiceBank__c</picklistField>
+        <picklistObject>Account</picklistObject>
+    </dynamicChoiceSets>
+    <environments>Default</environments>
+    <formulas>
+        <description>Needed a formula for occurences where onlyPostalPaperInvoice_checkbox isn&apos;t rendered and therefore is null</description>
+        <name>var_f_forcedPaperInvoice</name>
+        <dataType>Boolean</dataType>
+        <expression>IF({!onlyPostalPaperInvoice_checkbox} == true, true, false)</expression>
+    </formulas>
+    <interviewLabel>Account_Screenflow_ChangePaymentMethod {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - Screen Flow - Change Payment Method</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordUpdates>
+        <name>Update_Account</name>
+        <label>Update Account</label>
+        <locationX>182</locationX>
+        <locationY>650</locationY>
+        <connector>
+            <targetReference>Success_Screen</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Error_Screen</targetReference>
+        </faultConnector>
+        <inputReference>var_sobj_AccountToUpdate</inputReference>
+    </recordUpdates>
+    <runInMode>SystemModeWithSharing</runInMode>
+    <screens>
+        <name>ChangePaymentMethod</name>
+        <label>Byta betalsätt</label>
+        <locationX>182</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>SET_Account_values</targetReference>
+        </connector>
+        <fields>
+            <name>PaymentMethod_Picker</name>
+            <choiceReferences>choice_paym_bankgiro</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>choice_paym_bankgiro</defaultSelectedChoiceReference>
+            <fieldText>Betalsätt</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <helpText>&lt;p&gt;Endast bankgiro kan väljas härifrån.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Om man ämnar byta till Autogiro så behöver medlemmen själv ändra det från medlemsportalen alt. anmäla nytt autogiro hos sin bank. &lt;/p&gt;</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isDisabled>
+                <booleanValue>true</booleanValue>
+            </isDisabled>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>DistributionMethod_Picker</name>
+            <choiceReferences>choice_dstrb_efaktura</choiceReferences>
+            <choiceReferences>choice_dstrb_kivra</choiceReferences>
+            <choiceReferences>choice_dstrb_post</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>choice_dstrb_efaktura</defaultSelectedChoiceReference>
+            <fieldText>Distributionssätt för faktura</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>EInvoiceBank_Picker</name>
+            <choiceReferences>choices_eInvoiceBank</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>E-faktura bank</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>DistributionMethod_Picker</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>choice_dstrb_efaktura</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>onlyPostalPaperInvoice_checkbox</name>
+            <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>false</booleanValue>
+            </defaultValue>
+            <fieldText>Postal pappersfaktura (ej Kivra)</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>&lt;p&gt;Skicka pappersfaktura även om digital brevlåda (t.ex. Kivra) finns.&lt;/p&gt;</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>DistributionMethod_Picker</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <elementReference>choice_dstrb_post</elementReference>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Error_Screen</name>
+        <label>Error Screen</label>
+        <locationX>490</locationX>
+        <locationY>758</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <fields>
+            <name>Copy_1_of_SuccessTxt</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 14px; color: rgb(255, 0, 0);&quot;&gt;Något gick fel!&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Success_Screen</name>
+        <label>Success Screen</label>
+        <locationX>182</locationX>
+        <locationY>758</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>SuccessTxt</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 14px;&quot;&gt;Tack!&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Nu är uppgifterna sparade.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>ChangePaymentMethod</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Account Id (input)</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_sobj_AccountToUpdate</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+</Flow>

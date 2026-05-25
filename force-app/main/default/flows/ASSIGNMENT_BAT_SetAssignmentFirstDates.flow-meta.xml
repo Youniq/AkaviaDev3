@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Sets assignment first dates &amp; checkboxes on Account</description>
+    <environments>Default</environments>
+    <interviewLabel>Assignment - Scheduled - Set Assignment First Dates {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Assignment - Scheduled - Set Assignment First Dates</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>SUB_SetAssignmentInfoOnAccount</targetReference>
+        </connector>
+        <filterLogic>(1 OR 2 OR 3) AND (4 OR 5)</filterLogic>
+        <filters>
+            <field>Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Lokalt Förtroendevald</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Centralt Förtroendevald</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Role__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Studentmarknadsförare</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StartDateIsToday__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>EndDateWasYesterday__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Assignment__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2023-06-09</startDate>
+            <startTime>07:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>SUB_SetAssignmentInfoOnAccount</name>
+        <label>Sub-flow - Set Assignment Info on Account</label>
+        <locationX>176</locationX>
+        <locationY>252</locationY>
+        <flowName>Account_SUB_SetAssignmentInfo</flowName>
+        <inputAssignments>
+            <name>var_sObj_Assignment</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <variables>
+        <description>Person Account that holds Assignment</description>
+        <name>var_sObj_Account</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+</Flow>

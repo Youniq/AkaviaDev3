@@ -1,0 +1,1090 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <actionCalls>
+        <name>Exit_Application_Received_Email_To_Member</name>
+        <label>Exit Application Received Email To Member</label>
+        <locationX>50</locationX>
+        <locationY>1814</locationY>
+        <actionName>GLSendEmail__SendEmail</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>ScreenThankyou</targetReference>
+        </connector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>ContactOrLeadID</name>
+            <value>
+                <elementReference>Get_Person_Account.PersonContactId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>EmailTemplateName</name>
+            <value>
+                <stringValue>Communitites_Cancellation_Application_received_confirmation</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>OrgWideEmailAddress</name>
+            <value>
+                <elementReference>Get_Email_Addresses.No_Reply_Email_Address__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>RelatedToId</name>
+            <value>
+                <elementReference>Get_Person_Account.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>SaveAsActivity</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ToAddresses</name>
+            <value>
+                <elementReference>Get_Person_Account.PersonEmail</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>GLSendEmail__SendEmail</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_to_akavia_se</name>
+        <label>Send to akavia.se</label>
+        <locationX>50</locationX>
+        <locationY>2030</locationY>
+        <actionName>c:navigateEverywhereLFA</actionName>
+        <actionType>component</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>destinationType</name>
+            <value>
+                <stringValue>URL</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>destinationUrl</name>
+            <value>
+                <stringValue>https://www.akavia.se</stringValue>
+            </value>
+        </inputParameters>
+        <nameSegment>c:navigateEverywhereLFA</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_values_on_Application</name>
+        <label>Set values on Application</label>
+        <locationX>50</locationX>
+        <locationY>1382</locationY>
+        <assignmentItems>
+            <assignToReference>newApplication.Person__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Person_Account.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>newApplication.RequestedDate__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>exitDate_picker</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>newApplication.CancellationReason__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ExitReason</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>newApplication.Comment__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>ExitReasonComment</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>newApplication.RecordTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Record_Type_Cancellation_Application.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>newApplication.Membership__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Current_Membership.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ReviewInformation</targetReference>
+        </connector>
+    </assignments>
+    <choices>
+        <name>choice_currMonth</name>
+        <choiceText>{!form_T_MonthYearCurrent}</choiceText>
+        <dataType>Date</dataType>
+        <value>
+            <elementReference>LastDateThisMonth</elementReference>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_TodayPlus1Months</name>
+        <choiceText>{!form_T_MonthYearPlus1Month}</choiceText>
+        <dataType>Date</dataType>
+        <value>
+            <elementReference>form_D_TodayPlus1Month</elementReference>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_TodayPlus2Months</name>
+        <choiceText>{!form_T_MonthYearPlus2Months}</choiceText>
+        <dataType>Date</dataType>
+        <value>
+            <elementReference>form_D_TodayPlus2Months</elementReference>
+        </value>
+    </choices>
+    <choices>
+        <name>choice_TodayPlus3Months</name>
+        <choiceText>{!form_D_TodayPlus3Months}</choiceText>
+        <dataType>Date</dataType>
+        <value>
+            <elementReference>form_D_TodayPlus3Months</elementReference>
+        </value>
+    </choices>
+    <decisions>
+        <name>CHECK_Active_member</name>
+        <label>CHECK: Active member?</label>
+        <locationX>424</locationX>
+        <locationY>242</locationY>
+        <defaultConnector>
+            <targetReference>Unauthorized_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_activeMember</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Person_Account.MembershipStatus__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Aktiv</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Person_Account.MembershipStatus__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Kommande</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Person_Account.MembershipStatus__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Begärt utträde</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Record_Type_Cancellation_Application</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Found_Existing_Cancellation_Application</name>
+        <label>Check: Found Existing Cancellation Application?</label>
+        <locationX>50</locationX>
+        <locationY>674</locationY>
+        <defaultConnector>
+            <targetReference>Check_Is_Membership_active</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Yes, found existing</defaultConnectorLabel>
+        <rules>
+            <name>No_noExistingApplication</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Existing_Cancellation_Application</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Avsluta_medlemskap</targetReference>
+            </connector>
+            <label>No</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Has member cancelled its cancellation? Is the membership activ?</description>
+        <name>Check_Is_Membership_active</name>
+        <label>Check: Is Membership active?</label>
+        <locationX>182</locationX>
+        <locationY>782</locationY>
+        <defaultConnector>
+            <targetReference>Screen_Ans_kan_inskickad</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_stillactivemember</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Current_Membership.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Aktiv</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Avsluta_medlemskap</targetReference>
+            </connector>
+            <label>Yes, active member</label>
+        </rules>
+    </decisions>
+    <description>2025-11-11: Added validation foe max 255 characters on comment fields.
+2025-08-26: Updated Granska dina uppgifter with other comment
+2025-08-26: Updated layout on Avsluta medlemskkap and Granska dina uppgfiter
+2025-08-26: Updated copy on Avsluta medlemskap page, and added comment when member choose Annan anledning
+2025-06-19: Updated with new field, comment when member chooses specific exit reason
+2025-04-23: Update with config/copy on flows and new condition on dec (current membershipstatus = aktiv)
+2025-04-22: Testing out redirect to akavia.se after FSC footer component, as used in the old cancellation form
+2025-04-11: Now using FSC footer component, as experience cloud has css hiding the standard footer. Other screenflows used in portal has the same component in screens. 
+2025-04-03: Updated flow to Get cancellation application before screen</description>
+    <dynamicChoiceSets>
+        <name>CancellationReasons</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>CancellationReason__c</picklistField>
+        <picklistObject>Application__c</picklistObject>
+    </dynamicChoiceSets>
+    <environments>Default</environments>
+    <formulas>
+        <description>Formula to fetch the last day in upcoming month.
+Note that to get last date in a month, we go from 1st date in the month after and then subtracts 1 day. Result is the last date in prev month.</description>
+        <name>form_D_TodayPlus1Month</name>
+        <dataType>Date</dataType>
+        <expression>ADDMONTHS(DATE(YEAR(TODAY()), MONTH(TODAY()), 1), 2) - 1</expression>
+    </formulas>
+    <formulas>
+        <description>Formula to fetch the last day in 2 months from now.
+Note that to get last date in a month, we go from 1st date in the month after and then subtracts 1 day. Result is the last date in prev month.</description>
+        <name>form_D_TodayPlus2Months</name>
+        <dataType>Date</dataType>
+        <expression>ADDMONTHS(DATE(YEAR(TODAY()), MONTH(TODAY()), 1), 3) - 1</expression>
+    </formulas>
+    <formulas>
+        <description>Formula to fetch the last day in the month 3 months from now. 
+Note that to get last date in a month, we go from 1st date in the month after and then subtracts 1 day. Result is the last date in prev month.</description>
+        <name>form_D_TodayPlus3Months</name>
+        <dataType>Date</dataType>
+        <expression>ADDMONTHS(DATE(YEAR(TODAY()), MONTH(TODAY()), 1), 4) - 1</expression>
+    </formulas>
+    <formulas>
+        <name>form_T_MonthYearCurrent</name>
+        <dataType>String</dataType>
+        <expression>CASE(MONTH(TODAY()), 
+1, &apos;31 Januari&apos;, 
+2, &apos;28 Februari&apos;,
+3, &apos;31 Mars&apos;,
+4, &apos;30 April&apos;,
+5, &apos;31 Maj&apos;,
+6, &apos;30 Juni&apos;,
+7, &apos;31 Juli&apos;,
+8, &apos;31 Augusti&apos;,
+9, &apos;30 September&apos;,
+10, &apos;31 Oktober&apos;,
+11, &apos;30 November&apos;,
+&apos;31 December&apos;)
+&amp;&quot; &quot;&amp;TEXT(Year(TODAY()))
+&amp;&quot; &quot;&amp;&quot;(Innevarande månad)&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>form_T_MonthYearPlus1Month</name>
+        <dataType>String</dataType>
+        <expression>CASE(MONTH({!form_D_TodayPlus1Month}), 
+1, &apos;31 Januari&apos;, 
+2, &apos;28 Februari&apos;,
+3, &apos;31 Mars&apos;,
+4, &apos;30 April&apos;,
+5, &apos;31 Maj&apos;,
+6, &apos;30 Juni&apos;,
+7, &apos;31 Juli&apos;,
+8, &apos;31 Augusti&apos;,
+9, &apos;30 September&apos;,
+10, &apos;31 Oktober&apos;,
+11, &apos;30 November&apos;,
+&apos;31 December&apos;)
+&amp;&quot; &quot;&amp;TEXT(Year({!form_D_TodayPlus1Month}))</expression>
+    </formulas>
+    <formulas>
+        <name>form_T_MonthYearPlus2Months</name>
+        <dataType>String</dataType>
+        <expression>CASE(MONTH({!form_D_TodayPlus2Months}), 
+1, &apos;31 Januari&apos;, 
+2, &apos;28 Februari&apos;,
+3, &apos;31 Mars&apos;,
+4, &apos;30 April&apos;,
+5, &apos;31 Maj&apos;,
+6, &apos;30 Juni&apos;,
+7, &apos;31 Juli&apos;,
+8, &apos;31 Augusti&apos;,
+9, &apos;30 September&apos;,
+10, &apos;31 Oktober&apos;,
+11, &apos;30 November&apos;,
+&apos;31 December&apos;)
+&amp;&quot; &quot;&amp;TEXT(Year({!form_D_TodayPlus2Months}))</expression>
+    </formulas>
+    <formulas>
+        <name>form_T_MonthYearPlus3Months</name>
+        <dataType>String</dataType>
+        <expression>CASE(MONTH({!form_D_TodayPlus3Months}), 
+1, &apos;31 Januari&apos;, 
+2, &apos;28 Februari&apos;,
+3, &apos;31 Mars&apos;,
+4, &apos;30 April&apos;,
+5, &apos;31 Maj&apos;,
+6, &apos;30 Juni&apos;,
+7, &apos;31 Juli&apos;,
+8, &apos;31 Augusti&apos;,
+9, &apos;30 September&apos;,
+10, &apos;31 Oktober&apos;,
+11, &apos;30 November&apos;,
+&apos;31 December&apos;)
+&amp;&quot; &quot;&amp;TEXT(Year({!form_D_TodayPlus3Months}))</expression>
+    </formulas>
+    <formulas>
+        <name>LastDateThisMonth</name>
+        <dataType>Date</dataType>
+        <expression>IF( 
+     MONTH(TODAY())=12,
+     DATE(YEAR(TODAY())+1,1,1)-1, 
+     DATE(YEAR(TODAY()),MONTH(TODAY()) + 1,1) -1
+)</expression>
+    </formulas>
+    <interviewLabel>Community - Screen Flow - Cancellation Form {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Community - Screen Flow - Cancellation Form NEW</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordCreates>
+        <name>Create_Application</name>
+        <label>Create Application</label>
+        <locationX>50</locationX>
+        <locationY>1598</locationY>
+        <connector>
+            <targetReference>Get_Email_Addresses</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>ErrorScreen</targetReference>
+        </faultConnector>
+        <inputReference>newApplication</inputReference>
+    </recordCreates>
+    <recordLookups>
+        <name>Get_Current_Membership</name>
+        <label>Get Current Membership</label>
+        <locationX>50</locationX>
+        <locationY>458</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Existing_Cancellation_Application</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Person_Account.LatestMembership__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Membership__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Email_Addresses</name>
+        <label>Get Email Addresses</label>
+        <locationX>50</locationX>
+        <locationY>1706</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Exit_Application_Received_Email_To_Member</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Flow_Email_Addresses</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Flow_Email_Address__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get applications where decision doesn&apos;t equals &apos;Avslag&apos;</description>
+        <name>Get_Existing_Cancellation_Application</name>
+        <label>Get Existing Cancellation Application</label>
+        <locationX>50</locationX>
+        <locationY>566</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Found_Existing_Cancellation_Application</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Membership__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Current_Membership.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Decision__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Avslag</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Person_Account.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Application__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>CreatedDate</queriedFields>
+        <queriedFields>RequestedDate__c</queriedFields>
+        <queriedFields>Comment__c</queriedFields>
+        <queriedFields>CancellationReason__c</queriedFields>
+        <queriedFields>ExitOtherComment__c</queriedFields>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Person_Account</name>
+        <label>Get Person Account</label>
+        <locationX>424</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CHECK_Active_member</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>PersonContactId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$User.ContactId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Record_Type_Cancellation_Application</name>
+        <label>Get Record Type Cancellation Application</label>
+        <locationX>50</locationX>
+        <locationY>350</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Current_Membership</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Application__c</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>CancellationApplication</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <runInMode>SystemModeWithSharing</runInMode>
+    <screens>
+        <name>Avsluta_medlemskap</name>
+        <label>Avsluta medlemskap</label>
+        <locationX>50</locationX>
+        <locationY>1274</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Set_values_on_Application</targetReference>
+        </connector>
+        <fields>
+            <name>DisplayScreenExitSubject</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 22px; font-family: sans-serif;&quot;&gt;Avsluta medlemskap&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>DisplayScreenText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Välj orsak och skriv gärna en kommentar för att ge oss information om varför du vill avsluta ditt medlemskap. Välj sedan när du vill avsluta medlemskapet. &lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>ExitReason</name>
+            <choiceReferences>CancellationReasons</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Varför vill du avsluta ditt medlemskap?</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>CommentOtherReasonExit</name>
+            <fieldText>Kommentar annan anledning (obligatorsikt): Max 255 tecken</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <validationRule>
+                <errorMessage>&lt;p&gt;Max 255 tecken&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN({!CommentOtherReasonExit}) &lt;= 255</formulaExpression>
+            </validationRule>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ExitReason</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <stringValue>Annan anledning</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>ExitReasonComment</name>
+            <fieldText>Kommentar (frivillig) Max 255 tecken</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <validationRule>
+                <errorMessage>&lt;p&gt;Max 255 tecken&lt;/p&gt;</errorMessage>
+                <formulaExpression>LEN({!ExitReasonComment}) &lt;= 255</formulaExpression>
+            </validationRule>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ExitReason</leftValueReference>
+                    <operator>NotEqualTo</operator>
+                    <rightValue>
+                        <stringValue>Annan anledning</stringValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>exitDate_picker</name>
+            <choiceReferences>choice_currMonth</choiceReferences>
+            <choiceReferences>choice_TodayPlus1Months</choiceReferences>
+            <choiceReferences>choice_TodayPlus2Months</choiceReferences>
+            <choiceReferences>choice_TodayPlus3Months</choiceReferences>
+            <dataType>Date</dataType>
+            <fieldText>Välj månad för utträde *</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <helpText>&lt;p&gt;Ett utträde sker alltid den sista dagen i månaden.&lt;/p&gt;</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>space1</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); font-size: 12px; font-family: sans-serif;&quot;&gt;* Observera att utträde tidigast kan ske den sista i innevarande månad&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>footerBtn1</name>
+            <extensionName>c:customFooterFSC</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>onStartPage</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>nextButtonLabel</name>
+                <value>
+                    <stringValue>Granska dina uppgifter</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Granska dina uppgfiter</nextOrFinishButtonLabel>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>ErrorScreen</name>
+        <label>Error Screen</label>
+        <locationX>534</locationX>
+        <locationY>1706</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Copy_1_of_DisplayThankyou</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 22px; font-family: sans-serif;&quot;&gt;Någonting gick fel&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Någonting gick fel och din ansökan om utträde kunde inte sparas.&lt;/p&gt;&lt;p&gt;Vänligen försök igen!&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;Om felet kvarstår så  får du gärna kontakta oss och anmäla problemet via &lt;/em&gt;&lt;a href=&quot;mailto:medlemsservice@akavia.se&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;&lt;em&gt;medlemsservice@akavia.se&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Copy_1_of_space3</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>footerbtn4</name>
+            <extensionName>c:customFooterFSC</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>nextButtonLabel</name>
+                <value>
+                    <stringValue>Stäng</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>onFinalPage</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>onStartPage</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>ResetValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Stäng fönster</nextOrFinishButtonLabel>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>ReviewInformation</name>
+        <label>Granska dina uppgifter</label>
+        <locationX>50</locationX>
+        <locationY>1490</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Create_Application</targetReference>
+        </connector>
+        <fields>
+            <name>DisplayReviewInfo</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 22px; font-family: sans-serif;&quot;&gt;Granska dina uppgifter&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif;&quot;&gt;Namn&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); font-size: 12px; font-family: sans-serif; color: rgb(68, 68, 68);&quot;&gt;{!Get_Person_Account.FirstName} {!Get_Person_Account.LastName}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;Medlemskap&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;{!Get_Person_Account.MembershipCategory__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;Personnummer&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;{!Get_Person_Account.SocialSecurityNumber__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;Uträdesorsak&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;{!newApplication.CancellationReason__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;Utträdeskommentar&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;{!newApplication.Comment__c}{!CommentOtherReasonExit}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 12px;&quot;&gt;Datum för utträde&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255); font-family: sans-serif; font-size: 12px;&quot;&gt;{!newApplication.RequestedDate__c}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>CheckboxExitAkavia</name>
+            <dataType>Boolean</dataType>
+            <fieldText>&lt;b&gt;Medlemskap:&lt;/b&gt; Jag bekräftar härmed att jag avslutar mitt medlemskap i Akavia.</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>ResetValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; color: rgb(225, 19, 19);&quot;&gt;Det här valet måste bekräftas för att kunna gå vidare.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>{!CheckboxExitAkavia} = true</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>ConfirmFolksam</name>
+            <dataType>Boolean</dataType>
+            <fieldText>&lt;b&gt;Tilläggsförsäkringar:&lt;/b&gt; Jag bekräftar härmed att om jag har tilläggsförsäkringar hos Folksam så behöver jag säga upp dem på egen hand.</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;font-family: sans-serif; background-color: rgb(255, 255, 255); color: rgb(225, 19, 19);&quot;&gt;Det här valet måste bekräftas för att kunna gå vidare.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>{!ConfirmFolksam} = true</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>ConfirmUnemploymentFund</name>
+            <dataType>Boolean</dataType>
+            <fieldText>&lt;b&gt;A-kassa: &lt;/b&gt;Jag bekräftar härmed att jag är medveten om att jag själv måste säga upp eventuellt medlemskap i Akademikernas a-kassa på egen hand.</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>ResetValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+            <validationRule>
+                <errorMessage>&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(225, 19, 19); font-family: sans-serif;&quot;&gt;Det här valet måste bekräftas för att kunna gå vidare.&lt;/span&gt;&lt;/p&gt;</errorMessage>
+                <formulaExpression>{!ConfirmUnemploymentFund} = true</formulaExpression>
+            </validationRule>
+        </fields>
+        <fields>
+            <name>space</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>footerBtn2</name>
+            <extensionName>c:customFooterFSC</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>nextButtonLabel</name>
+                <value>
+                    <stringValue>Avsluta medlemskap i Akavia</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>previousButtonLabel</name>
+                <value>
+                    <stringValue>Gå tillbaka</stringValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>ResetValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Avsluta medlemskap i Akavia</nextOrFinishButtonLabel>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Screen_Ans_kan_inskickad</name>
+        <label>Ansökan redan inskickad</label>
+        <locationX>270</locationX>
+        <locationY>890</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Copy_1_of_DisplayScreenExitSubject</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 22px;&quot;&gt;Ansökan om utträde är inskickad&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Copy_1_of_DisplayScreenText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Vi kan se att det finns en utträdesansökan för ditt medlemskap. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Den hittade utträdesansökan gäller:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Namn&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif; background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;{!Get_Person_Account.FirstName} {!Get_Person_Account.LastName}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif; background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Typ av medlemskap&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;{!Get_Person_Account.MembershipCategory__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Skapades&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;{!Get_Existing_Cancellation_Application.CreatedDate}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Önskat datum att avsluta medlemskap&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;{!Get_Existing_Cancellation_Application.RequestedDate__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif;&quot;&gt;Utträdesorsak&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;{!Get_Existing_Cancellation_Application.CancellationReason__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Kommentar&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;{!Get_Existing_Cancellation_Application.Comment__c}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;em style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;Om du har några frågor så är du välkommen att kontakta &lt;/em&gt;&lt;a href=&quot;mailto:medlemsservice@akavia.se&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-size: 12px; font-family: sans-serif;&quot;&gt;&lt;em&gt;medlemsservice@akavia.se&lt;/em&gt;&lt;/a&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Granska dina uppgfiter</nextOrFinishButtonLabel>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>ScreenThankyou</name>
+        <label>Tack</label>
+        <locationX>50</locationX>
+        <locationY>1922</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Send_to_akavia_se</targetReference>
+        </connector>
+        <fields>
+            <name>DisplayThankyou</name>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 22px; font-family: sans-serif;&quot;&gt;Tack för din tid som medlem i Akavia&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;Du kommer inom kort att få ett bekräftelsemail på din uppsägning.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;Har du några frågor eller funderingar är du alltid välkommen att kontakta oss.&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>space3</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>footerbtn3</name>
+            <extensionName>c:customFooterFSC</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>nextButtonLabel</name>
+                <value>
+                    <stringValue>Stäng fönster och återgå till akavia.se</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>onFinalPage</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>onStartPage</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>ResetValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <outputParameters>
+                <assignToReference>Send_to_akavia_se.destinationUrl</assignToReference>
+                <name>nextButtonLabel</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>Send_to_akavia_se.destinationUrl</assignToReference>
+                <name>onFinalPage</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>Send_to_akavia_se.destinationUrl</assignToReference>
+                <name>onStartPage</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>Send_to_akavia_se.destinationUrl</assignToReference>
+                <name>previousButtonLabel</name>
+            </outputParameters>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Stäng</nextOrFinishButtonLabel>
+        <showFooter>false</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Unauthorized_Screen</name>
+        <label>Unauthorized Screen</label>
+        <locationX>798</locationX>
+        <locationY>350</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Unauthorized_Txt</name>
+            <fieldText>&lt;p&gt;Vi kan inte hitta ett pågående medlemskap för dig. &lt;/p&gt;&lt;p&gt;Vänligen kontakta Akavia medlemsservice om det här är felaktiga uppgifter.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>298</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Person_Account</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>newApplication</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Application__c</objectType>
+    </variables>
+</Flow>

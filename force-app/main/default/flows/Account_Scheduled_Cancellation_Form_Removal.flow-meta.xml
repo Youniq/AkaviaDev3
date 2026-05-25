@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>50.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Remove_cancelation_form_fields</name>
+        <label>Remove cancelation form fields</label>
+        <locationX>50</locationX>
+        <locationY>396</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.ActivateCancel__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.CancellationFormDate__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Account</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>X30_days_has_past</name>
+        <label>30 days has past</label>
+        <locationX>182</locationX>
+        <locationY>276</locationY>
+        <defaultConnectorLabel>No, do nothing</defaultConnectorLabel>
+        <rules>
+            <name>Yes_remove</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RemoveForm</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Remove_cancelation_form_fields</targetReference>
+            </connector>
+            <label>Yes, remove</label>
+        </rules>
+    </decisions>
+    <formulas>
+        <name>RemoveForm</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.CancellationFormDate__c} + 30 &lt; {!$Flow.CurrentDate}</expression>
+    </formulas>
+    <interviewLabel>Account - Scheduled - Cancellation Form {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - Scheduled - Cancellation Form Removal</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Account</name>
+        <label>Update Account</label>
+        <locationX>50</locationX>
+        <locationY>516</locationY>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>X30_days_has_past</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ActivateCancel__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>MembershipStatus__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Aktiv</stringValue>
+            </value>
+        </filters>
+        <object>Account</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2020-11-03</startDate>
+            <startTime>05:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>ACT_SendEmailAlertToMember</name>
+        <label>Send Email Alert to Member</label>
+        <locationX>50</locationX>
+        <locationY>650</locationY>
+        <actionName>Case.Member_CommentOnCase</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>CREATE_Task</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>var_T_CaseId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.Member_CommentOnCase</nameSegment>
+    </actionCalls>
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>ASSIGN_CaseInfoFromFeedItem</name>
+        <label>Assign Case info on variables from Feed Item</label>
+        <locationX>50</locationX>
+        <locationY>542</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_CaseId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_sObj_FeedItem.Parent:Case.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_T_CaseOwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_sObj_FeedItem.Parent:Case.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ACT_SendEmailAlertToMember</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>SET_CaseInfoFromFeedComment</name>
+        <label>Assign Case info on variables from Feed Comment</label>
+        <locationX>314</locationX>
+        <locationY>866</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_CaseId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>GET_ParentFeedItem.Parent:Case.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_T_CaseOwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>GET_ParentFeedItem.Parent:Case.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>ACT_SendEmailAlertToMember</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Checks if comment creator has profile Akavia Förhandling or Akavia Medlemsservice</description>
+        <name>CHECK_FeedCommentQualifiedForEmailAlert</name>
+        <label>Feed Comment qualified for Email Alert to Member?</label>
+        <locationX>644</locationX>
+        <locationY>542</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_FeedCommentQualifiedForEmailAlert_Yes</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>var_sObj_FeedComment.CreatedBy.Profile.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Akavia Förhandling</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_sObj_FeedComment.CreatedBy.Profile.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Akavia Medlemsservice</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GET_ParentFeedItem</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if input parameter is a Feed Item or a Feed Comment</description>
+        <name>CHECK_FeedItemOrFeedComment</name>
+        <label>Feed Item or Feed Comment?</label>
+        <locationX>578</locationX>
+        <locationY>434</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_FeedItemOrFeedComment_FeedItem</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_sObj_FeedItem</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ASSIGN_CaseInfoFromFeedItem</targetReference>
+            </connector>
+            <label>Feed Item</label>
+        </rules>
+        <rules>
+            <name>CHECK_FeedItemOrFeedComment_FeedComment</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_sObj_FeedComment</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CHECK_FeedCommentQualifiedForEmailAlert</targetReference>
+            </connector>
+            <label>Feed Comment</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if parent Case is not Arbetsgivarärende and Created by User = Case Account User</description>
+        <name>CHECK_FeedItemQualifiedForEmailAlertToMember</name>
+        <label>Feed Item qualified for email alert to Member?</label>
+        <locationX>446</locationX>
+        <locationY>758</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_NewCommentAdded_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GET_ParentFeedItem.Parent:Case.Reason</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Arbetsgivarärende</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>GET_ParentFeedItem.CreatedBy:User.Account.Id</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>GET_ParentFeedItem.Parent:Case.Account.Id</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_CaseInfoFromFeedComment</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Runningdebug</name>
+        <label>Running debug?</label>
+        <locationX>578</locationX>
+        <locationY>134</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_FeedItemOrFeedComment</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_feeditemTest</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_feedItemId_forTest</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Test_FeedItem</targetReference>
+            </connector>
+            <label>Yes Feed Item test</label>
+        </rules>
+        <rules>
+            <name>Yes_FeedComment_Test</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_feedCommentId_forTest</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Test_FeedComment</targetReference>
+            </connector>
+            <label>Yes FeedComment Test</label>
+        </rules>
+    </decisions>
+    <description>2024-02-14: Make it possible to debug this flow &amp; bugfix check for parent feed item based on feeditemid instead.
+2024-02-12: Added akavia Medlemsservice as qualifier profile for FeedComment, had just been missed. Added description on FeedComment input variable. Reason = Arbetsgivarärende (not CloseReason)
+Sends Email to Member
+Triggered by:
+- Apex (input parameter: FeedComment)
+- Flow FeedItem_TRG_NotifyMemberOnNewCaseComment (input parameter: FeedItem)</description>
+    <environments>Default</environments>
+    <interviewLabel>Feed Item / Feed Comment - Sub {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Feed Item / Feed Comment - Sub Flow - Notify Member on new Case Comment</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>CREATE_Task</name>
+        <label>Create Task</label>
+        <locationX>50</locationX>
+        <locationY>758</locationY>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <stringValue>Email skickat till medlem med information om att ny kommentar finns på ärendet</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>var_T_CaseOwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Email skickat till medlem</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>var_T_CaseId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <name>GET_ParentFeedItem</name>
+        <label>Get parent Feed Item</label>
+        <locationX>446</locationX>
+        <locationY>650</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CHECK_FeedItemQualifiedForEmailAlertToMember</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_sObj_FeedComment.FeedItemId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>FeedItem</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Test_FeedComment</name>
+        <label>Get Test FeedComment</label>
+        <locationX>578</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CHECK_FeedItemOrFeedComment</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_feedCommentId_forTest</elementReference>
+            </value>
+        </filters>
+        <object>FeedComment</object>
+        <outputReference>var_sObj_FeedComment</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>CreatedById</queriedFields>
+        <queriedFields>CommentType</queriedFields>
+        <queriedFields>ThreadParentId</queriedFields>
+        <queriedFields>ParentId</queriedFields>
+        <queriedFields>FeedItemId</queriedFields>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Test_FeedItem</name>
+        <label>Get Test FeedItem</label>
+        <locationX>314</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CHECK_FeedItemOrFeedComment</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_feedItemId_forTest</elementReference>
+            </value>
+        </filters>
+        <object>FeedItem</object>
+        <outputReference>var_sObj_FeedItem</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>CreatedById</queriedFields>
+        <queriedFields>ParentId</queriedFields>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+    </recordLookups>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>452</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Runningdebug</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>To be able to debug this flow</description>
+        <name>var_feedCommentId_forTest</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>To be able to debug this flow.</description>
+        <name>var_feedItemId_forTest</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The apex trigger: FeedCommentTrigger + FeedCommentTriggerHandler sends FeedComments here after create. 
+The apex initates this flow for Feed Comments:
+* created by non-members,
+* the connected FeedItem.Visibility = AllUsers
+* the connected FeedItem.Type = &apos;TextComment&apos; or &apos;ContentPost&apos;
+* the parent record is a Case</description>
+        <name>var_sObj_FeedComment</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>FeedComment</objectType>
+    </variables>
+    <variables>
+        <name>var_sObj_FeedItem</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>FeedItem</objectType>
+    </variables>
+    <variables>
+        <name>var_T_CaseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_T_CaseOwnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

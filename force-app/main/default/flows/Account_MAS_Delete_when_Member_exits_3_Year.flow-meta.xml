@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>50.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_person_field1</name>
+        <label>Set person field</label>
+        <locationX>336</locationX>
+        <locationY>242</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Person_Account.GDPRStatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>3 Year</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Person_Account.localUnionEducation__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_account_type</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>If person account is of type &apos;Förtroendevald, ej Akavia&apos; the account should only get the GDPRStatus__c stamp and then flow ends.</description>
+        <name>Check_account_type</name>
+        <label>Check account type</label>
+        <locationX>336</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Update_Person_Account2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Is &apos;Förtroendevald, ej Akavia&apos;</defaultConnectorLabel>
+        <rules>
+            <name>Is_not_F_rtroendevald_ej_Akavia</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Person_Account.Type</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Förtroendevald, ej Akavia</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Memberbenefits_To_Delete</targetReference>
+            </connector>
+            <label>Is not &apos;Förtroendevald, ej Akavia&apos;</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_CampaignMembers_To_Delete</name>
+        <label>Is There CampaignMembers To Delete</label>
+        <locationX>182</locationX>
+        <locationY>1382</locationY>
+        <defaultConnector>
+            <targetReference>Update_Person_Account_2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No CampaignMembers To Delete</defaultConnectorLabel>
+        <rules>
+            <name>Yes_CampaignMembers_To_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_CampaignMember_To_Delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Found_CampaignMembers</targetReference>
+            </connector>
+            <label>Yes, CampaignMembers To Delete</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_Exit_Applications_To_Delete</name>
+        <label>Is There Exit Applications To Delete</label>
+        <locationX>182</locationX>
+        <locationY>974</locationY>
+        <defaultConnector>
+            <targetReference>Get_CampaignMember_To_Delete</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Exit Applications To Delete</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Applications_To_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Exit_Applications_To_Delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Exit_Found_Applications</targetReference>
+            </connector>
+            <label>Yes, Exit Applications  To Delete</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_MemberBenefits_To_Delete</name>
+        <label>Is There MemberBenefits To Delete</label>
+        <locationX>182</locationX>
+        <locationY>566</locationY>
+        <defaultConnector>
+            <targetReference>Get_Exit_Applications_To_Delete</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Memberbenefits To Delete</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Memberbenefits_To_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Memberbenefits_To_Delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Found_Memberbenefits</targetReference>
+            </connector>
+            <label>Yes, Memberbenefits To Delete</label>
+        </rules>
+    </decisions>
+    <description>2025-02-10: Now unchecks Account.localUnionEducation__c
+Wipe person related data three years after cancellation date</description>
+    <environments>Default</environments>
+    <interviewLabel>Account - MAS - Delete when Member exits 3 Year {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - MAS - Delete when Member exits 3 Year</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Exit_Found_Applications</name>
+        <label>Delete Exit Found Applications</label>
+        <locationX>50</locationX>
+        <locationY>1082</locationY>
+        <connector>
+            <targetReference>Get_CampaignMember_To_Delete</targetReference>
+        </connector>
+        <inputReference>Get_Exit_Applications_To_Delete</inputReference>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete_Found_CampaignMembers</name>
+        <label>Delete Found CampaignMembers</label>
+        <locationX>50</locationX>
+        <locationY>1490</locationY>
+        <connector>
+            <targetReference>Update_Person_Account_2</targetReference>
+        </connector>
+        <inputReference>Get_CampaignMember_To_Delete</inputReference>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete_Found_Memberbenefits</name>
+        <label>Delete Found Memberbenefits</label>
+        <locationX>50</locationX>
+        <locationY>674</locationY>
+        <connector>
+            <targetReference>Get_Exit_Applications_To_Delete</targetReference>
+        </connector>
+        <inputReference>Get_Memberbenefits_To_Delete</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_CampaignMember_To_Delete</name>
+        <label>Get CampaignMember To Delete</label>
+        <locationX>182</locationX>
+        <locationY>1274</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_CampaignMembers_To_Delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ContactId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Person_Account.PersonContactId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CampaignMember</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Exit_Applications_To_Delete</name>
+        <label>Get Exit Applications To Delete</label>
+        <locationX>182</locationX>
+        <locationY>866</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_Exit_Applications_To_Delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Utträde</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Application__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Memberbenefits_To_Delete</name>
+        <label>Get Memberbenefits To Delete</label>
+        <locationX>182</locationX>
+        <locationY>458</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_MemberBenefits_To_Delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>MembershipBenefit__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Person_Account</name>
+        <label>Get Person Account</label>
+        <locationX>336</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_person_field1</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Set the GDPRStatus__c field. Field need to be filled in order for next GDPR step to proceed.</description>
+        <name>Update_Person_Account2</name>
+        <label>Update Person Account</label>
+        <locationX>490</locationX>
+        <locationY>458</locationY>
+        <inputReference>Get_Person_Account</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Person_Account_2</name>
+        <label>Update Person Account</label>
+        <locationX>182</locationX>
+        <locationY>1682</locationY>
+        <inputReference>Get_Person_Account</inputReference>
+    </recordUpdates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>210</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Person_Account</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>ContentDocumentId</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocument</objectType>
+    </variables>
+    <variables>
+        <name>ContentDocumentIdCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocument</objectType>
+    </variables>
+    <variables>
+        <description>Input account record on flow start</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

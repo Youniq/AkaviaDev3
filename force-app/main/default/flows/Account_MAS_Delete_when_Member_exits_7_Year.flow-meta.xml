@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>50.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_person_field</name>
+        <label>Set person field</label>
+        <locationX>336</locationX>
+        <locationY>278</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Person_Account.GDPRStatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>7 Year</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Account_type</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>If person account is of type &apos;Förtroendevald, ej Akavia&apos; the account should only get the GDPRStatus__c stamp and then flow ends.</description>
+        <name>Check_Account_type</name>
+        <label>Check Account type</label>
+        <locationX>336</locationX>
+        <locationY>398</locationY>
+        <defaultConnector>
+            <targetReference>Update_person_account2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Is &apos;Förtroendevald, ej Akavia&apos;</defaultConnectorLabel>
+        <rules>
+            <name>Is_not_F_rtroendevald_ej_Akavia</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Person_Account.Type</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Förtroendevald, ej Akavia</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Invoices_To_delete</targetReference>
+            </connector>
+            <label>Is not &apos;Förtroendevald, ej Akavia&apos;</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_Invoices_To_Update</name>
+        <label>Is There Invoices To Update</label>
+        <locationX>182</locationX>
+        <locationY>638</locationY>
+        <defaultConnector>
+            <targetReference>Update_person_account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Invoices To Update</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Invoices_To_Update</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Invoices_To_delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Found_Invoices</targetReference>
+            </connector>
+            <label>Yes, Invoices To Update</label>
+        </rules>
+    </decisions>
+    <description>Triggered from MAS &quot;Account - Delete when Member exits 7 Year&quot;</description>
+    <environments>Default</environments>
+    <interviewLabel>Account - MAS - Delete when Member exits 7 Year {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - MAS - Delete when Member exits 7 Year</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Found_Invoices</name>
+        <label>Delete Found Invoices</label>
+        <locationX>50</locationX>
+        <locationY>758</locationY>
+        <connector>
+            <targetReference>Update_person_account</targetReference>
+        </connector>
+        <inputReference>Get_Invoices_To_delete</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_Invoices_To_delete</name>
+        <label>Get Invoices to delete</label>
+        <locationX>182</locationX>
+        <locationY>518</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_Invoices_To_Update</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Invoice__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Person_Account</name>
+        <label>Get Person Account</label>
+        <locationX>336</locationX>
+        <locationY>158</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Set_person_field</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Sets the GDPRStatus__c to 7 Year in order to indicate that this person account has been processed in this flow.</description>
+        <name>Update_person_account</name>
+        <label>Update person account</label>
+        <locationX>182</locationX>
+        <locationY>974</locationY>
+        <inputReference>Get_Person_Account</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Set the GDPRStatus__c field. Field need to be filled in order for next GDPR step to proceed.</description>
+        <name>Update_person_account2</name>
+        <label>Update person account</label>
+        <locationX>490</locationX>
+        <locationY>518</locationY>
+        <inputReference>Get_Person_Account</inputReference>
+    </recordUpdates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>210</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Person_Account</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>ContentDocumentId</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocument</objectType>
+    </variables>
+    <variables>
+        <name>ContentDocumentIdCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentDocument</objectType>
+    </variables>
+    <variables>
+        <description>Input variable from triggering MAS</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>VarInvoices</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Invoice__c</objectType>
+    </variables>
+    <variables>
+        <name>VarInvoicesCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Invoice__c</objectType>
+    </variables>
+</Flow>

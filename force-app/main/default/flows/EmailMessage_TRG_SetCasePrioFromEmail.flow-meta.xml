@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>58.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Is_case_new</name>
+        <label>Is case new?</label>
+        <locationX>534</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_CaseIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>What_prio_to_set</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>What_prio_to_set</name>
+        <label>What prio to set?</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Medium (default value)</defaultConnectorLabel>
+        <rules>
+            <name>high</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_emailHasHighPrio</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Case_Priority_High</targetReference>
+            </connector>
+            <label>High</label>
+        </rules>
+        <rules>
+            <name>low</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_emailHasLowPrio</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>UPDATE_CasePriorityLow</targetReference>
+            </connector>
+            <label>Low</label>
+        </rules>
+    </decisions>
+    <description>Sets Case priority on new cases depending on if incoming email is marked as High/Low importance.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Checks that the case was created at the same time as this email message was created (allowing a span of +-1 minute)</description>
+        <name>formula_CaseIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>AND({!$Record.Parent.CreatedDate} &gt;= ({!$Record.CreatedDate} - 1/24/60) ,
+{!$Record.Parent.CreatedDate} &lt;= ({!$Record.CreatedDate} + 1/24/60 ))</expression>
+    </formulas>
+    <formulas>
+        <name>formula_emailHasHighPrio</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+CONTAINS({!$Record.Headers},&apos;X-Priority: 1&apos;), 
+CONTAINS({!$Record.Headers},&apos;X-MSMail-Priority: High&apos;), 
+CONTAINS({!$Record.Headers},&apos;X-MSMail-Priority: high&apos;), 
+CONTAINS({!$Record.Headers},&apos;Importance: High&apos;), 
+CONTAINS({!$Record.Headers},&apos;Importance: high&apos;)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_emailHasLowPrio</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+CONTAINS({!$Record.Headers},&apos;X-Priority: 5&apos;), 
+CONTAINS({!$Record.Headers},&apos;X-MSMail-Priority: Low&apos;), 
+CONTAINS({!$Record.Headers},&apos;X-MSMail-Priority: low&apos;), 
+CONTAINS({!$Record.Headers},&apos;Importance: Low&apos;), 
+CONTAINS({!$Record.Headers},&apos;Importance: low&apos;)
+)</expression>
+    </formulas>
+    <interviewLabel>EmailMessage - TRG - {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>EmailMessage - TRG - Set Case Prio From Email</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Case_Priority_High</name>
+        <label>Set High Case Priority</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Parent</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>UPDATE_CasePriorityLow</name>
+        <label>Set Low Case Priority</label>
+        <locationX>314</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Low</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Parent</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>408</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_case_new</targetReference>
+        </connector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>Incoming</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ParentId</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>EmailMessage</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <triggerOrder>1500</triggerOrder>
+</Flow>

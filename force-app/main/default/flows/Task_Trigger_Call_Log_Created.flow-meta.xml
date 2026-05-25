@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Create_variables</name>
+        <label>Create variables</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_medlemsservice</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Medlemsservice</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_forhandling</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Förhandling</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>What_value_to_use</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Eneter a value in the field Avdelning__c if the author has a profile value of either &quot;Akavia Förhandling&quot; or &quot;Akavia Medlemsservice&quot;</description>
+        <name>What_value_to_use</name>
+        <label>What value to use?</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Don&apos;t fill Avdelning__c with anything.</defaultConnectorLabel>
+        <rules>
+            <name>Use_Forhandling</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Profile.Name</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>var_forhandling</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Avdelning_Forhandling</targetReference>
+            </connector>
+            <label>Use Förhandling</label>
+        </rules>
+        <rules>
+            <name>Use_Medlemsservice</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Profile.Name</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>var_medlemsservice</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Avdelning_Medlemsservice</targetReference>
+            </connector>
+            <label>Use Medlemsservice</label>
+        </rules>
+    </decisions>
+    <description>2024-09-27: Deployed previously inactiv flow, needed for calls in account.</description>
+    <environments>Default</environments>
+    <interviewLabel>Task - Trigger - Call Log Created {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Task - Trigger - Call Log Created</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Set_Avdelning_Forhandling</name>
+        <label>Set Avdelning: Förhandling</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>Avdelning__c</field>
+            <value>
+                <stringValue>Förhandling</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Avdelning_Medlemsservice</name>
+        <label>Set Avdelning: Medlemsservice</label>
+        <locationX>314</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>Avdelning__c</field>
+            <value>
+                <stringValue>Medlemsservice</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_variables</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>Subject</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Call</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Subject</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Samtal</stringValue>
+            </value>
+        </filters>
+        <object>Task</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Text string holding the value &quot;Förhandling&quot;</description>
+        <name>var_forhandling</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Text holding the string &quot;Medlemsservice&quot;</description>
+        <name>var_medlemsservice</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

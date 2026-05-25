@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <constants>
+        <name>Const_BenefitName</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Skandia hälsoförsäkring psykisk ohälsa</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <description>Omfattar studerandemedlemmar som läster sista terminen (Medlemsfas). Den 1 apr resp 1 nov skapas förmånen Skandia hälsoförsäkring för målgruppen, detta flow hanterar nya medlemmar som tillkommer efter det schemalagda jobbet 1/4 resp 1/11.</description>
+        <name>DEC_entry_date_after_1_nov_or_1_apri</name>
+        <label>DEC entry date after 1 nov or 1 apri</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RunDate</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_benefits</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Förmånen ska bara skapas om det inte finns någon aktiv förmån på medlemmen sedan tidigare. Aktiv förmån är medlemsförmån med status Aktiv, Aktiverad eller Skickad till försäkringsbolag. OM det finns Avslutade förmåner så räknas det som att medlemmen saknar medlemsförmånen.</description>
+        <name>Decision_1</name>
+        <label>DEC does member have SHPO?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Yes</defaultConnectorLabel>
+        <rules>
+            <name>No</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_membershipbenefits</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Membershipbenefit_SHPO</targetReference>
+            </connector>
+            <label>No, member does not have SHPO</label>
+        </rules>
+    </decisions>
+    <description>2025-11-27: Flow skapat för att addera förmån på medlemmar som blir medlem efter 1 nov/1apr och omfattas av förmånen</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Denna formel räknar ut slutdatum för medlemsförmånen. Om person blir medlem efter den 1 apr, men före 1 sep ska förmånens slutdatum vara samma som de som automatiskt fick sin förmån tilldelad den 1 april, dvs 31 mars nästa år. 
+
+Samma logik gäller medlemmar som blir medlem mellan 1 nov och innan 1 feb, slutdatum blir 31 oktober nästa år.</description>
+        <name>EndDateFormula</name>
+        <dataType>Date</dataType>
+        <expression>
+IF(
+    AND(
+        (TODAY()) &gt;= DATE(YEAR(TODAY()), 4, 1),
+        (TODAY()) &lt;= DATE(YEAR(TODAY()), 8, 31)
+    ),
+    DATE(YEAR(TODAY()) + 1, 3, 31),
+    IF(
+        OR(
+            (TODAY()) &gt;= DATE(YEAR(TODAY()), 11, 1),
+            (TODAY()) &lt;= DATE(YEAR(TODAY()), 1, 31)
+        ),
+        DATE(YEAR(TODAY()) + 1, 10, 31),
+        NULL
+    )
+)</expression>
+    </formulas>
+    <formulas>
+        <description>Medlemsförmånen tilldelas via schemalagt jobb 1 apr rest 1 apr. Ny medlemmar i målgruppen (sista terminen) som blir medlemmar efter att det schemalagda jobbet körts (Mass Action) behöver få medlemsförmånen tillagt.
+
+Denna formel känner av om det är:
+* Mellan 1 apr och före 1 sep
+* Mellan 1 nov och före 1 feb
+
+Visar sant om villkoren möts</description>
+        <name>RunDate</name>
+        <dataType>Boolean</dataType>
+        <expression>
+OR(
+    AND(
+        TODAY() &gt;= DATE(YEAR(TODAY()), 4, 1),
+        TODAY() &lt; DATE(YEAR(TODAY()), 9, 1)
+    ),
+    AND(
+        OR(
+            TODAY() &gt;= DATE(YEAR(TODAY()), 11, 1),
+            TODAY() &lt; DATE(YEAR(TODAY()), 2, 1)
+        )
+    )
+)</expression>
+    </formulas>
+    <interviewLabel>Account - Scheduled - Add memberbenefit {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - Scheduled - Add memberbenefit SHPO</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_Membershipbenefit_SHPO</name>
+        <label>Create Membershipbenefit SHPO</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Benefit__c</field>
+            <value>
+                <elementReference>Get_benefits.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>EndDate__c</field>
+            <value>
+                <elementReference>EndDateFormula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Membership__c</field>
+            <value>
+                <elementReference>$Record.LatestMembership__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Person__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>StartDate__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status__c</field>
+            <value>
+                <stringValue>Aktiv</stringValue>
+            </value>
+        </inputAssignments>
+        <object>MembershipBenefit__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <name>Get_benefits</name>
+        <label>Get benefits</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_membershipbenefits</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Const_BenefitName</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Benefit__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_membershipbenefits</name>
+        <label>Get membershipbenefits</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_1</targetReference>
+        </connector>
+        <filterLogic>(1 OR 2 OR 3) AND 4 AND 5 AND 6</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Aktiv</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Aktiverad</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Skickad till försäkringsbolag</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>BenefitName__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Const_BenefitName</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Membership__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.LatestMembership__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>MembershipBenefit__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>DEC_entry_date_after_1_nov_or_1_apri</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>MemberPhase__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Sista terminen</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>MembershipStatus__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Aktiv</stringValue>
+            </value>
+        </filters>
+        <object>Account</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2025-11-28</startDate>
+            <startTime>04:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

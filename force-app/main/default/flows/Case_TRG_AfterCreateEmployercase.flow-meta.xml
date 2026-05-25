@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Email_ArbetsgivareForhandling</name>
+        <label>Email Arbetsgivare Förhandling</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Case.Case_Created_Case_Arbetsgivare_Forhandling</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Task_TextArbetsgivareForhandling</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.Case_Created_Case_Arbetsgivare_Forhandling</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <name>Email_ArbetsgivareStandard</name>
+        <label>Email Arbetsgivare Standard</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>Case.Case_Created_Case_Arbetsgivare_Standard</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>Task_TextArbetsgivareStandard</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Case.Case_Created_Case_Arbetsgivare_Standard</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Task_TextArbetsgivareForhandling</name>
+        <label>Set task text Arbetsgivare Förhandling</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_TaskDescription</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Autosvar skickat till arbetsgivare (förhandling)</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_TaskWhenEmailSent</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Task_TextArbetsgivareStandard</name>
+        <label>Set task text Arbetsgivare Standard</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_TaskDescription</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Autosvar skickat till arbetsgivare (standard)</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_TaskWhenEmailSent</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>CHECK_Arbetsgivare_Fields</name>
+        <label>CHECK: Arbetsgivare Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_SpecialFieldsEmployer</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CaseSpecialFields</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_ArbetsgivareForhandling</targetReference>
+            </connector>
+            <label>Ja, har specialfält</label>
+        </rules>
+        <rules>
+            <name>No_SpecialFieldsEmployer</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>CaseSpecialFields</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_ArbetsgivareStandard</targetReference>
+            </connector>
+            <label>Nej, har inte specialfält</label>
+        </rules>
+    </decisions>
+    <description>2025-12-29: New flow to trigger mail when new employer case is created.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Matchar fälten som AG fyller i i förhandingsframställan på akavia.se. Formeln nyttjas för att kunna skicka olika mail baserat på valt alternativ.</description>
+        <name>CaseSpecialFields</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+  TEXT($Record.OtherParties__c) == &quot;Ja&quot;,
+  TEXT($Record.AkaviaOrSacoMember__c) == &quot;Ja&quot;,
+  TEXT($Record.SendAttachments__c) == &quot;Ja&quot;
+)</expression>
+    </formulas>
+    <interviewLabel>Case - Trigger - After Create Arbetsgivarärende {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case - Trigger - After Create Arbetsgivarärende</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_TaskWhenEmailSent</name>
+        <label>Create task when email sent</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>var_T_TaskDescription</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CHECK_Arbetsgivare_Fields</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Reason</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Arbetsgivarärende</stringValue>
+            </value>
+        </filters>
+        <object>Case</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>var_T_TaskDescription</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

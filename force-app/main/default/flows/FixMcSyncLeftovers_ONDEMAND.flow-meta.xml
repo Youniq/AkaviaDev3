@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Tries to update children under Account to have the correct Mc Sync status (SyncWithMc__c)</description>
+        <name>Fix_Mc_Sync_Leftovers</name>
+        <label>Fix Mc Sync Leftovers</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <actionName>McSyncLeftoverInvocable</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>queryLimit</name>
+        </inputParameters>
+        <nameSegment>McSyncLeftoverInvocable</nameSegment>
+    </actionCalls>
+    <apiVersion>60.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Triggers invocable which tries to update child records under Account to have the correct mc sync status.</description>
+    <environments>Default</environments>
+    <interviewLabel>ON DEMAND - Fix Mc Sync Leftovers {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Fix Mc Sync Leftovers - ON DEMAND</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Fix_Mc_Sync_Leftovers</targetReference>
+        </connector>
+    </start>
+    <status>Draft</status>
+</Flow>

@@ -6,49 +6,78 @@
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
 **/
 global with sharing class EmailPublisherForCaseEmails implements QuickAction.QuickActionDefaultsHandler {
-  
-    global EmailPublisherForCaseEmails() {
-  }
 
-  global void onInitDefaults(QuickAction.QuickActionDefaults[] defaults) {
-    QuickAction.SendEmailQuickActionDefaults sendEmailDefaults = (QuickAction.SendEmailQuickActionDefaults)defaults.get(0);
-      
-    system.debug('EmailPublisher Email ActionName: ' + sendEmailDefaults.getActionName());
-    
-      if(sendEmailDefaults.getActionName().equals('Case.SendEmail') ||
-         sendEmailDefaults.getActionName().equals('Case.Email_With_History') ||
-         sendEmailDefaults.getActionName().equals('Case.Another_email_action')) {
-             EmailMessage emailMessage = (EmailMessage)sendEmailDefaults.getTargetSObject(); 
-              system.debug('EmailPublisher Used email action: ' + sendEmailDefaults);
-             
-              // always empty To, CC and Bcc addresses. They must be entered manually, Akavia requirement.
-              emailMessage.BccAddress = '';
-              emailMessage.CcAddress = '';
-              emailMessage.ToAddress = '';
-              
-            // In masterdev it's enough to only set empty strings on the above fields, but not in UAT. 
-             // In UAT: when uncommenting the below the fields are emptied in UAT but I get a big red error when trying to send an email. 
-             //emailMessage.ToIds = new List<String>{''};
-             //emailMessage.BccIds = new List<String>{''};
-             //emailMessage.CcIds = new List<String>{''};
-        
-              // Empty body to remove thread history if not using action specifically used for keeping thread history.
-              if (
-                sendEmailDefaults.getActionName().contains('Case.SendEmail')
-              ) {
-                system.debug('Emptying email body and subject');
-                emailMessage.HtmlBody = '';
-                emailMessage.TextBody = '';
-                emailMessage.Subject = '';
-              }
+    private static final String DEFAULT_TEMPLATE_DEVELOPER_NAME = 'Standard_Case_signatur';
+    private static Id cachedTemplateId;
+
+    global EmailPublisherForCaseEmails() {}
+
+    global void onInitDefaults(QuickAction.QuickActionDefaults[] defaults) {
+        if (defaults == null || defaults.isEmpty()) return;
+
+        for (QuickAction.QuickActionDefaults qd : defaults) {
+            if (!(qd instanceof QuickAction.SendEmailQuickActionDefaults)) continue;
+
+            QuickAction.SendEmailQuickActionDefaults sendEmailDefaults = (QuickAction.SendEmailQuickActionDefaults) qd;
+            EmailMessage emailMessage = (EmailMessage) sendEmailDefaults.getTargetSObject();
+            String actionName = sendEmailDefaults.getActionName();
+
+            // 1. Hämta mallens innehåll (Signaturen)
+            Id templateId = getDefaultClassicTemplateId();
+            String templateBody = '';
+            if (templateId != null) {
+                Id caseId = sendEmailDefaults.getContextId();
+                Messaging.SingleEmailMessage renderedTemplate = Messaging.renderStoredEmailTemplate(templateId, null, caseId);
+                templateBody = renderedTemplate.getHtmlBody();
+            }
+
+            // 2. LOGIK FÖR NYA MEJL (Case.SendEmail)
+            // Här vill vi fortfarande starta med ett tomt ark (förutom signaturen)
+            if (actionName.equals('Case.SendEmail') || 
+                actionName.equals('Case.Email_With_History') || 
+                actionName.equals('Case.Another_email_action')) {
                 
-              system.debug('EmailPublisher modified email: ' + emailMessage);
-         }
-      else if(sendEmailDefaults.getActionName().equals('EmailMessage._Reply') ||
-             sendEmailDefaults.getActionName().equals('EmailMessage._ReplyAll')) {
-              EmailMessage emailMessage = (EmailMessage)sendEmailDefaults.getTargetSObject(); 
-              system.debug('EmailPublisher before modify email: ' + emailMessage);
-              system.debug('EmailPublisher before modify email html body: ' + emailMessage.HtmlBody);     
-             }
-		}
+                emailMessage.BccAddress = '';
+                emailMessage.CcAddress = '';
+                emailMessage.ToAddress = '';
+
+                if (actionName.equals('Case.SendEmail')) {
+                    emailMessage.Subject = ''; 
+                    emailMessage.HtmlBody = templateBody; 
+                    emailMessage.TextBody = '';
+                } else {
+                    String existingBody = emailMessage.HtmlBody != null ? emailMessage.HtmlBody : '';
+                    emailMessage.HtmlBody = templateBody + '<br/><br/>' + existingBody;
+                }
+            }
+            
+            // 3. LOGIK FÖR SVAR (Reply / ReplyAll)
+            // HÄR BEHÅLLER VI ALLT: To, CC, BCC, Ämne och Historik
+            else if (actionName.equals('EmailMessage._Reply') || actionName.equals('EmailMessage._ReplyAll')) {
+                
+                // Spara historiken
+                String history = emailMessage.HtmlBody != null ? emailMessage.HtmlBody : '';
+                
+                // VI RÖR INTE:
+                // emailMessage.ToAddress
+                // emailMessage.CcAddress
+                // emailMessage.BccAddress
+                // emailMessage.Subject
+                // På så sätt behålls allt precis som det var i tråden.
+
+                // Lägg bara signaturen ÖVERST och behåll historiken under
+                emailMessage.HtmlBody = templateBody + '<br/><br/>' + history;
+            }
+        }
+    }
+
+    private static Id getDefaultClassicTemplateId() {
+        if (cachedTemplateId != null) return cachedTemplateId;
+        List<EmailTemplate> templates = [
+            SELECT Id FROM EmailTemplate 
+            WHERE DeveloperName = :DEFAULT_TEMPLATE_DEVELOPER_NAME AND IsActive = true 
+            LIMIT 1
+        ];
+        return templates.isEmpty() ? null : templates[0].Id;
+    }
 }

@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Send_Custom_Notification</name>
+        <label>Send Custom Notification</label>
+        <locationX>446</locationX>
+        <locationY>647</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <connector>
+            <targetReference>CHECK_SetCaseSpecifics</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>GET_CustomNotificationType.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>var_T_coll_NotificationRecipient</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <elementReference>text_CaseOwnerChanged_Title</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>text_CaseOwnerChanged_Body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>customNotificationAction</nameSegment>
+    </actionCalls>
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>adds new case owner id as recipient id for notification action - must be collection variable</description>
+        <name>Add_NotificationRecipient_ids</name>
+        <label>Add Notification Recipient to Collection</label>
+        <locationX>446</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_coll_NotificationRecipient</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Owner:User.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Custom_Notification</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Removes value the field System: Lokalförening on Case. 
+This field is used inprder to be able to have a related list on Employer Account of associated Cases.</description>
+        <name>Empty_System_Lokalforening</name>
+        <label>Empty System Lokalförening</label>
+        <locationX>842</locationX>
+        <locationY>1055</locationY>
+        <assignmentItems>
+            <assignToReference>var_sObj_caseToUpdate.System_ParentAssociation__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_caseToUpdate.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_Do_Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set Case.Employer__c = Case.Account.CurrentEmployer__c</description>
+        <name>SET_Case_Employer</name>
+        <label>SET: Case Employer</label>
+        <locationX>50</locationX>
+        <locationY>947</locationY>
+        <assignmentItems>
+            <assignToReference>var_sObj_caseToUpdate.Employer__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account.CurrentEmployer__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_caseToUpdate.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_Do_Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Populates the field System: Lokalförening on Case. 
+This field is used in prder to be able to have a related list on Employer Account of associated Cases.</description>
+        <name>SET_Case_Lokalf_rening</name>
+        <label>SET: Case system Lokalförening</label>
+        <locationX>314</locationX>
+        <locationY>947</locationY>
+        <assignmentItems>
+            <assignToReference>var_sObj_caseToUpdate.System_ParentAssociation__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_f_LokalForening</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_sObj_caseToUpdate.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CHECK_Do_Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>CHECK_Do_Update_Case</name>
+        <label>CHECK: Do Update Case?</label>
+        <locationX>578</locationX>
+        <locationY>1331</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Update_Case</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_sObj_caseToUpdate.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Case</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_Send_Case_Owner_changed_notification</name>
+        <label>CHECK: Send Case Owner changed notification</label>
+        <locationX>578</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_SetCaseSpecifics</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_SendCaseOwnerChangedNotification</name>
+            <conditionLogic>(1 OR 2) AND 3 AND 4 AND 5</conditionLogic>
+            <conditions>
+                <leftValueReference>var_f_CaseIsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.OwnerId</leftValueReference>
+                <operator>StartsWith</operator>
+                <rightValue>
+                    <stringValue>005</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.LastModifiedById</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.OwnerId</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Owner:User.IsActive</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GET_CustomNotificationType</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>- Case är skapat för ett person account (inte ett employer/workplace account) - För medlemsärende.
+- Case är skapat för en förening (föreningsärende)
+- Record type = Förhandlings-, Rässhjälps-, Rådgivningsärenden
+- Kundcaseorsak = &apos;Medlemsärende&apos; or &apos;Föreningsärende&apos;
+
+Hantera förändrad förening finns med som ett sätt att ta hand om uppdateringar på föreningsfältet på ett case. Tex. om Systemfältet behöver tömmas..</description>
+        <name>CHECK_SetCaseSpecifics</name>
+        <label>CHECK: Set Case Specifics?</label>
+        <locationX>578</locationX>
+        <locationY>839</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_Do_Update_Case</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_SetCaseEmployer</name>
+            <conditionLogic>(1 OR 2) AND (3 OR 4 OR 5) AND 6</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account.IsPersonAccount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Contact.IsPersonAccount</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LegalAid</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Negotiation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LegalCase</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Medlemsärende</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_Case_Employer</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Yes, medlemsärende</label>
+        </rules>
+        <rules>
+            <name>Yes_Foreningsarende</name>
+            <conditionLogic>(1 AND (2 OR 3 OR 4) AND 5 AND 6)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Association__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Trustee</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Negotiation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LegalCase</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Reason</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Föreningsärende</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_f_LokalForening</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_Case_Lokalf_rening</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Yes, Föreningsärende</label>
+        </rules>
+        <rules>
+            <name>Handle_Changed_Association</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Association__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CHECK_Valid_record_types</targetReference>
+            </connector>
+            <label>Hantera förändrad förening</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check that the case record type is of a sort which supports having the system parent förening populated.</description>
+        <name>CHECK_Valid_record_types</name>
+        <label>CHECK: Valid record types?</label>
+        <locationX>710</locationX>
+        <locationY>947</locationY>
+        <defaultConnector>
+            <targetReference>Empty_System_Lokalforening</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not valid -&gt; empty system field</defaultConnectorLabel>
+        <rules>
+            <name>Valid_RTs</name>
+            <conditionLogic>(1 OR 2 OR 3) AND (4 OR 5)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LegalCase</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Negotiation</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.RecordType.DeveloperName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Trustee</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Association__r.Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lokalförening</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Association__r.Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lokallokalförening</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <isGoTo>true</isGoTo>
+                <targetReference>SET_Case_Lokalf_rening</targetReference>
+            </connector>
+            <label>Valid RTs</label>
+        </rules>
+    </decisions>
+    <description>2025-05-12 - Support for Förhandlingsärende related list on employer acc by popylating asystem field with parent lokalförennig on case.
+2025-05-05: Now checks that notification recipient (owner) is active before sending notification
+2025-03-17: Now sets Case.Employer__c if conditions are fulfilled
+Now doesn&apos;t send notification if I myself set myself as the owner.
+Created to send notification to new Case Owner</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>var_f_CaseIsNew</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <description>Returns id of closest related Lokalförening for the input in Association__c field. Only valid if Association is of type Lokallokalförening or Lokalförening. 
+Other types returns null</description>
+        <name>var_f_LokalForening</name>
+        <dataType>String</dataType>
+        <expression>IF(ISPICKVAL({!$Record.Association__r.Type__c}, &apos;Lokallokalförening&apos;)  &amp;&amp; NOT(ISNULL({!$Record.Association__r.ParentAssociation__c})), 
+{!$Record.Association__r.ParentAssociation__c}, 
+IF(ISPICKVAL({!$Record.Association__r.Type__c}, &apos;Lokalförening&apos;), {!$Record.Association__c},
+null))</expression>
+    </formulas>
+    <interviewLabel>Case {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Case - Trigger - After Create/Update</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>GET_CustomNotificationType</name>
+        <label>Get Custom Notification Type</label>
+        <locationX>446</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Add_NotificationRecipient_ids</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Default_Custom_Notification</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Case</name>
+        <label>Update Case</label>
+        <locationX>446</locationX>
+        <locationY>1439</locationY>
+        <inputReference>var_sObj_caseToUpdate</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>452</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CHECK_Send_Case_Owner_changed_notification</targetReference>
+        </connector>
+        <object>Case</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>text_CaseOwnerChanged_Body</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Du har blivit tilldelad ärende {!$Record.CaseNumber}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>text_CaseOwnerChanged_Title</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Tilldelad ärende</text>
+    </textTemplates>
+    <variables>
+        <name>var_sObj_caseToUpdate</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Case</objectType>
+    </variables>
+    <variables>
+        <description>must be collection to be used in notification action</description>
+        <name>var_T_coll_NotificationRecipient</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Account Id for the employer to add on to Case.Employer__c field</description>
+        <name>var_TXT_CaseEmployer</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

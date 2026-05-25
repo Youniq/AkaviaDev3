@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>51.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_Person_Account_Data</name>
+        <label>Set Person Account Data</label>
+        <locationX>182</locationX>
+        <locationY>1274</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account_Record.CurrentEmployer__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Get_Account_Record.GDPRStatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>30 Days</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_GDPR_Status</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_Account_Data</name>
+        <label>Set Person Account Data</label>
+        <locationX>490</locationX>
+        <locationY>350</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Account_Record.GDPRStatus__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>30 Days</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_person_account</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>If person account is of type &apos;Förtroendevald, ej Akavia&apos; the account should only get the GDPRStatus__c stamp (needs it to be processed in next gdpr step after 1 year) and then flow ends.</description>
+        <name>Check_account_type</name>
+        <label>Check account type</label>
+        <locationX>336</locationX>
+        <locationY>242</locationY>
+        <defaultConnector>
+            <targetReference>Update_Account_Data</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Is &apos;Förtroendevald, ej Akavia&apos;</defaultConnectorLabel>
+        <rules>
+            <name>Is_not_F_rtroendevald_ej_Akavia</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Account_Record.Type</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Förtroendevald, ej Akavia</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Empty_Current_Employer</targetReference>
+            </connector>
+            <label>Is not &apos;Förtroendevald, ej Akavia&apos;</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_Found_Appointments</name>
+        <label>CHECK - Found Appointments?</label>
+        <locationX>182</locationX>
+        <locationY>974</locationY>
+        <defaultConnector>
+            <targetReference>Set_Person_Account_Data</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_Found_Appointments_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>GET_Appointments</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>DELETE_Appointments</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_There_Employments_To_Delete</name>
+        <label>Is There Employments To Delete</label>
+        <locationX>182</locationX>
+        <locationY>566</locationY>
+        <defaultConnector>
+            <targetReference>GET_Appointments</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Employments To Delete</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Employements_To_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Employments_To_Delete</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Employment_Records</targetReference>
+            </connector>
+            <label>Yes, Employements To Delete</label>
+        </rules>
+    </decisions>
+    <description>Triggered from a Mass Action Scheduler: Account - Delete when Member exits 30 Days</description>
+    <environments>Default</environments>
+    <interviewLabel>Account - MAS - Delete when Member exits 30 Days: {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account - MAS - Delete when Member exits 30 Days</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>DELETE_Appointments</name>
+        <label>DELETE - Appointments</label>
+        <locationX>50</locationX>
+        <locationY>1082</locationY>
+        <connector>
+            <targetReference>Set_Person_Account_Data</targetReference>
+        </connector>
+        <inputReference>GET_Appointments</inputReference>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Delete_Employment_Records</name>
+        <label>Delete Employment Records</label>
+        <locationX>50</locationX>
+        <locationY>674</locationY>
+        <connector>
+            <targetReference>GET_Appointments</targetReference>
+        </connector>
+        <inputReference>Get_Employments_To_Delete</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <name>Get_Account_Record</name>
+        <label>Get Account Record</label>
+        <locationX>336</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_account_type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GET_Appointments</name>
+        <label>GET Appointments</label>
+        <locationX>182</locationX>
+        <locationY>866</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CHECK_Found_Appointments</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Appointment__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Employments_To_Delete</name>
+        <label>Get Employments To Delete</label>
+        <locationX>182</locationX>
+        <locationY>458</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_There_Employments_To_Delete</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Person__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Employment__c</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Set CurrentEmployer__c = null</description>
+        <name>Empty_Current_Employer</name>
+        <label>Empty Current Employer</label>
+        <locationX>182</locationX>
+        <locationY>350</locationY>
+        <connector>
+            <targetReference>Get_Employments_To_Delete</targetReference>
+        </connector>
+        <inputReference>Get_Account_Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Sets the GRPD Status field to &apos;30 Days&apos; as a marker that this flow did run for this account.</description>
+        <name>Update_GDPR_Status</name>
+        <label>Update GDPR Status</label>
+        <locationX>182</locationX>
+        <locationY>1382</locationY>
+        <inputReference>Get_Account_Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Set the GDPRStatus__c field. Field need to be filled in order for next GDPR step to proceed.</description>
+        <name>Update_person_account</name>
+        <label>Update Person Account</label>
+        <locationX>490</locationX>
+        <locationY>458</locationY>
+        <inputReference>Get_Account_Record</inputReference>
+    </recordUpdates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>210</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Account_Record</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>DebugItem1</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>DebugLog__c</objectType>
+    </variables>
+    <variables>
+        <description>input recordId from MAS</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

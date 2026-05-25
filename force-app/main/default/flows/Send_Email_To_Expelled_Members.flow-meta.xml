@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Send_Expel_Email</name>
+        <label>Send Expel Email</label>
+        <locationX>264</locationX>
+        <locationY>566</locationY>
+        <actionName>GLSendEmail__SendEmail</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Expelled_Accounts</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>EmailTemplateName</name>
+            <value>
+                <stringValue>Member_Expelled_Due_To_Non_Payment</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ContactOrLeadID</name>
+            <value>
+                <elementReference>Expelled_Accounts.PersonContactId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>OrgWideEmailAddress</name>
+            <value>
+                <elementReference>Get_Email_Addresses.No_Reply_Email_Address__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>RelatedToId</name>
+            <value>
+                <elementReference>Expelled_Accounts.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>SaveAsActivity</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ToAddresses</name>
+            <value>
+                <elementReference>Expelled_Accounts.PersonEmail</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>GLSendEmail__SendEmail</nameSegment>
+    </actionCalls>
+    <apiVersion>51.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Does_Member_have_email</name>
+        <label>Does Member have email</label>
+        <locationX>396</locationX>
+        <locationY>458</locationY>
+        <defaultConnector>
+            <targetReference>Expelled_Accounts</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Member_has_email</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>hasEmail</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Expel_Email</targetReference>
+            </connector>
+            <label>Member has email</label>
+        </rules>
+    </decisions>
+    <description>2025-01-29: La in en paus för att trigga en ny transaktion
+Flyttade ut GET från loop</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>hasEmail</name>
+        <dataType>Boolean</dataType>
+        <expression>{!Expelled_Accounts.PersonEmail} != null</expression>
+    </formulas>
+    <interviewLabel>Send Email To Expelled Members {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Send Email To Expelled Members</label>
+    <loops>
+        <name>Expelled_Accounts</name>
+        <label>Expelled Accounts</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <collectionReference>accountList</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Does_Member_have_email</targetReference>
+        </nextValueConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Email_Addresses</name>
+        <label>Get Email Addresses</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Expelled_Accounts</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Flow_Email_Addresses</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Flow_Email_Address__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Paus_init_new_transaction</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>accountList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+    <waits>
+        <description>Ran in to SOQL query limits from unit-test when expelling members when this flow runs. Hence adding wait element to commit updates and then starting a new transaction after the wait.</description>
+        <name>Paus_init_new_transaction</name>
+        <elementSubtype>WaitDuration</elementSubtype>
+        <label>Paus, init new transaction</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <defaultConnectorLabel>Default Path</defaultConnectorLabel>
+        <waitEvents>
+            <conditionLogic>and</conditionLogic>
+            <connector>
+                <targetReference>Get_Email_Addresses</targetReference>
+            </connector>
+            <label>el_0</label>
+            <offset>1</offset>
+            <offsetUnit>Minutes</offsetUnit>
+        </waitEvents>
+    </waits>
+</Flow>

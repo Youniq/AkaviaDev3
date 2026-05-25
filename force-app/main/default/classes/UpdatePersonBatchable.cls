@@ -2,7 +2,7 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2025-04-07
+ * @last modified on  : 2024-09-06
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
  **/
 global class UpdatePersonBatchable implements Database.Batchable<Sobject> {
@@ -38,9 +38,6 @@ global class UpdatePersonBatchable implements Database.Batchable<Sobject> {
           } else {
             System.debug(
               acctList[index].SocialSecurityNumber__c + ' was updated'
-            );
-              System.debug(
-              acctList[index].Name + ' was updated'
             );
           }
         } else {
