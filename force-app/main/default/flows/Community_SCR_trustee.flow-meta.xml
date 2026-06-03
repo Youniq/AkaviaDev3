@@ -550,7 +550,8 @@
             <label>Export as file</label>
         </rules>
     </decisions>
-    <description>2026-02-02: Updated text on screen Export list for members
+    <description>2026-06-03: Updated error page Ej förtroendevald
+2026-02-02: Updated text on screen Export list for members
 2025-12-15: Updated text on screen for Beställ Saco-lista
 2025-12-11: Fixes for exporting members for an association
 2025-12-02: Now fetching all employers connected to the Association, export members component not updated yet. 
@@ -1002,7 +1003,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
             <dataType>String</dataType>
             <fieldText>Vill du skicka med en medlemslista?</fieldText>
             <fieldType>RadioButtons</fieldType>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -1024,7 +1024,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
                     <dataType>String</dataType>
                     <fieldText>Fyll i ditt organiationsnummer</fieldText>
                     <fieldType>InputField</fieldType>
-                    <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
                     <isRequired>false</isRequired>
                     <styleProperties>
                         <verticalAlignment>
@@ -1138,7 +1137,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
             <dataType>String</dataType>
             <fieldText>Vilken förening representerar du?</fieldText>
             <fieldType>DropdownBox</fieldType>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -1747,7 +1745,7 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
         <allowPause>true</allowPause>
         <fields>
             <name>txtNotTrust</name>
-            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-family: sans-serif; font-size: 18px;&quot;&gt;Ett fel inträffade&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;Vi hittar inget aktuellt uppdrag som lokalt förtroendevald på din profil. För att få åtkomst till denna sida behöver du vara lokalt förtroendevald som ordförande, vice ordförande eller medlemsadministratör.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;em style=&quot;font-family: sans-serif;&quot;&gt;Vänligen kontakta &lt;/em&gt;&lt;a href=&quot;mailto: fortroendevald@akavia.se&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-family: sans-serif;&quot;&gt;fortroendevald@akavia.se&lt;/a&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt; &lt;/span&gt;&lt;em style=&quot;font-family: sans-serif;&quot;&gt;för att åtgärda problemet.&lt;/em&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 18px; font-family: sans-serif;&quot;&gt;Ett fel inträffade&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;För att få åtkomst till denna sida behöver du vara lokalt förtroendevald som ordförande, vice ordförande eller medlemsadministratör. &lt;/span&gt;&lt;span style=&quot;font-family: sans-serif; background-color: rgb(255, 255, 255);&quot;&gt;Vi hittar inget sådant aktuellt uppdrag som lokalt förtroendevald på din profil. &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;em style=&quot;font-family: sans-serif;&quot;&gt;Vänligen kontakta &lt;/em&gt;&lt;a href=&quot;mailto: fortroendevald@akavia.se&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot; style=&quot;font-family: sans-serif;&quot;&gt;fortroendevald@akavia.se&lt;/a&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt; &lt;/span&gt;&lt;em style=&quot;font-family: sans-serif;&quot;&gt;för att åtgärda problemet.&lt;/em&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -1844,7 +1842,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
             <fieldText>Personnummer (ÅÅÅÅDDMMXXXX)</fieldText>
             <fieldType>InputField</fieldType>
             <helpText>&lt;p&gt;&lt;span style=&quot;font-family: sans-serif;&quot;&gt;Detta fält ät obligatoriskt&lt;/span&gt;&lt;span style=&quot;color: rgb(24, 24, 24);&quot;&gt;&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;</helpText>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -1874,7 +1871,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
             <fieldText>Skriv in arbetsgivare samt adress till arbetsplatsen för medlemmen, t.ex. Akavia, Nybrogatan 30, Stockholm</fieldText>
             <fieldType>InputField</fieldType>
             <helpText>&lt;p&gt;&lt;span style=&quot;color: rgb(24, 24, 24); font-family: sans-serif;&quot;&gt;Detta fält är obligatoriskt&lt;/span&gt;&lt;/p&gt;</helpText>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -1890,7 +1886,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
             <dataType>String</dataType>
             <fieldText>Namn</fieldText>
             <fieldType>InputField</fieldType>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -1906,7 +1901,6 @@ Returns Association Name if Type = “Lokalförening”, Parent Association Name
             <dataType>String</dataType>
             <fieldText>E-post</fieldText>
             <fieldType>InputField</fieldType>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
             <styleProperties>
                 <verticalAlignment>

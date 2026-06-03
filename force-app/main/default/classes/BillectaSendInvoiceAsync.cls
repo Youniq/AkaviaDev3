@@ -30,81 +30,87 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
   }
 
   public void execute(QueueableContext context) {
-    Callout__c currentCallout = [
-      SELECT
-        Id,
-        Status__c,
-        sentOn__c,
-        Duration__c,
-        Response__c,
-        Account__c,
-        jobId__c,
-        errorLog__c,
-        Type__c
-      FROM Callout__c
-      WHERE jobId__c = :context.getJobId()
-    ];
 
-    Long start = System.now().getTime();
+      Callout__c currentCallout = [
+          SELECT
+              Id,
+              Status__c,
+              sentOn__c,
+              Duration__c,
+              Response__c,
+              Account__c,
+              jobId__c,
+              errorLog__c,
+              Type__c
+          FROM Callout__c
+          WHERE jobId__c = :context.getJobId()
+      ];
 
-    /******FIRST WE CREATE/UPDATE INVOICE*****/
-    currentCallout = sendToBillecta(currentCallout);
+      // Retroaktiva fakturor hanteras i separat implementation
+      if (currentCallout.Type__c == 'Billecta - Create Retroactive Invoice') {
 
-    if (currentCallout.errorLog__c == null)
-      currentCallout.status__c = 'OK';
+        System.debug('QUEUEING RETROACTIVE JOB');
+        
+          System.enqueueJob(
+              new BillectaSendRetroactiveInvoiceAsync(
+                  this.acc.Id,
+                  currentCallout.Id,
+                  this.retroactiveInv
+              )
+          );
 
-    currentCallout.sentOn__c = System.now();
-    currentCallout.Duration__c = system.now().getTime() - start;
+          return;
+      }
 
-    /******SECOND WE CREATE INVOICE RECORD AND ATTACH BILLECTAID *****/
-    if (
-      currentCallout.Type__c == 'Billecta - Create Invoice' ||
-      currentCallout.Type__c == 'Billecta - Create Retroactive Invoice'
-    ) {
-      if (currentCallout.status__c == 'OK') {
-        BillectaCreateInvoice.CreatedView jsonResponse = BillectaCreateInvoice.parse(
-          currentCallout.Response__c
-        );
-        system.debug('parsed json : ' + jsonresponse);
-        BillectaId = jsonResponse.PublicId;
+      Long start = System.now().getTime();
 
-        system.debug('BillectaId String : ' + BillectaId);
-        Invoice__c inv = new Invoice__c();
+      /******FIRST WE CREATE/UPDATE INVOICE*****/
+      currentCallout = sendToBillecta(currentCallout);
 
-        if (this.retroactiveInv == null) {
-          // An invoice for current month
+      if (currentCallout.errorLog__c == null) {
+          currentCallout.status__c = 'OK';
+      }
+
+      currentCallout.sentOn__c = System.now();
+      currentCallout.Duration__c = system.now().getTime() - start;
+
+      /******SECOND WE CREATE INVOICE RECORD AND ATTACH BILLECTAID *****/
+      if (currentCallout.Type__c == 'Billecta - Create Invoice') {
+
+          BillectaCreateInvoice.CreatedView jsonResponse =
+              BillectaCreateInvoice.parse(currentCallout.Response__c);
+
+          BillectaId = jsonResponse.PublicId;
+
+          Invoice__c inv = new Invoice__c();
+
           inv.MembershipCategory__c = this.acc.MembershipCategory__c;
           inv.FeeCategory__c = this.acc.FeeCategory__c;
           inv.Person__c = this.acc.Id;
           inv.BillectaID__c = BillectaId;
-        } else {
-          // A retroactive invoice
-          inv.MembershipCategory__c = this.retroactiveInv.MembershipCategory;
-          inv.FeeCategory__c = this.retroactiveInv.FeeCategory;
-          inv.Person__c = this.acc.Id;
-          inv.BillectaId__c = BillectaId;
-        }
 
-        try {
-          insert inv;
-        } catch (Exception e) {
-          currentCallout = setFailedCalloutValues(currentCallout, e);
-        }
+          try {
+              insert inv;
+          } catch (Exception e) {
+              currentCallout = setFailedCalloutValues(currentCallout, e);
+          }
+
+      } else if (currentCallout.Type__c == 'Billecta - Pause Invoice') {
+
+          if (currentCallout.status__c == 'OK') {
+
+              this.inv.PaymentStatus__c = 'Pausad';
+
+              try {
+                  update inv;
+              } catch (Exception e) {
+                  currentCallout = setFailedCalloutValues(currentCallout, e);
+              }
+          }
       }
-    } else if (currentCallout.Type__c == 'Billecta - Pause Invoice') {
-      if (currentCallout.status__c == 'OK') {
-        this.inv.PaymentStatus__c = 'Pausad';
-        try {
-          update inv;
-        } catch (Exception e) {
-          currentCallout = setFailedCalloutValues(currentCallout, e);
-        }
-      }
-    }
 
-    /******THIRD WE UPDATE CALLOUT*****/
-
-    update currentCallout;
+      /******THIRD WE UPDATE CALLOUT*****/
+      update currentCallout;
   }
 
   public Callout__c sendToBillecta(Callout__c co) {
@@ -140,23 +146,7 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
       System.debug('Request: ' + request);
       System.debug('Body: ' + request.getBody());
     }
-    if (co.Type__c == 'Billecta - Create Retroactive Invoice') {
-      jsonPayload = BillectaEncodeJSON.encodeAkaviaRetroactiveInvoice(
-        this.acc,
-        this.retroactiveInv,
-        credentials.Creditor__c
-      );
-
-      System.debug(jsonPayload.toString());
-
-      request = BillectaUtils.initBillectaRequest(request);
-      request = BillectaUtils.CreateInvoice(request, jsonPayload);
-      co.request__c = jsonPayload.toString();
-      co.path__c = request.getEndpoint();
-
-      System.debug('Request: ' + request);
-      System.debug('Body: ' + request.getBody());
-    } else if (co.Type__c == 'Billecta - Pause Invoice') {
+    if (co.Type__c == 'Billecta - Pause Invoice') {
       request = BillectaUtils.initBillectaRequest(request);
       request = BillectaUtils.PauseInvoice(request, this.inv.BillectaID__c);
       co.path__c = request.getEndpoint();

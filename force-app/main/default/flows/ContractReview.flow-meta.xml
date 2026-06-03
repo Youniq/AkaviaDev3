@@ -73,6 +73,57 @@
     </actionCalls>
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Build_And_Add_Criterion</name>
+        <label>Build And Add Criterion</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>currentRuntimeCriterion.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Criterion_For_Assignment.MasterLabel</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>currentRuntimeCriterion.Definition__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Criterion_For_Assignment.Definition__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>currentRuntimeCriterion.Sequence__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Over_Assignments.Sequence__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>currentRuntimeCriterion.ContractReviewCriterionId__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Over_Assignments.ContractReviewCriterion__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>currentRuntimeCriterion.ContractReview__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Create_ContractReview.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>runtimeCriteriaCollection</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>currentRuntimeCriterion</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Over_Assignments</targetReference>
+        </connector>
+    </assignments>
     <customProperties>
         <name>ScreenProgressIndicator</name>
         <value>
@@ -123,6 +174,20 @@
     <environments>Default</environments>
     <interviewLabel>Avtalsgranskning {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Avtalsgranskning</label>
+    <loops>
+        <name>Loop_Over_Assignments</name>
+        <label>Loop Over Assignments</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Get_ContractReviewTemplateAssignments</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Criterion_For_Assignment</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Create_ContractReviewRuntimeCriteria</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -173,7 +238,7 @@
         <connector>
             <targetReference>Starta_granskning</targetReference>
         </connector>
-        <inputReference>Transform_into_runtime_criteria</inputReference>
+        <inputReference>runtimeCriteriaCollection</inputReference>
     </recordCreates>
     <recordCreates>
         <name>relate_File_to_ContractReview</name>
@@ -181,7 +246,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Transform_into_runtime_criteria</targetReference>
+            <targetReference>Loop_Over_Assignments</targetReference>
         </connector>
         <inputAssignments>
             <field>ContentDocumentId</field>
@@ -198,27 +263,6 @@
         <object>ContentDocumentLink</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
-    <recordLookups>
-        <name>Get_ContractReviewCriterion_mdt_records</name>
-        <label>Get ContractReviewCriterion__mdt records</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Create_ContractReview</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>In</operator>
-            <value>
-                <elementReference>Collect_ContractReviewCriterion_mdt_Ids</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>ContractReviewCriterion__mdt</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
     <recordLookups>
         <name>Get_ContractReviewTemplate_records</name>
         <label>Get ContractReview Templates</label>
@@ -239,7 +283,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Collect_ContractReviewCriterion_mdt_Ids</targetReference>
+            <targetReference>Create_ContractReview</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -249,8 +293,41 @@
                 <elementReference>Select_template</elementReference>
             </value>
         </filters>
+        <filters>
+            <field>IsActive__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>ContractReviewTemplateAssignment__mdt</object>
+        <sortField>Sequence__c</sortField>
+        <sortOrder>Asc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Criterion_For_Assignment</name>
+        <label>Get Criterion For Assignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Build_And_Add_Criterion</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Over_Assignments.ContractReviewCriterion__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContractReviewCriterion__mdt</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>MasterLabel</queriedFields>
+        <queriedFields>Definition__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -317,7 +394,6 @@
             <dataType>String</dataType>
             <fieldText>Välj fil</fieldText>
             <fieldType>DropdownBox</fieldType>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -334,7 +410,6 @@
             <dataType>String</dataType>
             <fieldText>Välj granskningsmall</fieldText>
             <fieldType>DropdownBox</fieldType>
-            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -390,82 +465,20 @@
         <text>Avtalsgranskning {!Create_ContractReview.Name} har påbörjats!
 Filnamn: {!getFile.Title} [{!getFile.FileExtension}]</text>
     </textTemplates>
-    <transforms>
-        <name>Collect_ContractReviewCriterion_mdt_Ids</name>
-        <label>Collect ContractReviewCriterion__mdt Ids</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Get_ContractReviewCriterion_mdt_records</targetReference>
-        </connector>
-        <dataType>String</dataType>
-        <isCollection>true</isCollection>
-        <scale>0</scale>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-        <transformValues>
-            <transformValueActions>
-                <transformType>Map</transformType>
-                <value>
-                    <elementReference>Get_ContractReviewTemplateAssignments[$EachItem].ContractReviewCriterion__c</elementReference>
-                </value>
-            </transformValueActions>
-        </transformValues>
-    </transforms>
-    <transforms>
-        <name>Transform_into_runtime_criteria</name>
-        <label>Transform into runtime criteria</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Create_ContractReviewRuntimeCriteria</targetReference>
-        </connector>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <objectType>ContractReviewRuntimeCriterion__c</objectType>
-        <scale>0</scale>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-        <transformValues>
-            <transformValueActions>
-                <outputFieldApiName>Name</outputFieldApiName>
-                <transformType>Map</transformType>
-                <value>
-                    <elementReference>Get_ContractReviewCriterion_mdt_records[$EachItem].MasterLabel</elementReference>
-                </value>
-            </transformValueActions>
-            <transformValueActions>
-                <outputFieldApiName>Definition__c</outputFieldApiName>
-                <transformType>Map</transformType>
-                <value>
-                    <elementReference>Get_ContractReviewCriterion_mdt_records[$EachItem].Definition__c</elementReference>
-                </value>
-            </transformValueActions>
-            <transformValueActions>
-                <outputFieldApiName>ContractReview__c</outputFieldApiName>
-                <transformType>Map</transformType>
-                <value>
-                    <formulaDataType>String</formulaDataType>
-                    <formulaExpression>IF(
-    NOT(ISBLANK({!Get_ContractReviewCriterion_mdt_records[$EachItem].Id})), 
-    {!Create_ContractReview.Id},
-    {!Create_ContractReview.Id}
-)</formulaExpression>
-                </value>
-            </transformValueActions>
-            <transformValueActions>
-                <outputFieldApiName>ContractReviewCriterionId__c</outputFieldApiName>
-                <transformType>Map</transformType>
-                <value>
-                    <elementReference>Get_ContractReviewCriterion_mdt_records[$EachItem].Id</elementReference>
-                </value>
-            </transformValueActions>
-        </transformValues>
-    </transforms>
     <variables>
         <name>ContractReviewResultIds</name>
         <dataType>String</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>currentRuntimeCriterion</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContractReviewRuntimeCriterion__c</objectType>
     </variables>
     <variables>
         <description>The ids of all ContractReviewCriterion__mdt records identified via the ContractReviewTemplateAssignment records</description>
@@ -481,5 +494,13 @@ Filnamn: {!getFile.Title} [{!getFile.FileExtension}]</text>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>runtimeCriteriaCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContractReviewRuntimeCriterion__c</objectType>
     </variables>
 </Flow>

@@ -37,6 +37,14 @@ public with sharing class BillectaDebtorInvoiceInvocable {
 
             BillectaCreateInvoice invoiceInfo = r.retroactiveInvoiceInfo;
 
+            if (invoiceInfo.Amount == null || invoiceInfo.Amount <= 0) {
+                throw new CustomException('Amount saknas eller är 0 för retroaktiv faktura.');
+            }
+
+            if (String.isBlank(invoiceInfo.ProductPublicId)) {
+                throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
+            }
+
             Date startDate = Date.newInstance(
                 invoiceInfo.PeriodStart.year(),
                 invoiceInfo.PeriodStart.month(),
@@ -52,10 +60,7 @@ public with sharing class BillectaDebtorInvoiceInvocable {
             }
 
             invoiceInfo.DueDate = calculateDueDate(Date.today());
-
-            //if (invoiceInfo.UseDebtorBalance == null) {
-                invoiceInfo.UseDebtorBalance = true;
-            //}
+            invoiceInfo.UseDebtorBalance = true;
 
             BillectaDebtorStatusUpdateHelper.sendRetroactiveInvoice(
                 r.accountId,

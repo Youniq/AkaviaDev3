@@ -186,6 +186,95 @@ public class BillectaEncodeJSON {
         return Blob.valueOf(jsonBody);
     }
 
+    public static Blob encodeAkaviaRetroactiveInvoice(
+        Account acc,
+        BillectaCreateInvoice newRetroActiveInv,
+        String creditorId
+    ) {
+        if (acc == null) {
+            throw new Exception('Account saknas.');
+        }
+
+        if (String.isBlank(acc.BillectaID__c)) {
+            throw new Exception('BillectaID saknas på Account.');
+        }
+
+        if (newRetroActiveInv == null) {
+            throw new Exception('Fakturainformation saknas.');
+        }
+
+        if (String.isBlank(newRetroActiveInv.ProductPublicId)) {
+            throw new Exception('ProductPublicId saknas för retroaktiv faktura.');
+        }
+
+        if (String.isBlank(newRetroActiveInv.CostCenter)) {
+            throw new Exception('CostCenter saknas för retroaktiv faktura.');
+        }
+
+        if (newRetroActiveInv.Amount == null || newRetroActiveInv.Amount <= 0) {
+            throw new Exception('Amount måste vara större än 0.');
+        }
+
+        Decimal amount = newRetroActiveInv.Amount;
+
+        Map<String, Object> record = new Map<String, Object>{
+            'ProductPublicId' => newRetroActiveInv.ProductPublicId,
+            'SequenceNo' => 0,
+            'Units' => null,
+            'ArticleDescription' => 'Retroaktiv medlemsavgift',
+            'ArticleNumber' => null,
+            'Quantity' => 1,
+            'UnitPrice' => new Map<String, Object>{
+                'CurrencyCode' => 'SEK',
+                'Value' => Integer.valueOf(amount * 100)
+            },
+            'DiscountAmount' => null,
+            'DiscountPercentage' => 0,
+            'DiscountType' => 'Amount',
+            'VAT' => 0,
+            'CostCenter' => newRetroActiveInv.CostCenter,
+            'PeriodStart' => newRetroActiveInv.PeriodStart,
+            'PeriodEnd' => newRetroActiveInv.PeriodEnd,
+            'Project' => null,
+            'RecordType' => 'Standard',
+            'VatIsIncluded' => false,
+            'Hidden' => false,
+            'ExternalReference' => acc.Id,
+            'Dimensions' => null
+        };
+
+        Map<String, Object> payload = new Map<String, Object>{
+            'ActionType' => 'InvoiceAction',
+            'CreditorPublicId' => creditorId,
+            'DebtorPublicId' => acc.BillectaID__c,
+            'InvoiceDate' => DateTime.now(),
+            'DueDate' => newRetroActiveInv.DueDate,
+            'DeliveryDate' => null,
+            'Records' => new List<Object>{ record },
+            'InterestPercentage' => 8,
+            'InterestStartInDaysAfterDueDate' => 0,
+            'InterestType' => 'AboveEffectiveReference',
+            'DeliveryMethod' => 'Email',
+            'CommunicationLanguage' => 'SV',
+            'Message' => null,
+            'InvoiceFee' => null,
+            'FreightFee' => null,
+            'VatIsIncluded' => false,
+            'UseDebtorBalance' => newRetroActiveInv.UseDebtorBalance == null ? true : newRetroActiveInv.UseDebtorBalance,
+            'ExternalReference' => acc.Id,
+            'IsLocked' => false,
+            'Autogiro' => null,
+            'CreditCard' => null,
+            'Swish' => null
+        };
+
+        String jsonBody = JSON.serialize(payload, true);
+        System.debug('Retroactive invoice payload: ' + jsonBody);
+
+        return Blob.valueOf(jsonBody);
+    }
+
+    /** PREVIOUS - when using Akavia custom endpoint at Billecta.
   public static Blob encodeAkaviaRetroactiveInvoice(
     Account acc,
     BillectaCreateInvoice newRetroActiveInv,
@@ -202,7 +291,7 @@ public class BillectaEncodeJSON {
         String jsonBody = JSON.serialize(newRetroActiveInv, true);
         return Blob.valueOf(jsonBody);
     }
-
+*/
   public static blob encodeSMS(Account acc, String creditorId) {
     BillectaCreateSMS.SMS newSMS = new BillectaCreateSMS.SMS();
 

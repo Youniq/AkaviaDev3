@@ -1,0 +1,88 @@
+<!--
+  @description       : 
+  @author            : Malin Nilsson (Stretch Customer AB)
+  @group             : 
+  @last modified on  : 2024-04-23
+  @last modified by  : Malin Nilsson (Stretch Customer AB)
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForRecordHome"
+    controller="BillectaDebtorStatusUpdateHelper">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!--component attributs -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="lastUpdated" type="String" />
+    <aura:attribute name="icon" type="String" />
+    <aura:attribute name="spinner" type="boolean" default="false" />
+    <aura:attribute name="showScreenflow" type="boolean" default="false" />
+    <aura:attribute name="obj" type="BillectaDebtorStatusUpdateHelper" />
+    <div class="slds-box slds-theme_default">
+        <!--   <header class="slds-modal__header">
+        <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!$Label.c.Billecta_PaymentInfoHead}</h2>
+    </header>-->
+
+        <aura:if isTrue="{!and((v.obj.Status == 'Failed'), (v.spinner == false))}">
+            <h1>Something went wrong</h1>
+            <lightning:icon iconName="utility:error" variant="error" style="padding-left:18px; padding-bottom:5px" />
+            <ui:outputText value="{!'Error Message :'+v.obj.ErrorMessage}" />
+        </aura:if>
+
+        <aura:if isTrue="{!and((v.obj != 'Failed'), (v.spinner == false))}">
+            <aura:if isTrue="{!and((v.obj.IDExists), (v.spinner == false))}">
+                <aura:if isTrue="{!and((v.showScreenflow == false),(true))}">
+                    <h1 class="slds-text-title_caps ">
+                        {!$Label.c.Billecta_LastUpdated}</h1>
+                    <ui:outputText value="{!v.obj.lastUpdated}" />
+                    <aura:if isTrue="{!and((v.obj.icon == 'warning'), (v.spinner == false))}">
+                        <lightning:icon iconName="utility:warning" variant="warning"
+                            style="padding-right:18px; padding-bottom:5px; float:right" />
+                    </aura:if>
+                    <aura:if isTrue="{!and((v.obj.icon == 'success'), (v.spinner == false))}">
+                        <lightning:icon iconName="utility:success" variant="success"
+                            style="padding-right:18px; padding-bottom:5px; float:right" />
+                    </aura:if>
+                    <br />
+                    <br />
+                    <br />
+                    <ui:button label="{!$Label.c.Billecta_UpdatePaymentInformtion}" press="{!c.doUpdate}"
+                        class="slds-button slds-button_brand" /><br />
+                    <ui:button label="{!$Label.c.Billecta_CreateNewInvoice}" press="{!c.doCreateInvoice}"
+                        class="slds-button slds-button_brand" /><br />
+                    <ui:button label="{!$Label.c.Billetca_SendSMS}" press="{!c.doSendSMS}"
+                        class="slds-button slds-button_brand" />
+                </aura:if>
+                <!-- <aura:set attribute="else"> -->
+                <div class="{!v.showScreenflow? '': 'slds-hide'}">
+                    <!-- Embedding a screenflow which manages user input during invoice create action. Initiated from c.doCreateInvoice -->
+                    <lightning:buttonIcon iconName="utility:close" class="slds-modal__close"
+                        onclick="{!c.doCloseScreenflow}" />
+                    <lightning:flow aura:id="flowCreateInvoice" />
+                </div>
+
+                <!-- </aura:set> -->
+            </aura:if>
+
+            <aura:if isTrue="{!and((v.obj.IDExists == false), (v.spinner == false))}">
+                <ui:outputText class="outputText" value="{!$Label.c.Billecta_MissingID}" />
+                <lightning:icon iconName="utility:error" variant="error"
+                    style="padding-right:18px; padding-bottom:5px; float:right" />
+            </aura:if>
+        </aura:if>
+
+
+        <!--loading spinner start-->
+        <aura:if isTrue="{!v.spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        <!-- Loading spinner end-->
+    </div>
+
+
+</aura:component>

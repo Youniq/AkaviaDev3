@@ -20,6 +20,12 @@ global class BillectaCreateInvoice {
     @AuraEnabled public Date PeriodEnd;
     @AuraEnabled public Date DueDate;
 
+    // NYA
+    @AuraEnabled public Decimal Amount;
+    @AuraEnabled public String ArticleDescription;
+    @AuraEnabled public String ProductPublicId;
+    @AuraEnabled public String CostCenter;
+
     global class CreatedView {
         public String PublicId;
     }

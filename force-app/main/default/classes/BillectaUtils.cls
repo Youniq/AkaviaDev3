@@ -49,6 +49,19 @@ public class BillectaUtils {
 
   //******SINGEL INVOICE ACTIONS *******/
 
+  public static httpRequest CreateRetroactiveInvoice(httpRequest req, Blob body) {
+
+      req.setEndpoint(
+          req.getEndpoint() + '/v1/invoice/action'
+      );
+
+      req.setMethod(GlobalConstants.HTTP_METHOD_POST);
+
+      req.setBodyAsBlob(body);
+
+      return req;
+  }
+
   public static httpRequest CreateInvoice(httpRequest req, Blob body) {
     req.setEndpoint(req.getEndpoint() + '/v1/akavia/createinvoice');
     req.setMethod(GlobalConstants.HTTP_METHOD_POST);
