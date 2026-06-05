@@ -6,7 +6,11 @@
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
  **/
 public class BillectaEncodeJSON {
+
+  public class CustomException extends Exception {}
+
   public static Blob encodeCreateDebtor(Account acc, String creditorId) {
+    
     BillectaCreateDebtor.DebtorView newDebtor = new BillectaCreateDebtor.DebtorView();
 
     if (acc.BillectaID__c != null) {
@@ -192,27 +196,27 @@ public class BillectaEncodeJSON {
         String creditorId
     ) {
         if (acc == null) {
-            throw new Exception('Account saknas.');
+            throw new CustomException('Account saknas.');
         }
 
         if (String.isBlank(acc.BillectaID__c)) {
-            throw new Exception('BillectaID saknas på Account.');
+            throw new CustomException('BillectaID saknas på Account.');
         }
 
         if (newRetroActiveInv == null) {
-            throw new Exception('Fakturainformation saknas.');
+            throw new CustomException('Fakturainformation saknas.');
         }
 
         if (String.isBlank(newRetroActiveInv.ProductPublicId)) {
-            throw new Exception('ProductPublicId saknas för retroaktiv faktura.');
+            throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
         }
 
         if (String.isBlank(newRetroActiveInv.CostCenter)) {
-            throw new Exception('CostCenter saknas för retroaktiv faktura.');
+            throw new CustomException('CostCenter saknas för retroaktiv faktura.');
         }
 
         if (newRetroActiveInv.Amount == null || newRetroActiveInv.Amount <= 0) {
-            throw new Exception('Amount måste vara större än 0.');
+            throw new CustomException('Amount måste vara större än 0.');
         }
 
         Decimal amount = newRetroActiveInv.Amount;
