@@ -2,7 +2,7 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2026-03-23
+ * @last modified on  : 2026-06-05
  * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 global class BillectaCreateInvoice {

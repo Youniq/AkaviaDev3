@@ -1,12 +1,18 @@
 /**
- * @description       : Creates an invoice in Billecta for the member. Create retroactive invoice or 'normal' invoice for current month
- *  As of june 2024 - The 'normal' invoice is not used at Akavia. They create invoices for current month using the same logic as for Retroactive invoices.
+ * @description       : Creates an invoice in Billecta for the member. Create 'normal' 
+ * invoice for current month As of june 2024 - The 'normal' invoice is not used at Akavia. 
+ * Create 'retroactive' invoice (Account - ScreenFlow - CreateInvoiceInBillecta) use Billecta public API 
+ * with an extended Json Blob. The reason is that the Due date for the invoice needs to be set to 28th of 
+ * current month IF creation is 14 days before the 28th ELSE DueDate is set to 28th of next month.
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2024-06-18
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-06-05
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 public with sharing class BillectaDebtorInvoiceInvocable {
+
+    public class CustomException extends Exception {}
+
   public class Request {
     @invocableVariable(label='Account Id' Required=true)
     public String accountId;

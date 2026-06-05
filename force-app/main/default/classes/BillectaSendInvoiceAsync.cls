@@ -2,8 +2,8 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2024-12-16
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-06-05
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallouts {
   private Account acc { get; set; }
