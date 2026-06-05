@@ -48,7 +48,7 @@ public with sharing class BillectaDebtorInvoiceInvocable {
             }
 
             if (String.isBlank(invoiceInfo.ProductPublicId)) {
-                throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
+                //throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
             }
 
             Date startDate = Date.newInstance(
@@ -58,6 +58,10 @@ public with sharing class BillectaDebtorInvoiceInvocable {
             );
 
             invoiceInfo.PeriodStart = startDate;
+
+            if(invoiceInfo.HaveAkassa) {
+                // invoiceInfo.Amount = invoiceInfo.Amount * {ska avgift för akassa adderas till summan?};
+            }
 
             if (isPensionerCategory(invoiceInfo.MembershipCategory)) {
                 invoiceInfo.PeriodEnd = startDate.addMonths(12).addDays(-1);

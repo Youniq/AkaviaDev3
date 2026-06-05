@@ -208,11 +208,11 @@ public class BillectaEncodeJSON {
         }
 
         if (String.isBlank(newRetroActiveInv.ProductPublicId)) {
-            throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
+            //throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
         }
 
         if (String.isBlank(newRetroActiveInv.CostCenter)) {
-            throw new CustomException('CostCenter saknas för retroaktiv faktura.');
+            //throw new CustomException('CostCenter saknas för retroaktiv faktura.');
         }
 
         if (newRetroActiveInv.Amount == null || newRetroActiveInv.Amount <= 0) {
@@ -222,7 +222,6 @@ public class BillectaEncodeJSON {
         Decimal amount = newRetroActiveInv.Amount;
 
         Map<String, Object> record = new Map<String, Object>{
-            'ProductPublicId' => newRetroActiveInv.ProductPublicId,
             'SequenceNo' => 0,
             'Units' => null,
             'ArticleDescription' => 'Retroaktiv medlemsavgift',
@@ -236,7 +235,6 @@ public class BillectaEncodeJSON {
             'DiscountPercentage' => 0,
             'DiscountType' => 'Amount',
             'VAT' => 0,
-            'CostCenter' => newRetroActiveInv.CostCenter,
             'PeriodStart' => newRetroActiveInv.PeriodStart,
             'PeriodEnd' => newRetroActiveInv.PeriodEnd,
             'Project' => null,
@@ -244,7 +242,14 @@ public class BillectaEncodeJSON {
             'VatIsIncluded' => false,
             'Hidden' => false,
             'ExternalReference' => acc.Id,
-            'Dimensions' => null
+            'Dimensions' => null,
+            'ProductPublicId' => String.isBlank(newRetroActiveInv.ProductPublicId)
+                ? null
+                : newRetroActiveInv.ProductPublicId,
+
+            'CostCenter' => String.isBlank(newRetroActiveInv.CostCenter)
+                ? null
+                : newRetroActiveInv.CostCenter
         };
 
         Map<String, Object> payload = new Map<String, Object>{
