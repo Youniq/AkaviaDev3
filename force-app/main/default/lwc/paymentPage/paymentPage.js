@@ -240,13 +240,13 @@ export default class PaymentPage extends LightningElement {
   }
 
   async refreshAccountData() {
-    if (this.userAccountId) {
-      await notifyRecordUpdateAvailable([{ recordId: this.userAccountId }]);
-    }
-  
-    if (this.wiredAccountResult) {
-      await refreshApex(this.wiredAccountResult);
-    }
+      if (this.userAccountId) {
+        await notifyRecordUpdateAvailable([{ recordId: this.userAccountId }]);
+      }
+
+      if (this.wiredAccountResult) {
+        await refreshApex(this.wiredAccountResult);
+      }
   }
 
   // Retrieves the availible AutoGiro Banks for selection
