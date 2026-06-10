@@ -211,7 +211,13 @@ public class BillectaDebtorStatusUpdateHelper {
   ) {
     List<Callout__c> calloutsScheduled = new List<Callout__c>();
     Account acc = [
-      SELECT Id, BillectaID__c, SocialSecurityNumber__c, MemberNumber__c
+      SELECT Id,
+            MembershipCategory__c,
+            FeeCategory__c,
+            BillectaID__c,
+            MemberNumber__c,
+            SocialSecurityNumber__c,
+            UnemploymentFundThroughAkavia__c
       FROM Account
       WHERE Id = :recordId
     ];

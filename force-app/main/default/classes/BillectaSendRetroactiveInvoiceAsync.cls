@@ -69,10 +69,12 @@ public class BillectaSendRetroactiveInvoiceAsync implements Queueable, Database.
 
             System.debug('Retroactive payload: ' + bodyBlob.toString());
 
+            /** Method is commented out. only used for PUBLIC API
             req = BillectaUtils.CreateRetroactiveInvoice(
                 req,
                 bodyBlob
             );
+            */
 
             co.Request__c = bodyBlob.toString();
             co.Path__c = req.getEndpoint();

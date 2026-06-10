@@ -49,6 +49,7 @@ public class BillectaUtils {
 
   //******SINGEL INVOICE ACTIONS *******/
 
+  /* Endpoint for PUBLIC API - NOT TESTED, DO NOT KNOW IF IT WORKS - ONLY USED FOR RETROACTIVE INVOICES
   public static httpRequest CreateRetroactiveInvoice(httpRequest req, Blob body) {
 
       req.setEndpoint(
@@ -61,6 +62,7 @@ public class BillectaUtils {
 
       return req;
   }
+  */
 
   public static httpRequest CreateInvoice(httpRequest req, Blob body) {
     req.setEndpoint(req.getEndpoint() + '/v1/akavia/createinvoice');

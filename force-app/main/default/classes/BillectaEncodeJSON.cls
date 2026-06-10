@@ -190,6 +190,7 @@ public class BillectaEncodeJSON {
         return Blob.valueOf(jsonBody);
     }
 
+    /** PUBLIC API - when using Akavia public endpoint at Billecta. NEVER TESTED 
     public static Blob encodeAkaviaRetroactiveInvoice(
         Account acc,
         BillectaCreateInvoice newRetroActiveInv,
@@ -282,8 +283,8 @@ public class BillectaEncodeJSON {
 
         return Blob.valueOf(jsonBody);
     }
-
-    /** PREVIOUS - when using Akavia custom endpoint at Billecta.
+*/
+    
   public static Blob encodeAkaviaRetroactiveInvoice(
     Account acc,
     BillectaCreateInvoice newRetroActiveInv,
@@ -300,7 +301,7 @@ public class BillectaEncodeJSON {
         String jsonBody = JSON.serialize(newRetroActiveInv, true);
         return Blob.valueOf(jsonBody);
     }
-*/
+
   public static blob encodeSMS(Account acc, String creditorId) {
     BillectaCreateSMS.SMS newSMS = new BillectaCreateSMS.SMS();
 

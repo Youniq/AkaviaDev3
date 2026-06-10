@@ -46,7 +46,7 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
           WHERE jobId__c = :context.getJobId()
       ];
 
-      // Retroaktiva fakturor hanteras i separat implementation
+      /* Retroaktiva fakturor mot PUBLIC API hanteras i separat implementation
       if (currentCallout.Type__c == 'Billecta - Create Retroactive Invoice') {
 
         System.debug('QUEUEING RETROACTIVE JOB');
@@ -61,6 +61,7 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
 
           return;
       }
+          */
 
       Long start = System.now().getTime();
 
@@ -75,15 +76,20 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
       currentCallout.Duration__c = system.now().getTime() - start;
 
       /******SECOND WE CREATE INVOICE RECORD AND ATTACH BILLECTAID *****/
-      if (currentCallout.Type__c == 'Billecta - Create Invoice') {
-
+      if (
+          currentCallout.errorLog__c == null &&
+          String.isNotBlank(currentCallout.Response__c) &&
+          (
+              currentCallout.Type__c == 'Billecta - Create Invoice' ||
+              currentCallout.Type__c == 'Billecta - Create Retroactive Invoice'
+          )
+      ) {
           BillectaCreateInvoice.CreatedView jsonResponse =
               BillectaCreateInvoice.parse(currentCallout.Response__c);
 
           BillectaId = jsonResponse.PublicId;
 
           Invoice__c inv = new Invoice__c();
-
           inv.MembershipCategory__c = this.acc.MembershipCategory__c;
           inv.FeeCategory__c = this.acc.FeeCategory__c;
           inv.Person__c = this.acc.Id;
@@ -94,7 +100,6 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
           } catch (Exception e) {
               currentCallout = setFailedCalloutValues(currentCallout, e);
           }
-
       } else if (currentCallout.Type__c == 'Billecta - Pause Invoice') {
 
           if (currentCallout.status__c == 'OK') {
@@ -131,7 +136,10 @@ public class BillectaSendInvoiceAsync implements Queueable, Database.AllowsCallo
       incomeInsurance = true;
     }
 
-    if (co.Type__c == 'Billecta - Create Invoice') {
+    if (
+          co.Type__c == 'Billecta - Create Invoice' ||
+          co.Type__c == 'Billecta - Create Retroactive Invoice'
+      ) {
       jsonPayload = BillectaEncodeJSON.encodeAkaviaInvoiceActionView(
         this.acc,
         incomeInsurance,

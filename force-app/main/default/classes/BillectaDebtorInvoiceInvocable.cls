@@ -30,7 +30,10 @@ public with sharing class BillectaDebtorInvoiceInvocable {
         for (Request r : requests) {
             System.debug('Input request: ' + r);
 
-            if (r.retroactiveInvoiceInfo == null || r.retroactiveInvoiceInfo.PeriodStart == null) {
+            BillectaCreateInvoice invoiceInfo = r.retroactiveInvoiceInfo;
+
+            /** 
+             * if (r.retroactiveInvoiceInfo == null || r.retroactiveInvoiceInfo.PeriodStart == null) {
                 BillectaDebtorStatusUpdateHelper.sendInvoice(r.accountId);
                 continue;
             }
@@ -41,15 +44,16 @@ public with sharing class BillectaDebtorInvoiceInvocable {
                 );
             }
 
-            BillectaCreateInvoice invoiceInfo = r.retroactiveInvoiceInfo;
-
             if (invoiceInfo.Amount == null || invoiceInfo.Amount <= 0) {
                 throw new CustomException('Amount saknas eller är 0 för retroaktiv faktura.');
             }
 
             if (String.isBlank(invoiceInfo.ProductPublicId)) {
-                //throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
+                throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
             }
+
+            // invoiceInfo.DueDate = calculateDueDate(Date.today());
+            */
 
             Date startDate = Date.newInstance(
                 invoiceInfo.PeriodStart.year(),
@@ -59,17 +63,12 @@ public with sharing class BillectaDebtorInvoiceInvocable {
 
             invoiceInfo.PeriodStart = startDate;
 
-            if(invoiceInfo.HaveAkassa) {
-                // invoiceInfo.Amount = invoiceInfo.Amount * {ska avgift för akassa adderas till summan?};
-            }
-
             if (isPensionerCategory(invoiceInfo.MembershipCategory)) {
                 invoiceInfo.PeriodEnd = startDate.addMonths(12).addDays(-1);
             } else {
                 invoiceInfo.PeriodEnd = startDate.addMonths(1).addDays(-1);
             }
 
-            invoiceInfo.DueDate = calculateDueDate(Date.today());
             invoiceInfo.UseDebtorBalance = true;
 
             BillectaDebtorStatusUpdateHelper.sendRetroactiveInvoice(
@@ -88,6 +87,7 @@ public with sharing class BillectaDebtorInvoiceInvocable {
         return value.contains('pension');
     }
 
+    // Not in use currently, DueDate is set to 28th of current or next month depending on creation date.
     private static Date calculateDueDate(Date baseDate) {
 
         //baseDate = baseDate.addDays(22); // TEST, REMOVE! if we are within 14 days from 28th, 
