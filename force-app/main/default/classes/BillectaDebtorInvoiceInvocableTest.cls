@@ -1,9 +1,8 @@
 /**
- * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2024-06-11
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-06-12
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 @isTest
 public with sharing class BillectaDebtorInvoiceInvocableTest {
@@ -23,30 +22,26 @@ public with sharing class BillectaDebtorInvoiceInvocableTest {
       FROM Account
       LIMIT 1
     ];
-    Date twoMonthsAgo = Date.today().addMonths(-2);
 
-    BillectaDebtorInvoiceInvocable.Request req = new BillectaDebtorInvoiceInvocable.Request();
-    req.retroactiveInvoiceInfo = new BillectaCreateInvoice();
-    req.retroactiveInvoiceInfo.MembershipCategory = 'Yrkesverksam';
-    req.retroactiveInvoiceInfo.FeeCategory = 'Fullbetalande';
-    req.retroactiveInvoiceInfo.HaveIncomeInsurance = true;
-    req.retroactiveInvoiceInfo.HaveAkassa = false;
-    req.retroactiveInvoiceInfo.IsCreditInvoice = false;
-    req.retroactiveInvoiceInfo.SocialSecurityNumber = testAcc.SocialSecurityNumber__c;
-    req.retroactiveInvoiceInfo.MemberNumber = testAcc.MemberNumber__c;
-    req.retroactiveInvoiceInfo.PeriodStart = Date.newInstance(
-      twoMonthsAgo.year(),
-      twoMonthsAgo.month(),
-      1
-    );
-    req.retroactiveInvoiceInfo.PeriodEnd = Date.newInstance(
-        twoMonthsAgo.year(),
-        twoMonthsAgo.month() + 1,
-        1
-      )
-      .addDays(-1);
+    Date twoMonthsAgo = Date.today().addMonths(-2);
+    Date expectedStart = Date.newInstance(twoMonthsAgo.year(), twoMonthsAgo.month(), 1);
+    Date expectedEnd = expectedStart.addMonths(1).addDays(-1);
+
+    BillectaCreateInvoice invoice = new BillectaCreateInvoice();
+    invoice.MembershipCategory = 'Yrkesverksam';
+    invoice.FeeCategory = 'Fullbetalande';
+    invoice.HaveIncomeInsurance = true;
+    invoice.HaveAkassa = false;
+    invoice.IsCreditInvoice = false;
+    invoice.SocialSecurityNumber = testAcc.SocialSecurityNumber__c;
+    invoice.MemberNumber = testAcc.MemberNumber__c;
+    invoice.PeriodStart = twoMonthsAgo;
+
+    BillectaDebtorInvoiceInvocable.Request req =
+      new BillectaDebtorInvoiceInvocable.Request();
 
     req.accountId = testAcc.Id;
+    req.retroactiveInvoiceInfo = invoice;
 
     Test.setMock(
       HttpCalloutMock.class,
@@ -59,73 +54,47 @@ public with sharing class BillectaDebtorInvoiceInvocableTest {
     );
     Test.stopTest();
 
-    List<Invoice__c> afterTestInvs = [
-      SELECT Id, BillectaId__c
+    Date expectedDueDate = BillectaDebtorInvoiceInvocable.calculateDueDate(Date.today());
+
+    Assert.areEqual(expectedDueDate, invoice.DueDate);
+    Assert.areEqual(expectedStart, invoice.PeriodStart);
+    Assert.areEqual(expectedEnd, invoice.PeriodEnd);
+    Assert.areEqual(true, invoice.UseDebtorBalance);
+
+    Assert.areEqual(1, [
+      SELECT COUNT()
       FROM Invoice__c
       WHERE Person__c = :testAcc.Id
-    ];
-
-    Assert.areEqual(1, afterTestInvs.size());
+    ]);
   }
 
   @isTest
-  static void testCreateRetroInvBadDate() {
+  static void testCreateRetroInvPensionerGetsTwelveMonths() {
     Account testAcc = [
       SELECT Id, SocialSecurityNumber__c, MemberNumber__c
       FROM Account
       LIMIT 1
     ];
-    Date sevenMonthsAgo = Date.today().addMonths(-7); // Must be between 1-6 months ago
 
-    BillectaDebtorInvoiceInvocable.Request req = new BillectaDebtorInvoiceInvocable.Request();
-    req.retroactiveInvoiceInfo = new BillectaCreateInvoice();
-    req.retroactiveInvoiceInfo.MembershipCategory = 'Yrkesverksam';
-    req.retroactiveInvoiceInfo.FeeCategory = 'Fullbetalande';
-    req.retroactiveInvoiceInfo.HaveIncomeInsurance = true;
-    req.retroactiveInvoiceInfo.HaveAkassa = false;
-    req.retroactiveInvoiceInfo.IsCreditInvoice = false;
-    req.retroactiveInvoiceInfo.SocialSecurityNumber = testAcc.SocialSecurityNumber__c;
-    req.retroactiveInvoiceInfo.MemberNumber = testAcc.MemberNumber__c;
-    req.retroactiveInvoiceInfo.PeriodStart = Date.newInstance(
-      sevenMonthsAgo.year(),
-      sevenMonthsAgo.month(),
-      1
-    );
-    req.retroactiveInvoiceInfo.PeriodEnd = Date.newInstance(
-        sevenMonthsAgo.year(),
-        sevenMonthsAgo.month() + 1,
-        1
-      )
-      .addDays(-1);
+    Date twoMonthsAgo = Date.today().addMonths(-2);
+    Date expectedStart = Date.newInstance(twoMonthsAgo.year(), twoMonthsAgo.month(), 1);
+    Date expectedEnd = expectedStart.addMonths(12).addDays(-1);
+
+    BillectaCreateInvoice invoice = new BillectaCreateInvoice();
+    invoice.MembershipCategory = 'Pensionär';
+    invoice.FeeCategory = 'Fullbetalande';
+    invoice.HaveIncomeInsurance = true;
+    invoice.HaveAkassa = false;
+    invoice.IsCreditInvoice = false;
+    invoice.SocialSecurityNumber = testAcc.SocialSecurityNumber__c;
+    invoice.MemberNumber = testAcc.MemberNumber__c;
+    invoice.PeriodStart = twoMonthsAgo;
+
+    BillectaDebtorInvoiceInvocable.Request req =
+      new BillectaDebtorInvoiceInvocable.Request();
 
     req.accountId = testAcc.Id;
-
-    Test.setMock(
-      HttpCalloutMock.class,
-      new Billecta_Test.MockHttpResponseGeneratorBillecta()
-    );
-
-    Boolean caughtError = false;
-    Test.startTest();
-    try {
-      BillectaDebtorInvoiceInvocable.createInvoice(
-        new List<BillectaDebtorInvoiceInvocable.Request>{ req }
-      );
-    } catch (Exception e) {
-      caughtError = true;
-    }
-
-    Test.stopTest();
-
-    Assert.areEqual(true, caughtError);
-  }
-
-  @isTest
-  static void testCreateInvForCurrentMonth() {
-    Account testAcc = [SELECT Id FROM Account LIMIT 1];
-
-    BillectaDebtorInvoiceInvocable.Request req = new BillectaDebtorInvoiceInvocable.Request();
-    req.accountId = testAcc.Id;
+    req.retroactiveInvoiceInfo = invoice;
 
     Test.setMock(
       HttpCalloutMock.class,
@@ -138,12 +107,75 @@ public with sharing class BillectaDebtorInvoiceInvocableTest {
     );
     Test.stopTest();
 
-    List<Invoice__c> afterTestInvs = [
-      SELECT Id, BillectaId__c
+    Date expectedDueDate = BillectaDebtorInvoiceInvocable.calculateDueDate(Date.today());
+
+    Assert.areEqual(expectedDueDate, invoice.DueDate);
+    Assert.areEqual(expectedStart, invoice.PeriodStart);
+    Assert.areEqual(expectedEnd, invoice.PeriodEnd);
+    Assert.areEqual(true, invoice.UseDebtorBalance);
+
+    Assert.areEqual(1, [
+      SELECT COUNT()
       FROM Invoice__c
       WHERE Person__c = :testAcc.Id
-    ];
+    ]);
+  }
 
-    Assert.areEqual(1, afterTestInvs.size());
+  @isTest
+  static void testCreateInvForCurrentMonthWhenInvoiceInfoIsNull() {
+    Account testAcc = [SELECT Id FROM Account LIMIT 1];
+
+    BillectaDebtorInvoiceInvocable.Request req =
+      new BillectaDebtorInvoiceInvocable.Request();
+
+    req.accountId = testAcc.Id;
+    req.retroactiveInvoiceInfo = null;
+
+    Test.setMock(
+      HttpCalloutMock.class,
+      new Billecta_Test.MockHttpResponseGeneratorBillecta()
+    );
+
+    Test.startTest();
+    BillectaDebtorInvoiceInvocable.createInvoice(
+      new List<BillectaDebtorInvoiceInvocable.Request>{ req }
+    );
+    Test.stopTest();
+
+    Assert.areEqual(1, [
+      SELECT COUNT()
+      FROM Invoice__c
+      WHERE Person__c = :testAcc.Id
+    ]);
+  }
+
+  @isTest
+  static void testCreateInvForCurrentMonthWhenPeriodStartIsNull() {
+    Account testAcc = [SELECT Id FROM Account LIMIT 1];
+
+    BillectaCreateInvoice invoice = new BillectaCreateInvoice();
+
+    BillectaDebtorInvoiceInvocable.Request req =
+      new BillectaDebtorInvoiceInvocable.Request();
+
+    req.accountId = testAcc.Id;
+    req.retroactiveInvoiceInfo = invoice;
+
+    Test.setMock(
+      HttpCalloutMock.class,
+      new Billecta_Test.MockHttpResponseGeneratorBillecta()
+    );
+
+    Test.startTest();
+    BillectaDebtorInvoiceInvocable.createInvoice(
+      new List<BillectaDebtorInvoiceInvocable.Request>{ req }
+    );
+    Test.stopTest();
+
+    Assert.areEqual(1, [
+      SELECT COUNT()
+      FROM Invoice__c
+      WHERE Person__c = :testAcc.Id
+    ]);
   }
 }

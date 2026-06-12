@@ -2,8 +2,8 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2025-07-02
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-06-12
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 public class BillectaDebtorStatusUpdateHelper {
   @AuraEnabled
@@ -229,7 +229,7 @@ public class BillectaDebtorStatusUpdateHelper {
     calloutsScheduled.add(
       new Callout__c(
         jobId__c = jobId,
-        Type__c = '	Billecta - Create Retroactive Invoice',
+        Type__c = 'Billecta - Create Retroactive Invoice',
         Account__c = acc.ID,
         Status__c = 'Queued'
       )

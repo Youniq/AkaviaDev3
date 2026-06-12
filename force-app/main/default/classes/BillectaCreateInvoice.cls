@@ -2,7 +2,7 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2026-06-05
+ * @last modified on  : 2026-06-12
  * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 global class BillectaCreateInvoice {
@@ -18,7 +18,7 @@ global class BillectaCreateInvoice {
     @AuraEnabled public Boolean UseDebtorBalance;
     @AuraEnabled public Date PeriodStart;
     @AuraEnabled public Date PeriodEnd;
-    // @AuraEnabled public Date DueDate; // DueDate is ignored by Billecta for retroactive invoices, 
+    @AuraEnabled public Date DueDate; // DueDate is ignored by Billecta for retroactive invoices, 
     // and will be set to the nearest 28th of the month.
 
     /* Only used for PUBLIC API - NOT TESTED, DO NOT KNOW IF IT WORKS

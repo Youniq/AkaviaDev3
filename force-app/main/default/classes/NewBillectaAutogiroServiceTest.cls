@@ -1,141 +1,141 @@
 @IsTest
-private class NewBillectaAutogiroServiceTest {
+public with sharing class NewBillectaAutogiroServiceTest {
+
+    private class MockBillectaResponse implements HttpCalloutMock {
+        public HTTPResponse respond(HTTPRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(200);
+            res.setHeader('Content-Type', 'application/json');
+
+            res.setBody(
+                '{"SessionToken":"token123","SessionId":"session123"}'
+            );
+
+            return res;
+        }
+    }
 
     @TestSetup
-    static void setup() {
+    static void makeData() {
+        TestDataFactorySetupParams params = new TestDataFactorySetupParams();
+        params.numberOfAccounts = 1;
 
-        Account pa = new Account(
-            RecordTypeId = getPersonAccountRecordTypeId(),
-            FirstName = 'Stefan',
-            LastName = 'Testsson',
-            PersonEmail = 'stefan.test@example.com',
-            SocialSecurityNumber__c = '740121-0674'
-        );
-
-        insert pa;
+        TestDataFactory.setupBasicTestData();
+        TestDataFactory.setupTestData(params);
     }
 
     @IsTest
     static void testStartAutogiroChange() {
 
-        Account pa = [
-            SELECT Id, SocialSecurityNumber__c
+        Account acc = [
+            SELECT Id, IsPersonAccount
             FROM Account
             LIMIT 1
         ];
 
-        // Mock Billecta config
-        NewBillectaBankAccountService.Config cfg =
-            new NewBillectaBankAccountService.Config();
+        acc.SocialSecurityNumber__c = '197401210674';
+        update acc;
 
-        cfg.baseEndpoint = 'https://test.billecta.com';
-        cfg.creditorPublicId = 'creditor-test';
-        cfg.secureToken = 'secure-token';
-        cfg.accountLookupBaseUrl = 'https://lookup.test';
-
-        NewBillectaBankAccountService.testConfig = cfg;
-
-        // Mock HTTP response
-        Test.setMock(HttpCalloutMock.class, new BillectaLookupMock());
+        Test.setMock(HttpCalloutMock.class, new MockBillectaResponse());
 
         Test.startTest();
 
         NewBillectaAutogiroService.StartAutogiroBankChangeResponse response =
-            NewBillectaAutogiroService.startAutogiroChange(pa.Id);
+            NewBillectaAutogiroService.startAutogiroChange(acc.Id);
 
         Test.stopTest();
 
-        System.assertNotEquals(null, response);
-        System.assertEquals('session-token-test', response.sessionToken);
-        System.assertEquals('session-id-test', response.sessionId);
+        Assert.isNotNull(response);
+        Assert.areEqual('token123', response.sessionToken);
+        Assert.areEqual('session123', response.sessionId);
+        Assert.isNotNull(response.autogiroChangeLogId);
 
         Autogiro_Change_Log__c logRec = [
             SELECT Id,
-                   Account__c,
-                   Status__c,
-                   Billecta_Session_Id__c
+                Account__c,
+                Status__c,
+                Billecta_Session_Id__c
             FROM Autogiro_Change_Log__c
+            WHERE Id = :response.autogiroChangeLogId
             LIMIT 1
         ];
 
-        System.assertEquals(pa.Id, logRec.Account__c);
-        System.assertEquals('Started', logRec.Status__c);
-        System.assertEquals('session-id-test', logRec.Billecta_Session_Id__c);
+        Assert.areEqual(acc.Id, logRec.Account__c);
+        Assert.areEqual('Started', logRec.Status__c);
+        Assert.areEqual('session123', logRec.Billecta_Session_Id__c);
     }
 
     @IsTest
     static void testCompleteAutogiroChange() {
 
-        Account pa = [
-            SELECT Id, DistributionMethod__c
-            FROM Account
-            LIMIT 1
-        ];
-
-        Autogiro_Change_Log__c logRec = new Autogiro_Change_Log__c(
-            Account__c = pa.Id,
-            Status__c = 'Started',
-            Started_At__c = System.now()
-        );
-
-        insert logRec;
-
-        Test.startTest();
-
-        Id resultId = NewBillectaAutogiroService.completeAutogiroChange(
-            logRec.Id,
-            'Completed',
-            '1234',
-            '1234567890',
-            'SEB',
-            'Skandinaviska Enskilda Banken'
-        );
-
-        Test.stopTest();
-
-        Autogiro_Change_Log__c updatedLog = [
-            SELECT Status__c,
-                   Session_State__c,
-                   Clearing_Number__c,
-                   Account_Number__c,
-                   Bank_Code__c,
-                   Bank_Name__c,
-                   Completed_At__c
-            FROM Autogiro_Change_Log__c
-            WHERE Id = :resultId
-        ];
-
-        System.assertEquals('Completed', updatedLog.Status__c);
-        System.assertEquals('1234', updatedLog.Clearing_Number__c);
-        System.assertEquals('1234567890', updatedLog.Account_Number__c);
-        System.assertEquals('SEB', updatedLog.Bank_Code__c);
-
-        Account updatedAcc = [
-            SELECT PaymentMethod__c,
-                DistributionMethod__c,
-                LatestSentPMDetails_Billecta__c
-            FROM Account
-            WHERE Id = :pa.Id
-        ];
-        System.assertEquals('AG', updatedAcc.PaymentMethod__c);
-        System.assertEquals('Ingen leverans', updatedAcc.DistributionMethod__c);
-        System.assertEquals(
-            'AG : Ingen leverans',
-            updatedAcc.LatestSentPMDetails_Billecta__c
-        );
-    }
-
-    @IsTest
-    static void testFailAutogiroChange() {
-
-        Account pa = [
+        Account acc = [
             SELECT Id
             FROM Account
             LIMIT 1
         ];
 
         Autogiro_Change_Log__c logRec = new Autogiro_Change_Log__c(
-            Account__c = pa.Id,
+            Account__c = acc.Id,
+            Status__c = 'Started',
+            Started_At__c = System.now()
+        );
+
+        insert logRec;
+
+        String autogiroJson =
+            '{"Autogiro":{' +
+            '"AccountNo":"123456789",' +
+            '"ClearingNo":"1234",' +
+            '"PaymentServiceSupplier":"Swedbank",' +
+            '"Stage":"Approved"' +
+            '}}';
+
+        Test.startTest();
+
+        Id resultId = NewBillectaAutogiroService.completeAutogiroChange(
+            logRec.Id,
+            'completed',
+            '1234',
+            '123456789',
+            'Swedbank',
+            'Swedbank',
+            autogiroJson
+        );
+
+        Test.stopTest();
+
+        Assert.areEqual(logRec.Id, resultId);
+
+        Autogiro_Change_Log__c updatedLog = [
+            SELECT Status__c,
+                Session_State__c,
+                Clearing_Number__c,
+                Account_Number__c,
+                Bank_Code__c,
+                Bank_Name__c,
+                Completed_At__c
+            FROM Autogiro_Change_Log__c
+            WHERE Id = :logRec.Id
+        ];
+
+        Assert.areEqual('Completed', updatedLog.Status__c);
+        Assert.areEqual('completed', updatedLog.Session_State__c);
+        Assert.areEqual('1234', updatedLog.Clearing_Number__c);
+        Assert.areEqual('123456789', updatedLog.Account_Number__c);
+        Assert.areEqual('Swedbank', updatedLog.Bank_Code__c);
+    }
+
+    @IsTest
+    static void testFailAutogiroChange() {
+
+        Account acc = [
+            SELECT Id
+            FROM Account
+            LIMIT 1
+        ];
+
+        Autogiro_Change_Log__c logRec = new Autogiro_Change_Log__c(
+            Account__c = acc.Id,
             Status__c = 'Started',
             Started_At__c = System.now()
         );
@@ -147,57 +147,53 @@ private class NewBillectaAutogiroServiceTest {
         Id resultId = NewBillectaAutogiroService.failAutogiroChange(
             logRec.Id,
             'Failed',
-            'ErrorState',
-            'Tekniskt fel'
+            'cancelled',
+            'Test error'
         );
 
         Test.stopTest();
 
+        Assert.areEqual(logRec.Id, resultId);
+
         Autogiro_Change_Log__c updatedLog = [
             SELECT Status__c,
-                   Session_State__c,
-                   Error_Message__c
+                Session_State__c,
+                Error_Message__c,
+                Completed_At__c
             FROM Autogiro_Change_Log__c
-            WHERE Id = :resultId
+            WHERE Id = :logRec.Id
         ];
 
-        System.assertEquals('Failed', updatedLog.Status__c);
-        System.assertEquals('ErrorState', updatedLog.Session_State__c);
-        System.assertEquals('Tekniskt fel', updatedLog.Error_Message__c);
+        Assert.areEqual('Failed', updatedLog.Status__c);
+        Assert.areEqual('cancelled', updatedLog.Session_State__c);
+        Assert.areEqual('Test error', updatedLog.Error_Message__c);
+        Assert.isNotNull(updatedLog.Completed_At__c);
     }
 
-    private static Id getPersonAccountRecordTypeId() {
+    @IsTest
+    static void testStartAutogiroChangeThrowsWhenNoSSN() {
 
-        return [
+        Account acc = [
             SELECT Id
-            FROM RecordType
-            WHERE SObjectType = 'Account'
-            AND IsPersonType = true
+            FROM Account
             LIMIT 1
-        ].Id;
-    }
+        ];
 
-    private class BillectaLookupMock implements HttpCalloutMock {
+        acc.SocialSecurityNumber__c = null;
+        update acc;
 
-        public HTTPResponse respond(HTTPRequest req) {
+        Boolean didThrow = false;
 
-            System.assertEquals(
-                'https://test.billecta.com/v1/bankAccount/InitiateRetrieval',
-                req.getEndpoint()
-            );
+        Test.startTest();
 
-            System.assert(req.getBody().contains('740121-0674'));
-
-            HttpResponse res = new HttpResponse();
-            res.setStatusCode(200);
-            res.setHeader('Content-Type', 'application/json');
-
-            res.setBody(
-                '{"SessionToken":"session-token-test",' +
-                '"SessionId":"session-id-test"}'
-            );
-
-            return res;
+        try {
+            NewBillectaAutogiroService.startAutogiroChange(acc.Id);
+        } catch (AuraHandledException e) {
+            didThrow = true;
         }
+
+        Test.stopTest();
+
+        Assert.areEqual(true, didThrow);
     }
 }

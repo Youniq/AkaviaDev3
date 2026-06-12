@@ -6,7 +6,7 @@
  * current month IF creation is 14 days before the 28th ELSE DueDate is set to 28th of next month.
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2026-06-05
+ * @last modified on  : 2026-06-12
  * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 public with sharing class BillectaDebtorInvoiceInvocable {
@@ -32,8 +32,7 @@ public with sharing class BillectaDebtorInvoiceInvocable {
 
             BillectaCreateInvoice invoiceInfo = r.retroactiveInvoiceInfo;
 
-            /** 
-             * if (r.retroactiveInvoiceInfo == null || r.retroactiveInvoiceInfo.PeriodStart == null) {
+            if (r.retroactiveInvoiceInfo == null || r.retroactiveInvoiceInfo.PeriodStart == null) {
                 BillectaDebtorStatusUpdateHelper.sendInvoice(r.accountId);
                 continue;
             }
@@ -44,6 +43,8 @@ public with sharing class BillectaDebtorInvoiceInvocable {
                 );
             }
 
+            /** 
+             * 
             if (invoiceInfo.Amount == null || invoiceInfo.Amount <= 0) {
                 throw new CustomException('Amount saknas eller är 0 för retroaktiv faktura.');
             }
@@ -52,8 +53,10 @@ public with sharing class BillectaDebtorInvoiceInvocable {
                 throw new CustomException('ProductPublicId saknas för retroaktiv faktura.');
             }
 
-            // invoiceInfo.DueDate = calculateDueDate(Date.today());
+            // 
             */
+
+            invoiceInfo.DueDate = calculateDueDate(Date.today());
 
             Date startDate = Date.newInstance(
                 invoiceInfo.PeriodStart.year(),
@@ -88,7 +91,7 @@ public with sharing class BillectaDebtorInvoiceInvocable {
     }
 
     // Not in use currently, DueDate is set to 28th of current or next month depending on creation date.
-    private static Date calculateDueDate(Date baseDate) {
+    public static Date calculateDueDate(Date baseDate) {
 
         //baseDate = baseDate.addDays(22); // TEST, REMOVE! if we are within 14 days from 28th, 
                                         // if so we set due date to 28th of next month, 

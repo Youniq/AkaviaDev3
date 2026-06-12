@@ -2,8 +2,8 @@
  * @description       :
  * @author            : Håkon Kavli
  * @group             : Stretch
- * @last modified on  : 2026-01-30
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-06-12
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
  **/
 import { LightningElement, api, track, wire } from "lwc";
 //import { getRecord, updateRecord } from "lightning/uiRecordApi";
