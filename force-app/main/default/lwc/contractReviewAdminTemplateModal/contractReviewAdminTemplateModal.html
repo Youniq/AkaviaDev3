@@ -1,0 +1,48 @@
+<template>
+  <lightning-modal-header label="Ny mall"></lightning-modal-header>
+  <lightning-modal-body>
+    <div class="slds-p-around_small">
+      <template lwc:if={errorMessage}>
+        <div
+          class="slds-text-color_error slds-m-bottom_small"
+          role="alert"
+        >
+          {errorMessage}
+        </div>
+      </template>
+      <lightning-input
+        label="Namn"
+        value={editLabel}
+        required
+        max-length="40"
+        onchange={handleLabelChange}
+        class="slds-m-bottom_x-small"
+      >
+      </lightning-input>
+      <lightning-textarea
+        label="Beskrivning"
+        value={editDescription}
+        max-length="2000"
+        onchange={handleDescriptionChange}
+        class="slds-m-bottom_small"
+      >
+      </lightning-textarea>
+    </div>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button
+      label="Avbryt"
+      onclick={handleCancel}
+      class="slds-m-right_x-small"
+    >
+    </lightning-button>
+    <lightning-button
+      variant="brand"
+      label="Spara"
+      icon-name="utility:save"
+      disabled={isSaveDisabled}
+      onclick={handleSave}
+    >
+    </lightning-button>
+  </lightning-modal-footer>
+</template>

@@ -1,0 +1,29 @@
+<template>
+    <lightning-quick-action-panel header="Skapa GDPR-registerutdrag">
+        <div class="slds-p-around_medium">
+            <lightning-radio-group
+                name="format"
+                label="Välj format"
+                options={formatOptions}
+                value={selectedFormat}
+                type="radio"
+                onchange={handleFormatChange}>
+            </lightning-radio-group>
+        </div>
+
+        <div slot="footer">
+            <lightning-button
+                variant="neutral"
+                label="Avbryt"
+                onclick={handleCancel}>
+            </lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Skapa"
+                class="slds-m-left_small"
+                onclick={handleCreate}
+                disabled={loading}>
+            </lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+</template>

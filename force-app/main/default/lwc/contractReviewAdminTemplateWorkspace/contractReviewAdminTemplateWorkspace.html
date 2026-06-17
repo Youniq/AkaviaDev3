@@ -1,0 +1,33 @@
+<template>
+  <template lwc:if={hasTemplate}>
+    <c-contract-review-admin-template-detail
+      selected-template={selectedTemplate}
+      ondeployinitiated={handleDeployInitiated}
+    >
+    </c-contract-review-admin-template-detail>
+    <c-contract-review-admin-assignment-manager
+      template-dev-name={templateDevName}
+      template-label={selectedTemplate.MasterLabel}
+      is-deploying={isDeploying}
+      ondeployinitiated={handleDeployInitiated}
+    >
+    </c-contract-review-admin-assignment-manager>
+  </template>
+  <template lwc:else>
+    <div class="empty-workspace">
+      <div class="slds-text-align_center">
+        <lightning-icon
+          icon-name="utility:touch_action"
+          size="large"
+          class="empty-icon"
+        ></lightning-icon>
+        <p class="slds-text-heading_small text-muted slds-m-top_medium">
+          Select a template to get started
+        </p>
+        <p class="slds-text-body_small text-muted slds-m-top_xx-small">
+          Choose a template from the sidebar or click + to create a new one.
+        </p>
+      </div>
+    </div>
+  </template>
+</template>

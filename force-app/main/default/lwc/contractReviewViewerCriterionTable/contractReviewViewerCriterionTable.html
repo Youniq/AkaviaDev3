@@ -1,0 +1,102 @@
+<template>
+  <div class="table-wrapper">
+    <div class="settings-container">
+      <lightning-button-icon
+        icon-name="utility:settings"
+        variant="bare"
+        alternative-text="Inställningar"
+        aria-haspopup="true"
+        aria-expanded={settingsOpen}
+        onclick={handleToggleSettings}
+      ></lightning-button-icon>
+      <template lwc:if={settingsOpen}>
+        <div class="settings-overlay" onclick={handleCloseSettings}></div>
+        <div class="settings-dropdown" role="menu" onkeydown={handleSettingsKeydown}>
+          <label class="settings-item">
+            <input type="checkbox" checked={hideMetCriteria} onchange={handleToggleHideMet} />
+            Dölj uppfyllda
+          </label>
+          <label class="settings-item">
+            <input type="checkbox" checked={disableTooltip} onchange={handleToggleDisableTooltip} />
+            Dölj tooltip (visa via ögon-ikon istället)
+          </label>
+          <div class="settings-separator"></div>
+          <div class="settings-group-label">Visa i lista</div>
+          <label class="settings-item">
+            <input type="radio" name="displayField" value={fieldExtractValue} checked={isExtractSelected} onchange={handleDisplayFieldChange} />
+            {radioExtractLabel}
+          </label>
+          <label class="settings-item">
+            <input type="radio" name="displayField" value={fieldAiCommentValue} checked={isAiCommentSelected} onchange={handleDisplayFieldChange} />
+            {radioAiCommentLabel}
+          </label>
+        </div>
+      </template>
+    </div>
+    <template lwc:if={hasDisplayedCriteria}>
+      <table class="criteria-table">
+        <thead>
+          <tr>
+            <th scope="col" class="col-icon">Uppfyllt</th>
+            <th scope="col" class="col-name">Granskningspunkt</th>
+            <th scope="col" class="col-comment">{displayColumnLabel}</th>
+            <th scope="col" class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <template for:each={displayedCriteria} for:item="criterion">
+            <tr key={criterion.Id} class="criteria-row" data-id={criterion.Id} onmouseenter={handleRowMouseEnter} onmouseleave={handleRowMouseLeave}>
+              <td class="col-icon">
+                <template lwc:if={criterion.CriterionMet__c}>
+                  <lightning-icon
+                    icon-name="utility:check"
+                    variant="success"
+                    size="x-small"
+                    alternative-text="Uppfyllt"
+                  ></lightning-icon>
+                </template>
+                <template lwc:else>
+                  <lightning-icon
+                    icon-name="utility:close"
+                    variant="error"
+                    size="x-small"
+                    alternative-text="Ej uppfyllt"
+                  ></lightning-icon>
+                </template>
+              </td>
+              <td class="col-name">{criterion.Name}</td>
+              <td class="col-comment">{criterion.displayValue}</td>
+              <td class="col-action">
+                <lightning-button-icon
+                  icon-name="utility:preview"
+                  variant="bare"
+                  size="medium"
+                  class="icon-action-blue"
+                  alternative-text="Visa detaljer"
+                  data-id={criterion.Id}
+                  onclick={handleOpenCriterion}
+                ></lightning-button-icon>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+      <div class={tooltipClass} style={tooltipStyle} role="tooltip">
+        <template lwc:if={activeTooltip}>
+          <div class="criterion-tooltip-label">{activeTooltip.label}</div>
+          <div class="criterion-tooltip-value">{activeTooltip.content}</div>
+        </template>
+      </div>
+    </template>
+    <template lwc:elseif={hasCriteria}>
+      <p class="slds-text-body_regular slds-text-color_weak slds-p-around_small slds-text-align_center">
+        Alla kriterier är uppfyllda.
+      </p>
+    </template>
+    <template lwc:else>
+      <p class="slds-text-body_regular slds-text-color_weak slds-p-around_small slds-text-align_center">
+        Inga granskningskriterier utvärderade för denna granskning.
+      </p>
+    </template>
+  </div>
+</template>

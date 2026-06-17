@@ -1,0 +1,104 @@
+/* Modal content layout */
+
+.modal-content {
+  padding: 0.5rem 0;
+}
+
+/* Status badge row */
+
+.modal-status-row {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--slds-g-color-neutral-base-90, #e5e5e5);
+  margin-bottom: 0.75rem;
+}
+
+/* Status badge */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.status-met {
+  background: var(--slds-g-color-success-base-40, #2e844a);
+  color: #fff;
+}
+
+.status-not-met {
+  background: var(--slds-g-color-error-base-40, #c23934);
+  color: #fff;
+}
+
+/* 2-column grid */
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.25rem;
+}
+
+.grid-left {
+  grid-column: 1;
+}
+
+.grid-right {
+  grid-column: 2;
+}
+
+.grid-full {
+  grid-column: 1 / -1;
+}
+
+/* Sections */
+
+.modal-section {
+  padding: 0.625rem 0;
+}
+
+.modal-section:last-child {
+  border-bottom: none;
+}
+
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slds-g-color-neutral-base-50, #747474);
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.375rem;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(
+    to right,
+    var(--slds-g-color-brand-base-50, #0176d3) 0%,
+    transparent 100%
+  ) 1;
+}
+
+.section-value {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--slds-g-color-neutral-base-10, #181818);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.section-empty {
+  color: var(--slds-g-color-neutral-base-70, #aeaeae);
+}
+
+/* Footer layout: feedback left, close right */
+
+.footer-layout {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}

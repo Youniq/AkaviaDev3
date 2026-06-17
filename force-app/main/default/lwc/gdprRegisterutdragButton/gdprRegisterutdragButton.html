@@ -1,0 +1,20 @@
+<template>
+    <div class="button-wrap slds-p-around_small">
+        <lightning-button
+            variant="brand-outline"
+            label="Skapa GDPR‑registerutdrag"
+            title="Skapa GDPR‑registerutdrag och koppla filen till personkontot"
+            onclick={handleClick}
+            disabled={isDisabled}
+        ></lightning-button>
+
+        <template if:true={loading}>
+            <div class="slds-m-top_small slds-align_absolute-center">
+                <lightning-spinner
+                    alternative-text="Skapar GDPR‑registerutdrag..."
+                    size="small"
+                ></lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>

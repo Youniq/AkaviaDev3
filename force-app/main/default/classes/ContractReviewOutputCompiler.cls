@@ -33,6 +33,7 @@ public with sharing class ContractReviewOutputCompiler {
             SELECT Id, ContractReview__c, CriterionMet__c, ContractReviewCriterionId__c
             FROM ContractReviewRuntimeCriterion__c
             WHERE ContractReview__c IN :reviewIds
+            ORDER BY Sequence__c ASC NULLS LAST
         ];
 
         if (runtimeCriteria.isEmpty()) {

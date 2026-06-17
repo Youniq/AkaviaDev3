@@ -1,0 +1,10 @@
+/* Komponenten tar bara plats för knappen, ingen full bredd eller mörk bakgrund */
+:host {
+    display: inline-block;
+    background: transparent;
+}
+
+.button-wrap {
+    display: inline-block;
+    padding: 0.25rem 0;
+}

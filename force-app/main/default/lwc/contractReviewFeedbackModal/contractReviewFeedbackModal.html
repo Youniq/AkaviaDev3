@@ -1,0 +1,17 @@
+<template>
+  <lightning-modal-header label="Feedback"></lightning-modal-header>
+  <lightning-modal-body>
+    <template lwc:if={flowError}>
+      <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+        <p>Det gick inte att ladda feedbackformuläret. Försök igen senare.</p>
+      </div>
+    </template>
+    <template lwc:if={showFlow}>
+      <lightning-flow
+        flow-api-name="ContractReviewFeedback"
+        flow-input-variables={flowInputVariables}
+        onstatuschange={handleFlowStatusChange}
+      ></lightning-flow>
+    </template>
+  </lightning-modal-body>
+</template>

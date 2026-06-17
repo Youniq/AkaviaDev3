@@ -1,0 +1,193 @@
+:host {
+  display: block;
+}
+
+.admin-shell {
+  background: var(--slds-g-color-neutral-base-95, #f3f3f3);
+  border-radius: var(--slds-g-radius-border-2, 0.5rem);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* ── Tab bar ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  background: var(--slds-g-color-neutral-base-100, #fff);
+  border-bottom: 1px solid var(--slds-g-color-neutral-base-80, #c9c9c9);
+  padding: 0 0.75rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--slds-g-color-neutral-base-30, #444);
+  cursor: pointer;
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.tab-btn:hover {
+  color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.tab-btn-active {
+  color: var(--slds-g-color-brand-base-50, #0176d3);
+  border-bottom-color: var(--slds-g-color-brand-base-50, #0176d3);
+}
+
+.tab-panel {
+  position: relative;
+}
+
+.tab-panel-hidden {
+  display: none !important;
+}
+
+/* ── Deploy overlay ── */
+.deploy-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
+}
+
+.deploy-overlay-text {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--slds-g-color-neutral-base-30, #444);
+}
+
+.templates-grid {
+  display: flex;
+}
+
+.sidebar-col {
+  flex: 0 0 180px;
+  max-width: 180px;
+  background: var(--slds-g-color-neutral-base-100, #fff);
+  border-right: 1px solid var(--slds-g-color-neutral-base-80, #c9c9c9);
+  padding: 0 !important;
+}
+
+.workspace-col {
+  flex: 1 1 0%;
+  background: var(--slds-g-color-neutral-base-100, #fff);
+  padding: 0.75rem 1rem !important;
+}
+
+.criteria-panel-body {
+  background: var(--slds-g-color-neutral-base-100, #fff);
+  padding: 0.75rem 1rem;
+}
+
+/* ── Console panel (fixed height) ── */
+.console-panel {
+  border-top: 1px solid #333;
+  background: #1e1e1e;
+  font-family: "Menlo", "Consolas", "Courier New", monospace;
+  border-radius: 0 0 var(--slds-g-radius-border-2, 0.5rem)
+    var(--slds-g-radius-border-2, 0.5rem);
+}
+
+.console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0.75rem;
+  background: #252526;
+  border-bottom: 1px solid #333;
+}
+
+.console-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #cccccc;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.console-icon {
+  color: #cccccc;
+}
+
+.console-clear-btn {
+  color: #858585;
+}
+
+.console-body {
+  height: calc(10 * 1.4 * 0.8125rem);
+  max-height: calc(10 * 1.4 * 0.8125rem);
+  overflow-y: auto;
+  padding: 0.25rem 0;
+}
+
+/* Scrollbar styling for dark panel */
+.console-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.console-body::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.console-body::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 4px;
+}
+
+.console-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.log-entry {
+  padding: 0.1875rem 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-info {
+  color: #d4d4d4;
+}
+
+.log-success {
+  color: #4ec9b0;
+}
+
+.log-error {
+  color: #f44747;
+}
+
+.log-warning {
+  color: #dcdcaa;
+}
+
+.log-empty {
+  color: #858585;
+  font-style: italic;
+}
+
+.log-timestamp {
+  color: #858585;
+  margin-right: 0.625rem;
+}
+
+.log-message {
+  color: inherit;
+}

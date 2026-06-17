@@ -1,0 +1,87 @@
+<template>
+  <lightning-tabset variant="default">
+    <!-- Swedish draft tab -->
+    <lightning-tab label="Svenska">
+      <template lwc:if={svDraftPending}>
+        <div class="draft-loading slds-p-around_medium slds-text-align_center">
+          <lightning-spinner alternative-text="Genererar svarsutkast" size="small"></lightning-spinner>
+          <p class="slds-m-top_small slds-text-body_regular slds-text-color_weak">
+            Genererar svarsutkast…
+          </p>
+        </div>
+      </template>
+      <template lwc:elseif={hasSwedishDraft}>
+        <div class="draft-toolbar">
+          <lightning-button
+            label={copyButtonLabel}
+            variant={copyButtonVariant}
+            icon-name={copyButtonIconName}
+            onclick={handleCopySwedishDraft}
+          ></lightning-button>
+        </div>
+        <div class="slds-p-around_small">
+          <lightning-formatted-rich-text
+            value={responseDraft}
+          ></lightning-formatted-rich-text>
+        </div>
+      </template>
+      <template lwc:else>
+        <div class="slds-p-around_medium slds-text-align_center">
+          <p class="slds-text-body_regular slds-text-color_weak">
+            Svarsutkast ej tillgängligt.
+          </p>
+        </div>
+      </template>
+    </lightning-tab>
+
+    <!-- English draft tab -->
+    <lightning-tab label="English" onactive={handleEnglishTabActive}>
+      <template lwc:if={engDraftPending}>
+        <div class="draft-loading slds-p-around_medium slds-text-align_center">
+          <lightning-spinner alternative-text="Generating draft" size="small"></lightning-spinner>
+          <p class="slds-m-top_small slds-text-body_regular slds-text-color_weak">
+            Generating email draft…
+          </p>
+        </div>
+      </template>
+      <template lwc:elseif={hasEnglishDraft}>
+        <div class="draft-toolbar">
+          <lightning-button
+            label={copyButtonLabel}
+            variant={copyButtonVariant}
+            icon-name={copyButtonIconName}
+            onclick={handleCopyEnglishDraft}
+          ></lightning-button>
+        </div>
+        <div class="slds-p-around_small">
+          <lightning-formatted-rich-text
+            value={responseDraftEng}
+          ></lightning-formatted-rich-text>
+        </div>
+      </template>
+      <template lwc:elseif={engDraftError}>
+        <div class="slds-p-around_medium slds-text-align_center">
+          <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+            <p>{engDraftError}</p>
+          </div>
+          <lightning-button
+            label="Försök igen"
+            variant="neutral"
+            icon-name="utility:refresh"
+            onclick={handleRetryEngDraft}
+          ></lightning-button>
+        </div>
+      </template>
+      <template lwc:elseif={showEnglishEmpty}>
+        <div class="slds-p-around_medium slds-text-align_center">
+          <p class="slds-text-body_regular slds-text-color_weak">
+            English draft not yet generated.
+          </p>
+        </div>
+      </template>
+    </lightning-tab>
+  </lightning-tabset>
+
+  <!-- Hidden helper for rich text clipboard -->
+  <div lwc:dom="manual" class="copy-helper" contenteditable="true"></div>
+</template>

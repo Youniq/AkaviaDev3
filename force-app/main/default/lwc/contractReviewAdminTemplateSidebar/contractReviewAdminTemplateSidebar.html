@@ -1,0 +1,34 @@
+<template>
+  <nav class="sidebar-nav slds-nav-vertical" aria-label="Template list">
+    <div class="slds-nav-vertical__section">
+      <div class="sidebar-header">
+        <h2 class="slds-nav-vertical__title slds-text-title_caps sidebar-title">
+          Templates
+        </h2>
+        <lightning-button-icon
+          icon-name="utility:add"
+          alternative-text="New template"
+          title="New template"
+          size="small"
+          variant="bare"
+          onclick={handleNewClick}
+        >
+        </lightning-button-icon>
+      </div>
+      <ul>
+        <template for:each={decoratedTemplates} for:item="tmpl">
+          <li key={tmpl.Id} class={tmpl.itemClass}>
+            <a
+              href="#"
+              class="slds-nav-vertical__action sidebar-link"
+              data-developer-name={tmpl.DeveloperName}
+              onclick={handleTemplateClick}
+            >
+              {tmpl.MasterLabel}
+            </a>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </nav>
+</template>

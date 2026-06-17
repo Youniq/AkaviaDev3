@@ -1,0 +1,239 @@
+<template>
+  <div class="slds-card">
+    <!-- SLDS 2 Cosmos: Page Header (record pattern) -->
+    <div class="slds-page-header slds-page-header_record">
+      <div class="slds-page-header__row">
+        <div class="slds-page-header__col-title">
+          <div class="slds-media slds-media_center">
+            <div class="slds-media__figure">
+              <lightning-icon
+                icon-name="standard:contract"
+                size="small"
+              ></lightning-icon>
+            </div>
+            <div class="slds-media__body header-body">
+              <span class="slds-text-heading_medium">Avtalsgranskning</span>
+              <template lwc:if={selectedReviewId}>
+                <button
+                  type="button"
+                  class="open-record-btn"
+                  title="Öppna granskningspost"
+                  onclick={handleOpenRecord}
+                >
+                  <lightning-icon
+                    icon-name="utility:new_window"
+                    size="xx-small"
+                    alternative-text="Öppna granskningspost"
+                  ></lightning-icon>
+                </button>
+              </template>
+              <div class="metadata-inline">
+                <div class="metadata-row">
+                  <span class="metadata-label">GRANSKNINGSMALL:</span>
+                  <span class="metadata-value">{templateName}</span>
+                </div>
+                <div class="metadata-row">
+                  <span class="metadata-label">FILNAMN:</span>
+                  <span class="metadata-value">{fileName}</span>
+                </div>
+                <div class="metadata-row">
+                  <span class="metadata-label">SKAPAD:</span>
+                  <span class="metadata-value">{createdDateFormatted}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slds-page-header__control">
+          <template lwc:if={hasReviews}>
+            <c-contract-review-viewer-picker
+              options={reviewOptions}
+              value={selectedReviewId}
+              onchange={handleReviewChange}
+            ></c-contract-review-viewer-picker>
+          </template>
+          <lightning-button
+            label="Ny Granskning"
+            variant="brand"
+            icon-name="utility:add"
+            onclick={handleNewReview}
+          ></lightning-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body: mutually exclusive states -->
+    <div class="slds-card__body slds-card__body_inner">
+      <!-- Background processing banner (non-blocking) -->
+      <template lwc:if={hasBackgroundProcessing}>
+        <div class="slds-notify slds-notify_alert slds-alert_info slds-m-bottom_small" role="status">
+          <lightning-spinner alternative-text="Bearbetar" size="x-small" class="slds-m-right_small"></lightning-spinner>
+          <p>Granskning pågår — {processingReviewName}…</p>
+        </div>
+      </template>
+
+      <!-- Inline new review flow -->
+      <template lwc:if={showNewReviewFlow}>
+        <div class="flow-container">
+          <template lwc:if={flowError}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+              <p>Ett fel uppstod. Försök igen senare.</p>
+            </div>
+          </template>
+          <lightning-flow
+            flow-api-name="ContractReview"
+            flow-input-variables={flowInputVariables}
+            onstatuschange={handleFlowStatusChange}
+          ></lightning-flow>
+          <div class="slds-m-top_small slds-text-align_center">
+            <lightning-button
+              label="Avbryt"
+              variant="neutral"
+              onclick={handleCancelFlow}
+            ></lightning-button>
+          </div>
+        </div>
+      </template>
+
+      <template lwc:elseif={error}>
+        <div
+          class="slds-notify slds-notify_alert slds-alert_error"
+          role="alert"
+        >
+          <p>Fel vid laddning av data. Kontrollera konsolen för detaljer.</p>
+        </div>
+      </template>
+
+      <!-- Loading -->
+      <template lwc:elseif={isLoading}>
+        <div class="spinner-container">
+          <lightning-spinner
+            alternative-text="Laddar"
+            size="medium"
+          ></lightning-spinner>
+        </div>
+      </template>
+
+      <!-- Content -->
+      <template lwc:elseif={hasReviews}>
+        <!-- Processing state -->
+        <template lwc:if={isProcessing}>
+          <div class="processing-state slds-p-around_medium slds-text-align_center">
+            <lightning-spinner
+              alternative-text="Granskning pågår"
+              size="medium"
+            ></lightning-spinner>
+            <p class="slds-text-heading_small slds-m-top_medium">
+              Granskning pågår…
+            </p>
+            <template lwc:if={isStale}>
+              <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-top_medium" role="alert">
+                <p>Denna granskning verkar ha fastnat.</p>
+                <lightning-button
+                  label="Avbryt granskning"
+                  variant="destructive"
+                  onclick={handleCancelStuckReview}
+                  class="slds-m-top_small"
+                ></lightning-button>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- Failure state -->
+        <template lwc:elseif={isFailure}>
+          <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+            <p>Granskningen misslyckades.</p>
+            <template lwc:if={errorMessage}>
+              <p class="slds-m-top_xx-small slds-text-body_small">{errorMessage}</p>
+            </template>
+          </div>
+        </template>
+
+        <!-- Refreshing state (between processing → results) -->
+        <template lwc:elseif={isRefreshing}>
+          <div class="spinner-container slds-p-around_medium">
+            <lightning-spinner
+              alternative-text="Laddar resultat"
+              size="medium"
+            ></lightning-spinner>
+          </div>
+        </template>
+
+        <!-- Results (Success or null status — backward-compatible) -->
+        <template lwc:if={showResults}>
+          <lightning-tabset variant="default">
+            <lightning-tab label="Resultat">
+              <c-contract-review-viewer-criterion-table
+                criteria={criteria}
+              ></c-contract-review-viewer-criterion-table>
+            </lightning-tab>
+
+            <lightning-tab label="Svarstext">
+              <c-contract-review-viewer-draft-tab
+                response-draft={responseDraft}
+                response-draft-eng={responseDraftEng}
+                sv-draft-pending={isSvDraftPending}
+                eng-draft-pending={isEngDraftPending}
+                eng-draft-error={engDraftError}
+                onrequestengdraft={handleGenerateEngDraft}
+              ></c-contract-review-viewer-draft-tab>
+            </lightning-tab>
+
+            <lightning-tab label="Granskat Avtal">
+              <template lwc:if={isImage}>
+                <div
+                  class="image-container"
+                  role="button"
+                  tabindex="0"
+                  onclick={handleImageClick}
+                  onkeydown={handleImageKeydown}
+                  title="Klicka för att öppna i filförhandsgranskning"
+                >
+                  <img
+                    src={imageUrl}
+                    alt={fileName}
+                    class="file-image"
+                  />
+                </div>
+              </template>
+              <template lwc:elseif={isPdf}>
+                <iframe
+                  src={pdfUrl}
+                  class="pdf-iframe"
+                  title="Granskat Avtal"
+                ></iframe>
+              </template>
+              <template lwc:else>
+                <p
+                  class="slds-text-body_regular slds-text-color_weak slds-p-around_small slds-text-align_center"
+                >
+                  Ingen fil bifogad till denna granskning.
+                </p>
+              </template>
+            </lightning-tab>
+          </lightning-tabset>
+        </template>
+      </template>
+
+      <!-- Empty -->
+      <template lwc:else>
+        <div class="empty-state slds-p-around_small slds-text-align_center">
+          <p class="slds-text-heading_small slds-text-color_weak">Inga granskningar</p>
+          <p
+            class="slds-text-body_regular slds-text-color_weak slds-m-top_xx-small"
+          >
+            Inga avtalsgranskningar hittades för detta ärende.
+          </p>
+          <lightning-button
+            label="Starta granskning"
+            variant="brand"
+            icon-name="utility:add"
+            onclick={handleNewReview}
+            class="slds-m-top_small"
+          ></lightning-button>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>

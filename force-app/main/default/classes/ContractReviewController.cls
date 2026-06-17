@@ -181,7 +181,7 @@ public with sharing class ContractReviewController {
         FROM ContractReviewRuntimeCriterion__c
         WHERE ContractReview__c = :reviewId
         WITH USER_MODE
-        ORDER BY Name
+        ORDER BY Sequence__c ASC NULLS LAST
       ];
       SObjectAccessDecision decision = Security.stripInaccessible(
         AccessType.READABLE,

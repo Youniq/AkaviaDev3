@@ -1,0 +1,43 @@
+<template>
+  <div class="picker-container">
+    <button
+      type="button"
+      class="slds-button slds-button_neutral picker-trigger"
+      aria-haspopup="listbox"
+      aria-expanded={ariaExpanded}
+      onclick={handleToggle}
+    >
+      {selectedLabel}
+      <lightning-icon
+        icon-name="utility:chevrondown"
+        size="xx-small"
+        class="slds-m-left_xx-small"
+      ></lightning-icon>
+    </button>
+    <template lwc:if={isOpen}>
+      <div class="picker-overlay" onclick={handleClose}></div>
+      <div
+        class="picker-dropdown"
+        role="listbox"
+        aria-activedescendant={focusedOptionId}
+        onkeydown={handleKeydown}
+        tabindex="0"
+      >
+        <template for:each={optionsWithState} for:item="option">
+          <div
+            key={option.value}
+            id={option.id}
+            role="option"
+            aria-selected={option.ariaSelected}
+            class={option.optionClass}
+            title={option.tooltip}
+            data-value={option.value}
+            onclick={handleSelect}
+          >
+            {option.label}
+          </div>
+        </template>
+      </div>
+    </template>
+  </div>
+</template>

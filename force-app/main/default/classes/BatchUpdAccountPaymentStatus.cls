@@ -31,15 +31,9 @@ global class BatchUpdAccountPaymentStatus implements Database.Batchable<sObject>
                     system.debug(json.LatestPaymentDate_c);
                     acc.LatestPaymentDate__c = Date.valueOf(json.LatestPaymentDate_c.left(10));
                 }
-                if (String.isNotBlank(json.PaymentMethod_c)) {
-                    acc.PaymentMethod__c = json.PaymentMethod_c;
-                }
-                if (String.isNotBlank(json.DistributionMethod_c)) {
-                    acc.DistributionMethod__c = json.DistributionMethod_c;
-                }
-                if (String.isNotBlank(json.AutogiroApprovalStatus_c)) {
-                    acc.AutogiroApprovalStatus__c = json.AutogiroApprovalStatus_c;
-                }
+                acc.PaymentMethod__c = json.PaymentMethod_c;
+                acc.DistributionMethod__c = json.DistributionMethod_c;
+                acc.AutogiroApprovalStatus__c = json.AutogiroApprovalStatus_c;
                 acc.PaymentStatusUpdated__c = DateTime.now();
             }
             update accountsToLoop;

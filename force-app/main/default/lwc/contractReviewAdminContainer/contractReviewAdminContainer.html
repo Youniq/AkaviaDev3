@@ -1,0 +1,107 @@
+<template>
+  <div class="admin-shell">
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button
+        class={templatesBtnClass}
+        data-tab="templates"
+        onclick={handleTabSwitch}
+      >
+        Mallar
+      </button>
+      <button
+        class={criteriaBtnClass}
+        data-tab="criteria"
+        onclick={handleTabSwitch}
+      >
+        Granskningspunkter
+      </button>
+    </div>
+
+    <!-- Templates panel -->
+    <div class={templatesTabClass}>
+      <template lwc:if={isDeploying}>
+        <div class="deploy-overlay">
+          <lightning-spinner
+            alternative-text="Deploying metadata"
+            size="medium"
+          ></lightning-spinner>
+          <p class="deploy-overlay-text">Deploying metadata&hellip;</p>
+        </div>
+      </template>
+      <div class="templates-grid">
+        <div class="sidebar-col">
+          <c-contract-review-admin-template-sidebar
+            templates={templates}
+            ontemplateselected={handleTemplateSelected}
+            ontemplatecreate={handleTemplateCreate}
+          >
+          </c-contract-review-admin-template-sidebar>
+        </div>
+        <div class="workspace-col">
+          <c-contract-review-admin-template-workspace
+            selected-template={selectedTemplate}
+            is-deploying={isDeploying}
+            ondeployinitiated={handleDeployInitiated}
+          >
+          </c-contract-review-admin-template-workspace>
+        </div>
+      </div>
+    </div>
+
+    <!-- Criteria panel -->
+    <div class={criteriaTabClass}>
+      <template lwc:if={isDeploying}>
+        <div class="deploy-overlay">
+          <lightning-spinner
+            alternative-text="Deploying metadata"
+            size="medium"
+          ></lightning-spinner>
+          <p class="deploy-overlay-text">Deploying metadata&hellip;</p>
+        </div>
+      </template>
+      <c-contract-review-admin-criteria-manager
+        is-deploying={isDeploying}
+        ondeployinitiated={handleDeployInitiated}
+      >
+      </c-contract-review-admin-criteria-manager>
+    </div>
+
+    <!-- Console output panel -->
+    <div class="console-panel">
+      <div class="console-header">
+        <span class="console-title">
+          <lightning-icon
+            icon-name="utility:terminal"
+            size="xx-small"
+            class="console-icon"
+          ></lightning-icon>
+          Console
+        </span>
+        <lightning-button-icon
+          icon-name="utility:delete"
+          alternative-text="Clear console"
+          title="Clear console"
+          size="small"
+          variant="bare"
+          class="console-clear-btn"
+          onclick={handleClearLog}
+        >
+        </lightning-button-icon>
+      </div>
+      <div class="console-body">
+        <template lwc:if={hasLogEntries}>
+          <template for:each={logEntries} for:item="entry">
+            <div key={entry.id} class={entry.cssClass}>
+              <span class="log-timestamp">{entry.timestamp}</span>
+              <span class="log-message">{entry.message}</span>
+            </div>
+          </template>
+        </template>
+        <template lwc:else>
+          <div class="log-entry log-empty">No log entries yet.</div>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>

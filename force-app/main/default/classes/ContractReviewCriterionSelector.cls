@@ -56,7 +56,7 @@ public with sharing class ContractReviewCriterionSelector {
         SELECT Id, Name, Definition__c, ContractReview__c
         FROM ContractReviewRuntimeCriterion__c
         WHERE ContractReview__c IN :reviewIds
-        ORDER BY Name
+        ORDER BY Sequence__c ASC NULLS LAST
       ]) {
         if (!criteriaByReview.containsKey(c.ContractReview__c)) {
           criteriaByReview.put(c.ContractReview__c, new List<ContractReviewRuntimeCriterion__c>());

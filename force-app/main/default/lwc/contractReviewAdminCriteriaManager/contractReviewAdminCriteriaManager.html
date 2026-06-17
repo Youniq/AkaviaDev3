@@ -1,0 +1,69 @@
+<template>
+  <div class="criteria-container">
+    <div class="criteria-header">
+      <h3 class="criteria-heading">Granskningspunkter</h3>
+      <lightning-button
+        variant="neutral"
+        label="Nytt kriterium"
+        icon-name="utility:add"
+        disabled={isDeploying}
+        onclick={handleNewCriterion}
+        class="new-btn"
+      >
+      </lightning-button>
+    </div>
+
+    <template lwc:if={error}>
+      <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+        <p>Fel vid laddning av kriterier. Se konsolen för detaljer.</p>
+      </div>
+    </template>
+
+    <template lwc:if={isLoading}>
+      <div class="spinner-container">
+        <lightning-spinner
+          alternative-text="Laddar kriterier"
+          size="medium"
+        ></lightning-spinner>
+      </div>
+    </template>
+
+    <template lwc:else>
+      <template lwc:if={hasCriteria}>
+        <table class="criteria-table">
+          <thead>
+            <tr>
+              <th class="col-name">Namn</th>
+              <th class="col-definition">Definition</th>
+              <th class="col-action"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <template for:each={decoratedCriteria} for:item="c">
+              <tr key={c.DeveloperName} class="criteria-row">
+                <td class="col-name">{c.MasterLabel}</td>
+                <td class="col-definition">{c.truncatedDefinition}</td>
+                <td class="col-action">
+                  <lightning-button-icon
+                    icon-name="utility:edit"
+                    alternative-text="Redigera"
+                    size="small"
+                    variant="bare"
+                    data-developer-name={c.DeveloperName}
+                    onclick={handleEditCriterion}
+                  >
+                  </lightning-button-icon>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </template>
+      <template lwc:else>
+        <p class="text-muted slds-text-align_center slds-p-around_medium">
+          Inga kriterier hittades. Klicka "Nytt kriterium" för att skapa ett.
+        </p>
+      </template>
+    </template>
+  </div>
+</template>

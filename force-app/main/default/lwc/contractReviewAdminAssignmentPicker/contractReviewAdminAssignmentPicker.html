@@ -1,0 +1,144 @@
+<template>
+  <div class="picker-container">
+    <template lwc:if={disabled}>
+      <div class="picker-overlay">
+        <lightning-spinner
+          alternative-text="Distribuerar"
+          size="small"
+        ></lightning-spinner>
+      </div>
+    </template>
+
+    <div class="picker-grid">
+      <!-- ── Available column ── -->
+      <div class="picker-column picker-column-left">
+        <div class="picker-col-header">Tillgängliga</div>
+        <div
+          class="picker-list"
+          role="listbox"
+          aria-label="Tillgängliga kriterier"
+          ondragover={handleDragOverAvailable}
+          ondrop={handleDropOnAvailable}
+          ondragenter={handleDragEnterAvailable}
+          ondragleave={handleDragLeaveAvailable}
+        >
+          <template lwc:if={hasAvailable}>
+            <template for:each={decoratedAvailable} for:item="item">
+              <div
+                key={item.value}
+                class={item.rowClass}
+                role="option"
+                aria-selected={item.isSelected}
+                data-value={item.value}
+                data-list="available"
+                draggable={draggableValue}
+                onclick={handleRowClick}
+                ondragstart={handleDragStart}
+                ondragend={handleDragEnd}
+              >
+                <label class="picker-checkbox" onclick={handleCheckboxClick}>
+                  <input
+                    type="checkbox"
+                    checked={item.isChecked}
+                    disabled={disabled}
+                    data-value={item.value}
+                    onchange={handleAvailableCheck}
+                  />
+                </label>
+                <span class="picker-label">{item.label}</span>
+              </div>
+            </template>
+          </template>
+          <template lwc:else>
+            <p class="picker-empty">Inga kriterier tillgängliga</p>
+          </template>
+        </div>
+        <div class="picker-action-bar">
+          <lightning-button
+            variant="neutral"
+            label="Tilldela"
+            icon-name="utility:right"
+            icon-position="right"
+            disabled={isAssignDisabled}
+            onclick={handleAssign}
+          ></lightning-button>
+        </div>
+      </div>
+
+      <!-- ── Assigned column ── -->
+      <div class="picker-column">
+        <div class="picker-col-header">Tilldelade</div>
+        <div
+          class="picker-list"
+          role="listbox"
+          aria-label="Tilldelade kriterier"
+          ondragover={handleDragOverAssigned}
+          ondrop={handleDropOnAssigned}
+          ondragenter={handleDragEnterAssigned}
+          ondragleave={handleDragLeaveAssigned}
+        >
+          <template lwc:if={hasAssigned}>
+            <template for:each={decoratedAssigned} for:item="item">
+              <div
+                key={item.value}
+                class={item.rowClass}
+                role="option"
+                aria-selected={item.isSelected}
+                data-value={item.value}
+                data-list="assigned"
+                draggable={draggableValue}
+                onclick={handleRowClick}
+                ondragstart={handleDragStart}
+                ondragend={handleDragEnd}
+              >
+                <label class="picker-checkbox" onclick={handleCheckboxClick}>
+                  <input
+                    type="checkbox"
+                    checked={item.isChecked}
+                    disabled={disabled}
+                    data-value={item.value}
+                    onchange={handleAssignedCheck}
+                  />
+                </label>
+                <span class="seq-badge">{item.sequence}</span>
+                <span class="picker-label">{item.label}</span>
+                <span class="reorder-buttons">
+                  <lightning-button-icon
+                    icon-name="utility:arrowup"
+                    alternative-text="Flytta upp"
+                    variant="bare"
+                    size="small"
+                    disabled={item.isFirst}
+                    data-value={item.value}
+                    onclick={handleMoveUp}
+                  ></lightning-button-icon>
+                  <lightning-button-icon
+                    icon-name="utility:arrowdown"
+                    alternative-text="Flytta ner"
+                    variant="bare"
+                    size="small"
+                    disabled={item.isLast}
+                    data-value={item.value}
+                    onclick={handleMoveDown}
+                  ></lightning-button-icon>
+                </span>
+              </div>
+            </template>
+          </template>
+          <template lwc:else>
+            <p class="picker-empty">Inga kriterier tilldelade</p>
+          </template>
+        </div>
+        <div class="picker-action-bar">
+          <lightning-button
+            variant="neutral"
+            label="Ta bort"
+            icon-name="utility:left"
+            disabled={isUnassignDisabled}
+            onclick={handleUnassign}
+          ></lightning-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

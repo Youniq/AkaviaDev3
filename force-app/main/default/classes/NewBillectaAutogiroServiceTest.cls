@@ -24,8 +24,18 @@ public with sharing class NewBillectaAutogiroServiceTest {
         TestDataFactory.setupTestData(params);
     }
 
+    private static void setupBillectaConfig() {
+        NewBillectaBankAccountService.Config cfg = new NewBillectaBankAccountService.Config();
+        cfg.baseEndpoint = 'https://apitest.billecta.com';
+        cfg.creditorPublicId = '467fe7dd-529b-47cc-bc63-d840981a52aa';
+        cfg.secureToken = 'secure-token-value';
+        cfg.accountLookupBaseUrl = 'https://accountlookup.test.billecta.com';
+        NewBillectaBankAccountService.testConfig = cfg;
+    }
+
     @IsTest
     static void testStartAutogiroChange() {
+        setupBillectaConfig();
 
         Account acc = [
             SELECT Id, IsPersonAccount

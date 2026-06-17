@@ -16,7 +16,7 @@ public with sharing class NewBillectaBankAccountService {
             return testConfig;
         }
 
-        String configName = 'Api_Test'; // Api_Prod
+        String configName = resolveConfigName();
         Billecta_Settings__mdt cfg = Billecta_Settings__mdt.getInstance(configName);
 
         if (cfg == null) {
@@ -31,6 +31,11 @@ public with sharing class NewBillectaBankAccountService {
         //c.clientScriptUrl = clean(cfg.Client_Script_Url__c); 
         // Fetched from static resource instead to avoid CORS issues
         return c;
+    }
+
+    @TestVisible
+    private static String resolveConfigName() {
+        return GenericUtils.isSandbox() ? 'Api_Test' : 'Api_Prod';
     }
 
     private static String clean(String value) {

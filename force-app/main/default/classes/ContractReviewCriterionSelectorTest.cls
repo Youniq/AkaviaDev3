@@ -15,12 +15,14 @@ private class ContractReviewCriterionSelectorTest {
       new ContractReviewRuntimeCriterion__c(
         Name = 'A - First Criterion',
         Definition__c = 'First definition text',
-        ContractReview__c = review.Id
+        ContractReview__c = review.Id,
+        Sequence__c = 20
       ),
       new ContractReviewRuntimeCriterion__c(
         Name = 'B - Second Criterion',
         Definition__c = 'Second definition text',
-        ContractReview__c = review.Id
+        ContractReview__c = review.Id,
+        Sequence__c = 10
       )
     };
     insert criteria;
@@ -53,9 +55,9 @@ private class ContractReviewCriterionSelectorTest {
 
     Map<String, Object> first = (Map<String, Object>) parsed[0];
     System.assertEquals(
-      'A - First Criterion',
+      'B - Second Criterion',
       first.get('Name'),
-      'First criterion should come first (ORDER BY Name)'
+      'B criterion (Sequence 10) should come first (ORDER BY Sequence__c)'
     );
     System.assertNotEquals(
       null,
@@ -66,9 +68,9 @@ private class ContractReviewCriterionSelectorTest {
 
     Map<String, Object> second = (Map<String, Object>) parsed[1];
     System.assertEquals(
-      'B - Second Criterion',
+      'A - First Criterion',
       second.get('Name'),
-      'Second criterion should come second'
+      'A criterion (Sequence 20) should come second'
     );
   }
 

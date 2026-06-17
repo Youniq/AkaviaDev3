@@ -1,0 +1,68 @@
+<template>
+  <div class="assignment-container">
+    <div class="section-header">
+      <h3 class="slds-text-heading_small">
+        <lightning-icon
+          icon-name="standard:criteria_based_sharing_rule"
+          size="small"
+          class="slds-m-right_x-small"
+        ></lightning-icon>
+        Hantera kriterietilldelningar
+        <template lwc:if={assignmentCount}>
+          <span class="count-badge">{assignmentCount}</span>
+        </template>
+      </h3>
+    </div>
+
+    <template lwc:if={error}>
+      <div
+        class="slds-notify slds-notify_alert slds-alert_error slds-m-top_small"
+        role="alert"
+      >
+        <p>Fel vid laddning av data. Se konsolen för detaljer.</p>
+      </div>
+    </template>
+
+    <template lwc:if={isLoading}>
+      <div class="spinner-container">
+        <lightning-spinner
+          alternative-text="Laddar kriterier"
+          size="medium"
+        ></lightning-spinner>
+      </div>
+    </template>
+
+    <template lwc:else>
+      <div class="picker-container">
+        <c-contract-review-admin-assignment-picker
+          available-items={availableItems}
+          assigned-items={assignedItems}
+          selected-item-value={selectedItemValue}
+          disabled={isInteractionDisabled}
+          onassign={handleAssign}
+          onunassign={handleUnassign}
+          onreorder={handleReorder}
+          onassigntoindex={handleAssignToIndex}
+          onreordertoindex={handleReorderToIndex}
+          onitemclick={handleItemClick}
+        ></c-contract-review-admin-assignment-picker>
+      </div>
+
+      <c-contract-review-admin-info-panel
+        criterion={selectedCriterion}
+        disabled={isInteractionDisabled}
+        oncriterionsave={handleCriterionSave}
+      ></c-contract-review-admin-info-panel>
+
+      <div class="save-area">
+        <lightning-button
+          variant="brand"
+          label="Spara tilldelningar"
+          icon-name="utility:save"
+          onclick={handleSaveAssignments}
+          disabled={isSaveDisabled}
+        ></lightning-button>
+      </div>
+    </template>
+  </div>
+</template>

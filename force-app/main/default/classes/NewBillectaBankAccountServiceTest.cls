@@ -77,7 +77,7 @@ private class NewBillectaBankAccountServiceTest {
         System.assertEquals('token123', result.sessionToken);
         System.assertEquals('session456', result.sessionId);
         System.assertEquals('https://accountlookup.test.billecta.com', result.accountLookupBaseUrl);
-        System.assertEquals('https://accountlookup.billecta.com/js/client.js', result.clientScriptUrl);
+        System.assertEquals(null, result.clientScriptUrl, 'Client script is loaded from static resource, not API response');
     }
 
     @IsTest
@@ -93,7 +93,7 @@ private class NewBillectaBankAccountServiceTest {
         System.assertEquals('token123', result.sessionToken);
         System.assertEquals('session456', result.sessionId);
         System.assertEquals('https://accountlookup.test.billecta.com', result.accountLookupBaseUrl);
-        System.assertEquals('https://accountlookup.billecta.com/js/client.js', result.clientScriptUrl);
+        System.assertEquals(null, result.clientScriptUrl, 'Client script is loaded from static resource, not API response');
     }
 
     @IsTest

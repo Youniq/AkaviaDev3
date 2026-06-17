@@ -1,0 +1,96 @@
+<template>
+  <lightning-modal-header label={modalTitle}></lightning-modal-header>
+  <lightning-modal-body>
+    <div class="slds-p-around_small">
+      <lightning-input
+        label="Namn"
+        value={editLabel}
+        required
+        max-length="40"
+        onchange={handleLabelChange}
+        class="slds-m-bottom_x-small"
+      >
+      </lightning-input>
+
+      <lightning-textarea
+        label="Definition"
+        value={editDefinition}
+        required
+        max-length="32768"
+        onchange={handleDefinitionChange}
+        class="slds-m-bottom_x-small"
+      >
+      </lightning-textarea>
+
+      <lightning-accordion allow-multiple-sections-open>
+        <lightning-accordion-section name="outputs" label="Utdatatext">
+          <lightning-input
+            label="Visningstitel (engelska)"
+            field-level-help="Används som rubrik i utdatatext. Namn används om tomt."
+            value={editDisplayTitleEng}
+            max-length="255"
+            onchange={handleDisplayTitleEngChange}
+            class="slds-m-bottom_x-small"
+          >
+          </lightning-input>
+          <lightning-textarea
+            label="Utdata vid Uppfyllt (engelska)"
+            value={editOutputTrueEng}
+            max-length="10000"
+            onchange={handleOutputTrueEngChange}
+            class="slds-m-bottom_x-small"
+          >
+          </lightning-textarea>
+          <lightning-textarea
+            label="Utdata vid Ej uppfyllt (engelska)"
+            value={editOutputFalseEng}
+            max-length="10000"
+            onchange={handleOutputFalseEngChange}
+            class="slds-m-bottom_x-small"
+          >
+          </lightning-textarea>
+          <lightning-input
+            label="Visningstitel (svenska)"
+            field-level-help="Används som rubrik i utdatatext. Namn används om tomt."
+            value={editDisplayTitle}
+            max-length="255"
+            onchange={handleDisplayTitleChange}
+            class="slds-m-bottom_x-small"
+          >
+          </lightning-input>
+          <lightning-textarea
+            label="Utdata vid Uppfyllt (svenska)"
+            value={editOutputTrueSv}
+            max-length="10000"
+            onchange={handleOutputTrueSvChange}
+            class="slds-m-bottom_x-small"
+          >
+          </lightning-textarea>
+          <lightning-textarea
+            label="Utdata vid Ej uppfyllt (svenska)"
+            value={editOutputFalseSv}
+            max-length="10000"
+            onchange={handleOutputFalseSvChange}
+          >
+          </lightning-textarea>
+        </lightning-accordion-section>
+      </lightning-accordion>
+    </div>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button
+      label="Avbryt"
+      onclick={handleCancel}
+      class="slds-m-right_x-small"
+    >
+    </lightning-button>
+    <lightning-button
+      variant="brand"
+      label="Spara"
+      icon-name="utility:save"
+      disabled={isSaveDisabled}
+      onclick={handleSave}
+    >
+    </lightning-button>
+  </lightning-modal-footer>
+</template>

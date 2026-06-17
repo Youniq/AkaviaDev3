@@ -1,0 +1,77 @@
+<template>
+  <lightning-modal-header label={modalTitle}></lightning-modal-header>
+  <lightning-modal-body>
+    <div class="modal-content">
+      <!-- Status badge -->
+      <div class="modal-status-row">
+        <span class={statusClass} aria-label={statusLabel}>
+          <template lwc:if={isMet}>
+            <lightning-icon
+              icon-name="utility:check"
+              variant="inverse"
+              size="xx-small"
+              alternative-text="Uppfyllt"
+            ></lightning-icon>
+          </template>
+          <template lwc:else>
+            <lightning-icon
+              icon-name="utility:close"
+              variant="inverse"
+              size="xx-small"
+              alternative-text="Ej uppfyllt"
+            ></lightning-icon>
+          </template>
+          {statusLabel}
+        </span>
+      </div>
+
+      <!-- 2-column grid: Definition + Extract, then AI Comment full-width -->
+      <div class="modal-grid">
+        <div class="modal-section grid-left">
+          <h3 class="section-label">{definitionLabel}</h3>
+          <template lwc:if={definition}>
+            <p class="section-value">{definition}</p>
+          </template>
+          <template lwc:else>
+            <p class="section-value section-empty">&mdash;</p>
+          </template>
+        </div>
+
+        <div class="modal-section grid-right">
+          <h3 class="section-label">{extractLabel}</h3>
+          <template lwc:if={extract}>
+            <p class="section-value">{extract}</p>
+          </template>
+          <template lwc:else>
+            <p class="section-value section-empty">&mdash;</p>
+          </template>
+        </div>
+
+        <!-- Full-width -->
+        <div class="modal-section grid-full">
+          <h3 class="section-label">{aiCommentLabel}</h3>
+          <template lwc:if={aiComment}>
+            <p class="section-value">{aiComment}</p>
+          </template>
+          <template lwc:else>
+            <p class="section-value section-empty">&mdash;</p>
+          </template>
+        </div>
+      </div>
+    </div>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <div class="footer-layout">
+      <lightning-button
+        label="Ge feedback"
+        variant="brand"
+        onclick={handleGiveFeedback}
+      ></lightning-button>
+      <lightning-button
+        label="Stäng"
+        variant="neutral"
+        onclick={handleClose}
+      ></lightning-button>
+    </div>
+  </lightning-modal-footer>
+</template>

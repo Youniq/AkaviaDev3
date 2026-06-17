@@ -4,7 +4,7 @@
         <name>ACT_CreateInvoiceInBillecta</name>
         <label>Apex Action: CreateInvoiceInBillecta</label>
         <locationX>204</locationX>
-        <locationY>1316</locationY>
+        <locationY>1424</locationY>
         <actionName>BillectaDebtorInvoiceInvocable</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -32,10 +32,41 @@
     <apiVersion>60.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <description>NOT IN USE - Use if using Billecta Public API in the future
+ToDo: 1. Calculate amount based on MembershipCategory and
+FeeCategory 2. Fetch (or hardcode) and set the other values</description>
+        <name>Assign_Amount_And_Extras</name>
+        <label>Assign Amount And Extras</label>
+        <locationX>204</locationX>
+        <locationY>800</locationY>
+        <assignmentItems>
+            <assignToReference>Amount</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ArticleDescription</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>ProductPublicId</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>CostCenter</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>GET_Account</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>ASSIGN_RetroactiveInvoiceValues</name>
         <label>Assign Retroactive Invoice values</label>
         <locationX>204</locationX>
-        <locationY>908</locationY>
+        <locationY>1016</locationY>
         <assignmentItems>
             <assignToReference>apexDef_BillectaCreateInvoice.FeeCategory</assignToReference>
             <operator>Assign</operator>
@@ -158,7 +189,7 @@
         <locationX>50</locationX>
         <locationY>458</locationY>
         <defaultConnector>
-            <targetReference>GET_Account</targetReference>
+            <targetReference>Assign_Amount_And_Extras</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -184,7 +215,7 @@
         <locationX>204</locationX>
         <locationY>242</locationY>
         <defaultConnector>
-            <targetReference>GET_Account</targetReference>
+            <targetReference>Assign_Amount_And_Extras</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -207,7 +238,7 @@
         <name>CHECK_IsUserSystemAdmin</name>
         <label>Is User System Admin?</label>
         <locationX>204</locationX>
-        <locationY>1016</locationY>
+        <locationY>1124</locationY>
         <defaultConnector>
             <targetReference>ACT_CreateInvoiceInBillecta</targetReference>
         </defaultConnector>
@@ -228,7 +259,9 @@
             <label>Yes</label>
         </rules>
     </decisions>
-    <description>- added a calculated due date 
+    <description>- rollback, i.e. removed public api variables
+- added variables for Billecta public api -&gt; retroactive invoice
+- added a calculated due date 
 - fixed junli typo (juli)
 - exclude some feecategories from income insurance
 - added custom headers
@@ -477,7 +510,7 @@ MONTH({!SC_SVFRI_PicklistMonth}),
         <name>GET_Account</name>
         <label>Get Account</label>
         <locationX>204</locationX>
-        <locationY>800</locationY>
+        <locationY>908</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>ASSIGN_RetroactiveInvoiceValues</targetReference>
@@ -498,7 +531,7 @@ MONTH({!SC_SVFRI_PicklistMonth}),
         <name>S_AI</name>
         <label>Admin Info</label>
         <locationX>72</locationX>
-        <locationY>1124</locationY>
+        <locationY>1232</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -507,7 +540,7 @@ MONTH({!SC_SVFRI_PicklistMonth}),
         </connector>
         <fields>
             <name>SC_AI_DisplayTextInfo</name>
-            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;&lt;em&gt;Visas endast för System Admins&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Membership Category: {!apexDef_BillectaCreateInvoice.MembershipCategory}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Fee category: {!apexDef_BillectaCreateInvoice.FeeCategory}&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;PeriodStart: {!apexDef_BillectaCreateInvoice.PeriodStart}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;HaveAkassa: &lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!apexDef_BillectaCreateInvoice.HaveAkassa}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;HaveIncomeInsurance: &lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!apexDef_BillectaCreateInvoice.HaveIncomeInsurance}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Membernumber: {!apexDef_BillectaCreateInvoice.MemberNumber}&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;Social Security Number: {!apexDef_BillectaCreateInvoice.SocialSecurityNumber}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;Due Date: {!var_DueDate}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;&lt;em&gt;Visas endast för System Admins&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Membership Category: {!apexDef_BillectaCreateInvoice.MembershipCategory}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Fee category: {!apexDef_BillectaCreateInvoice.FeeCategory}&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;PeriodStart: {!apexDef_BillectaCreateInvoice.PeriodStart}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;HaveAkassa: &lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!apexDef_BillectaCreateInvoice.HaveAkassa}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;HaveIncomeInsurance: &lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;{!apexDef_BillectaCreateInvoice.HaveIncomeInsurance}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Membernumber: {!apexDef_BillectaCreateInvoice.MemberNumber}&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;Social Security Number: {!apexDef_BillectaCreateInvoice.SocialSecurityNumber}&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;-------- Prefered calculated Due Date is currently ignored by Billecta ----------&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255);&quot;&gt;Due Date: {!var_DueDate}&lt;/span&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -525,7 +558,7 @@ MONTH({!SC_SVFRI_PicklistMonth}),
         <name>S_ES</name>
         <label>Error Screen</label>
         <locationX>534</locationX>
-        <locationY>1424</locationY>
+        <locationY>1532</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -627,7 +660,7 @@ MONTH({!SC_SVFRI_PicklistMonth}),
         <name>S_SS</name>
         <label>Success Screen</label>
         <locationX>204</locationX>
-        <locationY>1424</locationY>
+        <locationY>1532</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>true</allowPause>
@@ -788,9 +821,38 @@ MONTH({!SC_SVFRI_PicklistMonth}),
     </start>
     <status>Active</status>
     <variables>
+        <name>Amount</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
         <name>apexDef_BillectaCreateInvoice</name>
         <apexClass>BillectaCreateInvoice</apexClass>
         <dataType>Apex</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>ArticleDescription</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>CostCenter</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>ProductPublicId</name>
+        <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>

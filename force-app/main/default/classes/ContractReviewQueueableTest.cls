@@ -90,7 +90,8 @@ private class ContractReviewQueueableTest {
             for (Integer i = 0; i < 2; i++) {
                 criteria.add(new ContractReviewRuntimeCriterion__c(
                     ContractReview__c = review.Id,
-                    Definition__c = 'Test criterion ' + i
+                    Definition__c = 'Test criterion ' + i,
+                    Sequence__c = i + 1
                 ));
             }
             insert criteria;
@@ -105,7 +106,7 @@ private class ContractReviewQueueableTest {
             List<ContractReviewRuntimeCriterion__c> criteria = [
                 SELECT Id FROM ContractReviewRuntimeCriterion__c
                 WHERE ContractReview__c = :review.Id
-                ORDER BY Name
+                ORDER BY Sequence__c ASC NULLS LAST
             ];
 
             // Build mock JSON matching the parser's expected format
@@ -254,7 +255,7 @@ private class ContractReviewQueueableTest {
             List<ContractReviewRuntimeCriterion__c> criteria = [
                 SELECT Id FROM ContractReviewRuntimeCriterion__c
                 WHERE ContractReview__c = :review.Id
-                ORDER BY Name
+                ORDER BY Sequence__c ASC NULLS LAST
             ];
 
             String mockJson = '[' +
@@ -297,7 +298,7 @@ private class ContractReviewQueueableTest {
             List<ContractReviewRuntimeCriterion__c> criteria = [
                 SELECT Id FROM ContractReviewRuntimeCriterion__c
                 WHERE ContractReview__c = :review.Id
-                ORDER BY Name
+                ORDER BY Sequence__c ASC NULLS LAST
             ];
 
             String mockJson = '[' +
@@ -337,7 +338,7 @@ private class ContractReviewQueueableTest {
             List<ContractReviewRuntimeCriterion__c> criteria = [
                 SELECT Id FROM ContractReviewRuntimeCriterion__c
                 WHERE ContractReview__c = :review.Id
-                ORDER BY Name
+                ORDER BY Sequence__c ASC NULLS LAST
             ];
 
             String mockJson = '[' +
@@ -377,7 +378,7 @@ private class ContractReviewQueueableTest {
             List<ContractReviewRuntimeCriterion__c> criteria = [
                 SELECT Id FROM ContractReviewRuntimeCriterion__c
                 WHERE ContractReview__c = :review.Id
-                ORDER BY Name
+                ORDER BY Sequence__c ASC NULLS LAST
             ];
 
             String mockJson = '[' +

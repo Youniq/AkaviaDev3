@@ -2,8 +2,8 @@
  * @description       :
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             :
- * @last modified on  : 2026-06-12
- * @last modified by  : Stefan Trieton (Stretch Customer AB)
+ * @last modified on  : 2025-07-02
+ * @last modified by  : Malin Nilsson (Stretch Customer AB)
  **/
 public class BillectaEncodeJSON {
 

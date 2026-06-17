@@ -1,0 +1,23 @@
+/* Svarstext toolbar */
+
+.draft-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.draft-loading {
+  position: relative;
+  min-height: 6rem;
+}
+
+/* Hidden helper for rich text clipboard */
+
+.copy-helper {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+}

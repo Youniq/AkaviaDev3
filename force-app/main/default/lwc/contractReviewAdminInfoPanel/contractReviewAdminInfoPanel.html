@@ -1,0 +1,161 @@
+<template>
+  <!-- ── Read mode ── -->
+  <template lwc:if={isReadMode}>
+    <div class="detail-card">
+      <div class="detail-header">
+        <h4 class="detail-title">{criterionLabel}</h4>
+        <lightning-button-icon
+          icon-name="utility:edit"
+          alternative-text="Redigera kriterium"
+          variant="bare"
+          size="small"
+          disabled={isEditDisabled}
+          onclick={handleEdit}
+        ></lightning-button-icon>
+      </div>
+      <div class="detail-body">
+        <div class="field-group">
+          <span class="field-label">Definition</span>
+          <p class="field-value">{definition}</p>
+        </div>
+
+        <div class="output-grid">
+          <div class="output-cell">
+            <span class="field-label">Visningstitel (svenska)</span>
+            <p class="field-value">{displayTitleDisplay}</p>
+          </div>
+          <div class="output-cell">
+            <span class="field-label">Visningstitel (engelska)</span>
+            <p class="field-value">{displayTitleEngDisplay}</p>
+          </div>
+          <div class="output-cell">
+            <span class="field-label">Utdata vid Uppfyllt (svenska)</span>
+            <p class="field-value">{outputTrueSvDisplay}</p>
+          </div>
+          <div class="output-cell">
+            <span class="field-label">Utdata vid Uppfyllt (engelska)</span>
+            <p class="field-value">{outputTrueEngDisplay}</p>
+          </div>
+          <div class="output-cell">
+            <span class="field-label">Utdata vid Ej uppfyllt (svenska)</span>
+            <p class="field-value">{outputFalseSvDisplay}</p>
+          </div>
+          <div class="output-cell">
+            <span class="field-label">Utdata vid Ej uppfyllt (engelska)</span>
+            <p class="field-value">{outputFalseEngDisplay}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ── Edit mode ── -->
+  <template lwc:if={isEditMode}>
+    <div class="detail-card">
+      <div class="detail-header">
+        <h4 class="detail-title">Redigera kriterium</h4>
+      </div>
+      <div class="detail-body">
+        <lightning-input
+          label="Namn"
+          value={_editLabel}
+          required
+          maxlength="40"
+          disabled={isInputDisabled}
+          onchange={handleLabelChange}
+          class="slds-m-bottom_x-small"
+        ></lightning-input>
+
+        <lightning-textarea
+          label="Definition"
+          value={_editDefinition}
+          required
+          max-length="32768"
+          disabled={isInputDisabled}
+          onchange={handleDefinitionChange}
+          class="slds-m-bottom_x-small"
+        ></lightning-textarea>
+
+        <div class="output-grid">
+          <lightning-input
+            label="Visningstitel (svenska)"
+            field-level-help="Används som rubrik i utdatatext. Namn används om tomt."
+            value={_editDisplayTitle}
+            max-length="255"
+            disabled={isInputDisabled}
+            onchange={handleDisplayTitleChange}
+            class="slds-m-bottom_x-small"
+          ></lightning-input>
+          <lightning-input
+            label="Visningstitel (engelska)"
+            field-level-help="Används som rubrik i utdatatext. Namn används om tomt."
+            value={_editDisplayTitleEng}
+            max-length="255"
+            disabled={isInputDisabled}
+            onchange={handleDisplayTitleEngChange}
+            class="slds-m-bottom_x-small"
+          ></lightning-input>
+          <lightning-textarea
+            label="Utdata vid Uppfyllt (svenska)"
+            value={_editOutputTrueSv}
+            max-length="10000"
+            disabled={isInputDisabled}
+            onchange={handleOutputTrueSvChange}
+            class="slds-m-bottom_x-small"
+          ></lightning-textarea>
+          <lightning-textarea
+            label="Utdata vid Uppfyllt (engelska)"
+            value={_editOutputTrueEng}
+            max-length="10000"
+            disabled={isInputDisabled}
+            onchange={handleOutputTrueEngChange}
+            class="slds-m-bottom_x-small"
+          ></lightning-textarea>
+          <lightning-textarea
+            label="Utdata vid Ej uppfyllt (svenska)"
+            value={_editOutputFalseSv}
+            max-length="10000"
+            disabled={isInputDisabled}
+            onchange={handleOutputFalseSvChange}
+            class="slds-m-bottom_x-small"
+          ></lightning-textarea>
+          <lightning-textarea
+            label="Utdata vid Ej uppfyllt (engelska)"
+            value={_editOutputFalseEng}
+            max-length="10000"
+            disabled={isInputDisabled}
+            onchange={handleOutputFalseEngChange}
+            class="slds-m-bottom_x-small"
+          ></lightning-textarea>
+        </div>
+
+        <div class="edit-footer">
+          <lightning-button
+            label="Avbryt"
+            onclick={handleCancel}
+          ></lightning-button>
+          <lightning-button
+            variant="brand"
+            label="Spara kriterium"
+            icon-name="utility:save"
+            disabled={isSaveDisabled}
+            onclick={handleSave}
+          ></lightning-button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ── Empty state ── -->
+  <template lwc:if={hasCriterion}></template>
+  <template lwc:else>
+    <div class="detail-card detail-card-empty">
+      <lightning-icon
+        icon-name="utility:info"
+        size="small"
+        class="empty-icon"
+      ></lightning-icon>
+      <p class="empty-text">Välj ett kriterium för att visa detaljer</p>
+    </div>
+  </template>
+</template>

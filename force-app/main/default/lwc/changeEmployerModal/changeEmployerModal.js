@@ -402,7 +402,7 @@ export default class ChangeEmployerModal extends LightningElement {
       EndDate__c: getYesterday().toJSON()
     };
     this.updateObj.employment = { action: "U", record: empObj };
-    //return employmentService.editEmployment(empObj);
+    return employmentService.editEmployment(empObj);
   }
 
   // /**

@@ -1,0 +1,57 @@
+<template>
+  <div class="detail-card">
+    <!-- View mode -->
+    <template lwc:if={showViewMode}>
+      <div class="detail-header">
+        <h2 class="detail-title">{selectedTemplate.MasterLabel}</h2>
+        <lightning-button-icon
+          icon-name="utility:edit"
+          alternative-text="Redigera mall"
+          title="Redigera mall"
+          size="small"
+          variant="bare"
+          onclick={handleEdit}
+        >
+        </lightning-button-icon>
+      </div>
+      <p class={descriptionClass} onclick={handleEdit}>{descriptionDisplay}</p>
+    </template>
+
+    <!-- Edit mode -->
+    <template lwc:else>
+      <lightning-input
+        label="Namn"
+        value={editLabel}
+        required
+        max-length="40"
+        onchange={handleLabelChange}
+        class="slds-m-bottom_x-small"
+      >
+      </lightning-input>
+      <lightning-textarea
+        label="Beskrivning"
+        value={editDescription}
+        max-length="2000"
+        onchange={handleDescriptionChange}
+        class="slds-m-bottom_small"
+      >
+      </lightning-textarea>
+      <div class="detail-actions">
+        <lightning-button
+          label="Avbryt"
+          onclick={handleCancel}
+          class="slds-m-right_x-small"
+        >
+        </lightning-button>
+        <lightning-button
+          variant="brand"
+          label="Spara"
+          icon-name="utility:save"
+          disabled={isSaveDisabled}
+          onclick={handleSave}
+        >
+        </lightning-button>
+      </div>
+    </template>
+  </div>
+</template>

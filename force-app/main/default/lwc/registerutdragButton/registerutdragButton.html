@@ -1,0 +1,15 @@
+<template>
+    <div class="slds-p-around_small">
+        <lightning-button
+            label="Ta ut registerutdrag"
+            title="Generera registerutdrag och koppla till ärendet"
+            variant="neutral"
+            onclick={handleGenerate}
+            disabled={isDisabled}
+            class="slds-m-right_x-small">
+        </lightning-button>
+        <template if:true={loading}>
+            <lightning-spinner alternative-text="Skapar registerutdrag..." size="small"></lightning-spinner>
+        </template>
+    </div>
+</template>

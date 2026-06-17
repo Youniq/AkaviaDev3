@@ -1,0 +1,15 @@
+.empty-workspace {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 1rem;
+}
+
+.empty-icon {
+  color: var(--slds-g-color-neutral-base-60, #aeaeae);
+}
+
+.text-muted {
+  color: var(--slds-g-color-neutral-base-60, #aeaeae);
+}
