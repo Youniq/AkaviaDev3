@@ -86,7 +86,7 @@ public class BillectaUtils {
   public static httpRequest CancelInvoice(String guId, httpRequest req) {
     req.setEndpoint(req.getEndpoint() + '/v1/akavia/CancelInvoice?id=' + guId);
     req.setMethod(GlobalConstants.HTTP_METHOD_POST);
-    req.setHeader('Content-length', '0');
+    //req.setHeader('Content-length', '0');
 
     return req;
   }
