@@ -16,6 +16,7 @@
             </value>
         </inputParameters>
         <nameSegment>McSyncLeftoverInvocable</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>50.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

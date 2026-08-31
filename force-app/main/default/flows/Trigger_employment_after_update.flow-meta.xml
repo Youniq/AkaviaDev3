@@ -2,7 +2,7 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>Uppdaterar aktuell arbetsgivare på personkonto om arbetsgivare ändras på aktiv anställning</description>
+    <description>- Uppdaterar aktuell arbetsgivare på personkonto om arbetsgivare ändras på aktiv anställning</description>
     <environments>Default</environments>
     <interviewLabel>Trigger employment after update {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Employment - Trigger - After Update</label>
@@ -30,7 +30,7 @@
         <name>Update_Current_Employer_on_Person_Account</name>
         <label>Update Current Employer on Person Account</label>
         <locationX>176</locationX>
-        <locationY>335</locationY>
+        <locationY>323</locationY>
         <inputAssignments>
             <field>CurrentEmployer__c</field>
             <value>
@@ -64,5 +64,5 @@
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Obsolete</status>
 </Flow>

@@ -114,6 +114,12 @@ sms is not selectable for PersonAccount.</description>
             <stringValue>BG</stringValue>
         </value>
     </choices>
+    <customProperties>
+        <name>ScreenProgressIndicator</name>
+        <value>
+            <stringValue>{&quot;location&quot;:&quot;top&quot;,&quot;type&quot;:&quot;simple&quot;}</stringValue>
+        </value>
+    </customProperties>
     <decisions>
         <name>CHECK_Is_E_Invoice</name>
         <label>CHECK: Is E-Invoice?</label>

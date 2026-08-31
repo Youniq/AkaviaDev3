@@ -21,6 +21,7 @@
             </value>
         </inputParameters>
         <nameSegment>c:navigateEverywhereLFA</nameSegment>
+        <offset>0</offset>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <actionCalls>
@@ -71,6 +72,7 @@
             </value>
         </inputParameters>
         <nameSegment>GLSendEmail__SendEmail</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <actionCalls>
         <name>Send_Custom_Notification</name>
@@ -114,6 +116,7 @@
             </value>
         </inputParameters>
         <nameSegment>customNotificationAction</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>53.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

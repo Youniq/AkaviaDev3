@@ -3,10 +3,35 @@
     <apiVersion>50.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <decisions>
+        <name>CHECK_Account_has_local_union_education_flag</name>
+        <label>CHECK: Account has local union education flag?</label>
+        <locationX>182</locationX>
+        <locationY>1476</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_hasFlag</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.localUnionEducation__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SET_Remove_local_union_education_flag</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Is_There_CampaignMembers_To_Delete</name>
         <label>Is There CampaignMembers To Delete</label>
         <locationX>182</locationX>
-        <locationY>1308</locationY>
+        <locationY>1176</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_Account_has_local_union_education_flag</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>No CampaignMembers To Delete</defaultConnectorLabel>
         <rules>
             <name>Yes_CampaignMembers_To_Delete</name>
@@ -28,7 +53,7 @@
         <name>Is_There_Exit_Applications_To_Delete</name>
         <label>Is There Exit Applications To Delete</label>
         <locationX>182</locationX>
-        <locationY>852</locationY>
+        <locationY>768</locationY>
         <defaultConnector>
             <targetReference>Get_CampaignMember_To_Delete</targetReference>
         </defaultConnector>
@@ -53,7 +78,7 @@
         <name>Is_There_MemberBenefits_To_Delete</name>
         <label>Is There MemberBenefits To Delete</label>
         <locationX>182</locationX>
-        <locationY>396</locationY>
+        <locationY>360</locationY>
         <defaultConnector>
             <targetReference>Get_Exit_Applications_To_Delete</targetReference>
         </defaultConnector>
@@ -74,6 +99,8 @@
             <label>Yes, Memberbenefits To Delete</label>
         </rules>
     </decisions>
+    <description>2025-02-10: Now unchecks Account.localUnionEducation__c</description>
+    <environments>Default</environments>
     <interviewLabel>Account - Schedule - Delete when Member exits 3 Year {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Account - Schedule - Delete when Member exits 3 Year</label>
     <processMetadataValues>
@@ -99,7 +126,7 @@
         <name>Delete_Exit_Found_Applications</name>
         <label>Delete Exit Found Applications</label>
         <locationX>50</locationX>
-        <locationY>972</locationY>
+        <locationY>876</locationY>
         <connector>
             <targetReference>Get_CampaignMember_To_Delete</targetReference>
         </connector>
@@ -109,14 +136,17 @@
         <name>Delete_Found_CampaignMembers</name>
         <label>Delete Found CampaignMembers</label>
         <locationX>50</locationX>
-        <locationY>1428</locationY>
+        <locationY>1284</locationY>
+        <connector>
+            <targetReference>CHECK_Account_has_local_union_education_flag</targetReference>
+        </connector>
         <inputReference>Get_CampaignMember_To_Delete</inputReference>
     </recordDeletes>
     <recordDeletes>
         <name>Delete_Found_Memberbenefits</name>
         <label>Delete Found Memberbenefits</label>
         <locationX>50</locationX>
-        <locationY>516</locationY>
+        <locationY>468</locationY>
         <connector>
             <targetReference>Get_Exit_Applications_To_Delete</targetReference>
         </connector>
@@ -126,7 +156,7 @@
         <name>Get_CampaignMember_To_Delete</name>
         <label>Get CampaignMember To Delete</label>
         <locationX>182</locationX>
-        <locationY>1188</locationY>
+        <locationY>1068</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Is_There_CampaignMembers_To_Delete</targetReference>
@@ -148,7 +178,7 @@
         <name>Get_Exit_Applications_To_Delete</name>
         <label>Get Exit Applications To Delete</label>
         <locationX>182</locationX>
-        <locationY>732</locationY>
+        <locationY>660</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Is_There_Exit_Applications_To_Delete</targetReference>
@@ -177,7 +207,7 @@
         <name>Get_Memberbenefits_To_Delete</name>
         <label>Get Memberbenefits To Delete</label>
         <locationX>182</locationX>
-        <locationY>276</locationY>
+        <locationY>252</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Is_There_MemberBenefits_To_Delete</targetReference>
@@ -195,6 +225,19 @@
         <queriedFields>Id</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <name>SET_Remove_local_union_education_flag</name>
+        <label>SET: Remove local union education flag</label>
+        <locationX>50</locationX>
+        <locationY>1584</locationY>
+        <inputAssignments>
+            <field>localUnionEducation__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
     <start>
         <locationX>56</locationX>
         <locationY>0</locationY>
@@ -231,7 +274,7 @@
         </schedule>
         <triggerType>Scheduled</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Draft</status>
     <variables>
         <name>ContentDocumentId</name>
         <dataType>SObject</dataType>

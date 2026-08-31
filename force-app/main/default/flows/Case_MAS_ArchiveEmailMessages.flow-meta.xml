@@ -501,7 +501,7 @@
             <targetReference>Get_Case_EmailMessages</targetReference>
         </connector>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
     <transforms>
         <name>Coll_EmailMessage_Ids</name>
         <label>GET: Origin EmailMessage Ids Array</label>

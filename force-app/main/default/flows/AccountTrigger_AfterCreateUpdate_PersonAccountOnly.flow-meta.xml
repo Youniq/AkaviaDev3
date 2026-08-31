@@ -6,7 +6,7 @@
         <name>NewMemberNumber</name>
         <label>NewMemberNumber</label>
         <locationX>182</locationX>
-        <locationY>431</locationY>
+        <locationY>539</locationY>
         <assignmentItems>
             <assignToReference>newMemberNumberRecord.Person__c</assignToReference>
             <operator>Assign</operator>
@@ -22,7 +22,10 @@
         <name>CHECK_ActivatePortalUser</name>
         <label>CHECK: Activate Portal User?</label>
         <locationX>314</locationX>
-        <locationY>731</locationY>
+        <locationY>839</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Do nothing</defaultConnectorLabel>
         <rules>
             <name>Yes_Activate</name>
@@ -69,7 +72,7 @@
         <name>CHECK_NewOrUpdated</name>
         <label>CHECK New or Updated?</label>
         <locationX>314</locationX>
-        <locationY>323</locationY>
+        <locationY>431</locationY>
         <defaultConnector>
             <targetReference>CHECK_ActivatePortalUser</targetReference>
         </defaultConnector>
@@ -90,7 +93,70 @@
             <label>New</label>
         </rules>
     </decisions>
-    <description>Moved process builder func here</description>
+
+    <decisions>
+        <description>2026-08-31: All Marketing Cloud mirror-field synchronization is handled in this After Save flow because Salesforce does not support the required source fields in RecordBeforeSave. Before performing DML, CHECK_MC_Fields_Need_Update compares all 24 source/target pairs. Account is updated only when at least one value differs, so the recursive After Save execution exits without another update.
+2026-08-03: Update MC Fields
+Moved process builder func here</description>
+        <name>CHECK_MC_Fields_Need_Update</name>
+        <label>CHECK MC Fields Need Update</label>
+        <locationX>314</locationX>
+        <locationY>947</locationY>
+        <defaultConnectorLabel>No changes</defaultConnectorLabel>
+        <rules>
+            <name>MC_Fields_Different</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.UnemploymentFundThroughAkavia_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.UnemploymentFundThroughAkavia__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.IsManager_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.IsManager__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.AutoGraduationDate_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.AutoGraduationDate__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.EmailConsent_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.EmailConsent__pc</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.SMSConsent_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.SMSConsent__pc</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StartDateForCurrentFeeCategory_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.StartDateForCurrentFeeCategory__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MC_Fields</targetReference>
+            </connector>
+            <label>Update required</label>
+        </rules>
+    </decisions>
+
+    <description>2026-08-03: Update MC Fields
+Moved process builder func here</description>
     <environments>Default</environments>
     <formulas>
         <description>Check if record is new or not</description>
@@ -123,12 +189,165 @@
         <name>Create_MemberNumber</name>
         <label>Create MemberNumber</label>
         <locationX>182</locationX>
-        <locationY>539</locationY>
+        <locationY>647</locationY>
         <connector>
             <targetReference>CHECK_ActivatePortalUser</targetReference>
         </connector>
         <inputReference>newMemberNumberRecord</inputReference>
     </recordCreates>
+    <recordUpdates>
+        <description>Synchronizes all Marketing Cloud mirror fields on the Person Account. This element executes only when CHECK_MC_Fields_Need_Update detects at least one difference, preventing unnecessary DML and recursive updates.</description>
+        <name>Update_MC_Fields</name>
+        <label>Update MC Fields</label>
+        <locationX>182</locationX>
+        <locationY>1055</locationY>
+        <inputAssignments>
+            <field>Age_MC__c</field>
+            <value>
+                <elementReference>$Record.Age__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>AutoGraduationDate_MC__c</field>
+            <value>
+                <elementReference>$Record.AutoGraduationDate__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentCOAdress_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentCOAdress__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentCity_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentCity__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentCountry_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentCountry__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentCountyCode_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentCountyCode__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentMunicipalityCode_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentMunicipalityCode__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentMunicipality_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentMunicipality__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentState_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentState__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentStreetAdress_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentStreetAdress__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CurrentZipCode_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentZipCode__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>EmailConsent_MC__c</field>
+            <value>
+                <elementReference>$Record.EmailConsent__pc</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>EmployerFormula_MC__c</field>
+            <value>
+                <elementReference>$Record.EmployerFormula__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>EmployerOrgNumber_MC__c</field>
+            <value>
+                <elementReference>$Record.EmployerOrgNumber__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>FeeCategory_MC__c</field>
+            <value>
+                <elementReference>$Record.FeeCategory__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>IsManager_MC__c</field>
+            <value>
+                <elementReference>$Record.IsManager__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>MemberPhase_MC__c</field>
+            <value>
+                <elementReference>$Record.MemberPhase__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>MembershipCategory_MC__c</field>
+            <value>
+                <elementReference>$Record.MembershipCategory__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>MembershipStatus_MC__c</field>
+            <value>
+                <elementReference>$Record.MembershipStatus__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>PersonSection_MC__c</field>
+            <value>
+                <elementReference>$Record.PersonSection__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SMSConsent_MC__c</field>
+            <value>
+                <elementReference>$Record.SMSConsent__pc</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Section_MC__c</field>
+            <value>
+                <elementReference>$Record.Section__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>StartDateForCurrentFeeCategory_MC__c</field>
+            <value>
+                <elementReference>$Record.StartDateForCurrentFeeCategory__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>UnemploymentFundThroughAkavia_MC__c</field>
+            <value>
+                <elementReference>$Record.UnemploymentFundThroughAkavia__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+
     <start>
         <locationX>188</locationX>
         <locationY>0</locationY>
@@ -152,7 +371,10 @@
         <name>Run_Community_User_Subflow</name>
         <label>Run Community User Subflow</label>
         <locationX>50</locationX>
-        <locationY>839</locationY>
+        <locationY>947</locationY>
+        <connector>
+            <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
+        </connector>
         <flowName>Account_Sub_Flow_Community_User</flowName>
         <inputAssignments>
             <name>PersonAccountRecord</name>

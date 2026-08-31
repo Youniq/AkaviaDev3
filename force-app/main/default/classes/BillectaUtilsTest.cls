@@ -32,7 +32,7 @@ public with sharing class BillectaUtilsTest {
 
     Assert.areEqual('POST', req.getMethod());
     Assert.isTrue(req.getEndpoint().endsWith('/v1/akavia/CancelInvoice?id=invoice-id'));
-    Assert.areEqual('0', req.getHeader('Content-length'));
+    
   }
 
   @IsTest

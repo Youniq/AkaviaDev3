@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Initially the flow is created to update new members with deliveryMethod = Kivra at Billecta. This applies only to members with the distributionMethod = &apos;Postalt&apos; in SF. At billecta they should have  Kivra as default.</description>
+        <name>Send_debtor_payment_method_to_Billecta</name>
+        <label>Send debtor + payment method to Billecta</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>BillectaInitiateSendDebtor</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>billectaAction</name>
+            <value>
+                <stringValue>update</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>BillectaInitiateSendDebtor</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <description>No payment method info is sent.</description>
+        <name>Send_debtor_to_Billecta</name>
+        <label>Send debtor to Billecta</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>BillectaInitiateSendDebtor_WithoutPM</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>billectaAction</name>
+            <value>
+                <stringValue>update</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>BillectaInitiateSendDebtor_WithoutPM</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Send contact + payment details OR send only contact info</description>
+        <name>CHECK_Send_payment_details</name>
+        <label>CHECK: Send payment details?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Send_debtor_to_Billecta</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_sendPaymentDetails</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>bool_sendPaymentDetails</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_debtor_payment_method_to_Billecta</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>This flow can be used to trigger an update of the debtor in Billecta</description>
+    <environments>Default</environments>
+    <interviewLabel>MAS: Account - Update debtor in Billecta {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>MAS: Account - Update debtor in Billecta</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>CHECK_Send_payment_details</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>set to true in order to update the payment details on the debtor in Billecta. Otherwise only contact informatino is updated. Sendint paymentdetails updates both contact and payment-information</description>
+        <name>bool_sendPaymentDetails</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Account recordId for the account to send to Billecta</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

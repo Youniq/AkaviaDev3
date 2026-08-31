@@ -14,9 +14,9 @@
         <conditionLogic>and</conditionLogic>
         <conditions>
             <leftValueReference>currentItem_Case_Document_Links.LinkedEntityId</leftValueReference>
-            <operator>StartsWith</operator>
+            <operator>IsNull</operator>
             <rightValue>
-                <stringValue>500</stringValue>
+                <booleanValue>false</booleanValue>
             </rightValue>
         </conditions>
         <connector>
@@ -185,6 +185,16 @@
             </value>
         </filters>
         <object>ContentDocumentLink</object>
+    </recordDeletes>
+    <recordDeletes>
+        <name>Deletecontentdocumentlinks</name>
+        <label>Delete content document links</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Delete_Content_Document_and_links</targetReference>
+        </connector>
+        <inputReference>Get_All_Content_Document_Links</inputReference>
     </recordDeletes>
     <recordLookups>
         <name>Get_All_Content_Document_Links</name>
@@ -409,7 +419,7 @@
             <targetReference>Get_Content_Document_Links</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <subflows>
         <name>Case_Chatter_Post</name>
         <label>Case Chatter Post</label>
@@ -534,7 +544,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Delete_Content_Document_and_links</targetReference>
+            <targetReference>Deletecontentdocumentlinks</targetReference>
         </connector>
         <dataType>String</dataType>
         <isCollection>true</isCollection>

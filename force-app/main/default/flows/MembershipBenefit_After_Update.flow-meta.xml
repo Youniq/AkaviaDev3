@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>62.0</apiVersion>
+    <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>A platform event triggered flow helping out to set member user as active/deactive</description>
+    <description>2026-08-14: Update MC fields</description>
     <environments>Default</environments>
-    <interviewLabel>PlatformEvent - MemberUser - {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Platform Event - Member User - Update on activate/deactivate</label>
+    <interviewLabel>MembershipBenefit - After Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>MembershipBenefit - After Update</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -26,41 +26,39 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordUpdates>
-        <name>Update_MemberUser</name>
-        <label>Update MemberUser</label>
-        <locationX>176</locationX>
-        <locationY>170</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.UserId__c</elementReference>
-            </value>
-        </filters>
+        <name>Update_MC_fields</name>
+        <label>Update MC fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <inputAssignments>
-            <field>FederationIdentifier</field>
+            <field>BenefitName_MC__c</field>
             <value>
-                <elementReference>$Record.FederationId__c</elementReference>
+                <elementReference>$Record.Benefit__c</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>IsActive</field>
+            <field>BenefitType_MC__c</field>
             <value>
-                <elementReference>$Record.Activate__c</elementReference>
+                <elementReference>$Record.BenefitType__c</elementReference>
             </value>
         </inputAssignments>
-        <object>User</object>
+        <inputAssignments>
+            <field>MembershipCategory_mc__c</field>
+            <value>
+                <elementReference>$Record.MembershipCategory__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
     </recordUpdates>
     <start>
-        <locationX>50</locationX>
+        <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_MemberUser</targetReference>
+            <targetReference>Update_MC_fields</targetReference>
         </connector>
-        <flowRunAsUser>DefaultWorkflowUser</flowRunAsUser>
-        <object>MemberUsers__e</object>
-        <triggerType>PlatformEvent</triggerType>
+        <object>MembershipBenefit__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>
 </Flow>

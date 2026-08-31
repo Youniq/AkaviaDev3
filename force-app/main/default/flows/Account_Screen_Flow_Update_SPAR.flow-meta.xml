@@ -21,6 +21,7 @@
             </value>
         </inputParameters>
         <nameSegment>BCIUpdatePerson</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <actionCalls>
         <name>Remove_Person</name>
@@ -43,6 +44,7 @@
             </value>
         </inputParameters>
         <nameSegment>BCIRemovePerson</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>50.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

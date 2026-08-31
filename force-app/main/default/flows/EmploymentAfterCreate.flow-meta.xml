@@ -267,7 +267,7 @@
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>EndDateToAddToEarlierEmployment</name>
         <dataType>Date</dataType>

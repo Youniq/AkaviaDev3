@@ -15,6 +15,7 @@
             </value>
         </inputParameters>
         <nameSegment>BillectaDeleteDebtorInvocable</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <actionCalls>
         <name>Disable_Account_IsCustomerPortal</name>
@@ -40,6 +41,7 @@
             </value>
         </inputParameters>
         <nameSegment>SetAccountIsCustomerPortalInvocable</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>50.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

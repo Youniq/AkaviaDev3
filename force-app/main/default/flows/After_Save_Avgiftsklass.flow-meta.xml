@@ -48,7 +48,7 @@
         <name>Is_SelfEmployed</name>
         <label>Is Egenföretagare?</label>
         <locationX>182</locationX>
-        <locationY>1247</locationY>
+        <locationY>1355</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_selfEmployed</name>
@@ -98,7 +98,8 @@
             <label>Yes, valid</label>
         </rules>
     </decisions>
-    <description>2025-10-15: Now using a subflow for generation of Fullbetalande FeeCategory after a Reduced Fee Category
+    <description>2026-08-14: Update MC fields
+2025-10-15: Now using a subflow for generation of Fullbetalande FeeCategory after a Reduced Fee Category
 2025-03-13: Updated with Åter student create new kommande fee category</description>
     <environments>Default</environments>
     <formulas>
@@ -163,6 +164,28 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
+        <name>Update_MC_fields</name>
+        <label>Update MC fields</label>
+        <locationX>182</locationX>
+        <locationY>1247</locationY>
+        <connector>
+            <targetReference>Is_SelfEmployed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>CurrentFeeCategory_MC__c</field>
+            <value>
+                <elementReference>$Record.CurrentFeeCategory__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status_MC__c</field>
+            <value>
+                <elementReference>$Record.Status__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
         <name>Update_Membership_with_current_FeeCategory</name>
         <label>Update Membership with current FeeCategory</label>
         <locationX>50</locationX>
@@ -191,7 +214,7 @@
         <name>Update_Person_Field</name>
         <label>Update Person Field</label>
         <locationX>50</locationX>
-        <locationY>1355</locationY>
+        <locationY>1463</locationY>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -236,7 +259,7 @@
         <locationX>182</locationX>
         <locationY>1139</locationY>
         <connector>
-            <targetReference>Is_SelfEmployed</targetReference>
+            <targetReference>Update_MC_fields</targetReference>
         </connector>
         <flowName>FeeCategory_Subflow_GenerateFullFeeCategoryAfterReducedFee</flowName>
         <inputAssignments>

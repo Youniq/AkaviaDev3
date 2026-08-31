@@ -58,13 +58,6 @@
                 <numberValue>201.0</numberValue>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>caseId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_r_CaseToSubmit.Id</elementReference>
-            </value>
-        </assignmentItems>
     </assignments>
     <assignments>
         <name>Assign_Status_Code</name>
@@ -130,7 +123,7 @@
             <assignToReference>var_r_CaseToSubmit.Origin</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>Web</stringValue>
+                <elementReference>origin</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -141,7 +134,7 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>var_r_CaseToSubmit.AccountId</assignToReference>
+            <assignToReference>var_r_CaseToSubmit.Employer__c</assignToReference>
             <operator>Assign</operator>
             <value>
                 <elementReference>Employer.Id</elementReference>
@@ -173,20 +166,6 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>otherParties</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_r_CaseToSubmit.Reason</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Arbetsgivarärende</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_r_CaseToSubmit.CategoryCommunity__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Övrigt</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -338,11 +317,7 @@
             <label>Negotiation Form</label>
         </rules>
     </decisions>
-    <description>2026-05-21: Added new assignment, Kategori
-2026-05-19: Added new assignment, case reason = Arbetsgivarärende
-2026-05-12: Update with variable caseId when case is created
-2026-05-04: Update correct field for employer.
-2025: Initially built to support incoming cases from non-members and employers.</description>
+    <description>Initially built to support incoming cases from non-members and employers.</description>
     <environments>Default</environments>
     <formulas>
         <name>ErrorMessageText</name>
@@ -572,13 +547,6 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>caseId</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>true</isOutput>
     </variables>
     <variables>
         <description>the user selection from web form. &quot;Vad gäller din fråga?&quot;</description>

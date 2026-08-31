@@ -21,6 +21,7 @@
             </value>
         </inputParameters>
         <nameSegment>BillectaInitiateSendDebtor</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <actionCalls>
         <name>QuickAction_DeleteInBillecta</name>
@@ -37,6 +38,7 @@
             </value>
         </inputParameters>
         <nameSegment>BillectaDeleteDebtorInvocable</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>61.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

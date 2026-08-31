@@ -585,8 +585,7 @@ In case of it being partially paid  - it is corrected from Billectas end, where 
             <label>Delete</label>
         </rules>
     </decisions>
-    <description>2025-10-21: Avsluta aktiverade förmåner vid utträde
-2025-06-23: Now not taking partially paid sums in to calculation when setting rest invoice amounts.
+    <description>2025-06-23: Now not taking partially paid sums in to calculation when setting rest invoice amounts.
 2025-03-31: Now not adding unpaid invoices to restInvoiceAmount when member has feecategory &quot;Dubbelansluten SRAT&quot;
 2024-06-27: Now cancel all invoices. A rest invoice will be generated upon re-entrance to Akavia by other logic at middleware
 2024-04-19: Temp solution to only cancel invoices for members making cancelling the membership during Yrk1 and before any invoices has been payed. Don&apos;t cancel invoices for already paying members.
@@ -855,7 +854,7 @@ NOTE: In MasterDev version 5 contains changes that are not present in this versi
         <connector>
             <targetReference>Is_There_MemberBenefits_To_End</targetReference>
         </connector>
-        <filterLogic>1 AND (2 OR 3 OR 4)</filterLogic>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Person__c</field>
             <operator>EqualTo</operator>
@@ -868,20 +867,6 @@ NOTE: In MasterDev version 5 contains changes that are not present in this versi
             <operator>EqualTo</operator>
             <value>
                 <stringValue>Aktiv</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Status__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Skickad till försäkringsbolag</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Status__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Aktiverad</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>

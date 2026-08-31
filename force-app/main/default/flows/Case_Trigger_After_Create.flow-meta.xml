@@ -753,7 +753,7 @@ Changed labels for task and removed admin</description>
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
     <variables>
         <name>var_T_TaskDescription</name>
         <dataType>String</dataType>

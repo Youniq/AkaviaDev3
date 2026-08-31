@@ -682,7 +682,7 @@ Vill inte ha en formula för bransch informationen pga spanning relationships li
     <assignments>
         <name>Unset_Deleted_From_Mc</name>
         <label>Unset Deleted From Mc</label>
-        <locationX>842</locationX>
+        <locationX>820</locationX>
         <locationY>6761</locationY>
         <assignmentItems>
             <assignToReference>$Record.DeletedFromMC__c</assignToReference>
@@ -1761,7 +1761,7 @@ Vill inte ha en formula för bransch informationen pga spanning relationships li
         </rules>
     </decisions>
     <decisions>
-        <description>If member is updated to be syncronized w MC, then make sure that the deletedFromMc__c is set to false.</description>
+        <description>If SyncWithMc__c changes and the record must be restored for Marketing Cloud synchronization, clear DeletedFromMC__c. This is the final step in this Before Save flow.</description>
         <name>Should_update_deletedFromMc</name>
         <label>CHECK- unset deletedFromMc?</label>
         <locationX>974</locationX>
@@ -1797,7 +1797,8 @@ Vill inte ha en formula för bransch informationen pga spanning relationships li
             <label>Yes</label>
         </rules>
     </decisions>
-    <description>2026-05-22: Added &quot;Autogiro&quot; in Check: New distribution method, changed logic
+    <description>2026-08-31: Removed Marketing Cloud mirror-field assignments from this Before Save flow. Salesforce does not support the required source fields on $Record in RecordBeforeSave. All MC mirror-field synchronization is handled in the PersonAccount Only After Save flow with change detection before DML, preventing recursive updates.
+2026-05-22: Added &quot;Autogiro&quot; in Check: New distribution method, changed logic
 2026-01-14: Updated with löneenkäts fields
 2025-08-19: Removed logic connected to member paper changed descision
 2025-07-02: NOw setting distrMethod = &apos;Ingen leverans&apos; in case betalsätt is updated to Autogiro
@@ -1808,7 +1809,7 @@ Vill inte ha en formula för bransch informationen pga spanning relationships li
 2025-05-26: Now setting date-stamp when member updates person email value
 2025-05-16: Now removes unused bank details when switching distribution method
 2025-01-27: Updated dec with Senast uppdaterat betalsätt</description>
-    <environments>Default</environments>
+<environments>Default</environments>
     <formulas>
         <name>form_D_BirthDate</name>
         <dataType>Date</dataType>
@@ -1917,7 +1918,7 @@ Vill inte ha en formula för bransch informationen pga spanning relationships li
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <textTemplates>
         <name>var_T_MailingStreet</name>
         <isViewedAsPlainText>true</isViewedAsPlainText>

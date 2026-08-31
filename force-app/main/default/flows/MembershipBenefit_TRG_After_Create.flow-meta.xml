@@ -6,7 +6,7 @@
         <name>CHECK_Set_Sync_With_Mc_value</name>
         <label>CHECK - Set Sync With Mc value?</label>
         <locationX>182</locationX>
-        <locationY>323</locationY>
+        <locationY>431</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_setSyncWithMc</name>
@@ -45,6 +45,7 @@
             <label>Yes</label>
         </rules>
     </decisions>
+    <description>2026-08-14: Update MC fields</description>
     <environments>Default</environments>
     <interviewLabel>MembershipBenefit - TRG - After Create {!$Flow.CurrentDateTime}</interviewLabel>
     <label>MembershipBenefit - TRG - After Create</label>
@@ -71,7 +72,7 @@
         <name>Set_Sync_With_MC_value</name>
         <label>Set Sync With MC</label>
         <locationX>50</locationX>
-        <locationY>431</locationY>
+        <locationY>539</locationY>
         <inputAssignments>
             <field>SyncWithMc__c</field>
             <value>
@@ -80,11 +81,39 @@
         </inputAssignments>
         <inputReference>$Record</inputReference>
     </recordUpdates>
+    <recordUpdates>
+        <name>Update_MC_fields</name>
+        <label>Update MC fields</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <connector>
+            <targetReference>CHECK_Set_Sync_With_Mc_value</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>BenefitName_MC__c</field>
+            <value>
+                <elementReference>$Record.Benefit__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>BenefitType_MC__c</field>
+            <value>
+                <elementReference>$Record.BenefitType__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>MembershipCategory_mc__c</field>
+            <value>
+                <elementReference>$Record.MembershipCategory__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
     <start>
         <locationX>56</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>CHECK_Set_Sync_With_Mc_value</targetReference>
+            <targetReference>Update_MC_fields</targetReference>
         </connector>
         <object>MembershipBenefit__c</object>
         <recordTriggerType>Create</recordTriggerType>

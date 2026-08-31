@@ -41,6 +41,7 @@
             <label>Yes</label>
         </rules>
     </decisions>
+    <description>2025-11-14: Enabling this flow to make application become syncWithMC__c = true quicker.</description>
     <environments>Default</environments>
     <interviewLabel>Application - Trigger - Sync with MC {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Application - Trigger - Sync with MC</label>
@@ -80,5 +81,5 @@
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
 </Flow>

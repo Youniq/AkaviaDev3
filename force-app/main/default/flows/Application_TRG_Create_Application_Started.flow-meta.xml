@@ -193,7 +193,9 @@
             <label>Complete</label>
         </rules>
     </decisions>
-    <description>Runs when a application is &quot;påbörjad ansökan&quot; mot not finalized</description>
+    <description>2026-06-26: Updated Yes found with Synk to MC and Applicationdate
+2026-06-26: Updated påbörjad ansökan with synk to MC and setting of Applicationdate
+Runs when a application is &quot;påbörjad ansökan&quot; mot not finalized</description>
     <environments>Default</environments>
     <interviewLabel>Application -TRG- Create: Application Started {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Application -TRG- Create: Application Started</label>
@@ -300,9 +302,21 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
+            <field>ApplicationDate__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>Lead__c</field>
             <value>
                 <elementReference>GET_LeadAssociatedToApplication.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SyncWithMc__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </inputAssignments>
         <inputReference>$Record</inputReference>
@@ -326,9 +340,21 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
+            <field>ApplicationDate__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>Lead__c</field>
             <value>
                 <elementReference>var_sObj_Lead.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>SyncWithMc__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </inputAssignments>
         <inputReference>$Record</inputReference>
@@ -369,7 +395,7 @@
             </value>
         </filters>
         <object>Application__c</object>
-        <recordTriggerType>Create</recordTriggerType>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Active</status>

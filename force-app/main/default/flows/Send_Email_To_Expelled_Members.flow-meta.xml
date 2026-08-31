@@ -48,6 +48,7 @@
             </value>
         </inputParameters>
         <nameSegment>GLSendEmail__SendEmail</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>51.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>

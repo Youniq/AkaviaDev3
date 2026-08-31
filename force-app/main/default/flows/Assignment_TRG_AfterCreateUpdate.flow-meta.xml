@@ -6,7 +6,7 @@
         <name>SET_SyncWithMC</name>
         <label>Set Sync With MC</label>
         <locationX>50</locationX>
-        <locationY>539</locationY>
+        <locationY>647</locationY>
         <assignmentItems>
             <assignToReference>$Record.SyncWithMc__c</assignToReference>
             <operator>Assign</operator>
@@ -22,7 +22,7 @@
         <name>CHECK_AssInfoNeedsUpdateCreated</name>
         <label>Assignemnt Info needs update?</label>
         <locationX>182</locationX>
-        <locationY>839</locationY>
+        <locationY>947</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>YesStartDate_CHECK_AssInfoNeedsUpdateCreated</name>
@@ -59,7 +59,7 @@
         <name>CHECK_AssInfoNeedsUpdateUpdated</name>
         <label>Assignment info needs update?</label>
         <locationX>886</locationX>
-        <locationY>431</locationY>
+        <locationY>539</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>YesStartDate_CHECK_AssInfoNeedsUpdateUpdated</name>
@@ -132,7 +132,7 @@
         <name>CHECK_CreatedOrUpdated</name>
         <label>Created or Updated?</label>
         <locationX>534</locationX>
-        <locationY>323</locationY>
+        <locationY>431</locationY>
         <defaultConnector>
             <targetReference>CHECK_AssInfoNeedsUpdateUpdated</targetReference>
         </defaultConnector>
@@ -160,7 +160,7 @@ Is assignment Lokalt förtroendevald or Centralt förtroendevald or Studentmarkn
         <name>CHECK_FortroendevaldOrStudentmarknadsforare</name>
         <label>Uppdrag Förtroendevald eller Studentmarknadsförare?</label>
         <locationX>534</locationX>
-        <locationY>1223</locationY>
+        <locationY>1331</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>Yes_CHECK_FortroendevaldOrStudentmarknadsforare</name>
@@ -197,7 +197,7 @@ Is assignment Lokalt förtroendevald or Centralt förtroendevald or Studentmarkn
         <name>CHECK_SyncWithMc</name>
         <label>Sync with MC?</label>
         <locationX>182</locationX>
-        <locationY>431</locationY>
+        <locationY>539</locationY>
         <defaultConnector>
             <targetReference>CHECK_AssInfoNeedsUpdateCreated</targetReference>
         </defaultConnector>
@@ -218,7 +218,8 @@ Is assignment Lokalt förtroendevald or Centralt förtroendevald or Studentmarkn
             <label>Yes</label>
         </rules>
     </decisions>
-    <description>* Updated to set SyncWithMc__c checkbox after create if MC_validator__c = true	
+    <description>* Update MC fields - 2026-08-14
+* Updated to set SyncWithMc__c checkbox after create if MC_validator__c = true	
 * Lagt till scenario för återöppnade Uppdrag</description>
     <environments>Default</environments>
     <interviewLabel>Assignment {!$Flow.CurrentDateTime}</interviewLabel>
@@ -246,17 +247,39 @@ Is assignment Lokalt förtroendevald or Centralt förtroendevald or Studentmarkn
         <name>UPDATE_Assignment</name>
         <label>Update Assignment</label>
         <locationX>50</locationX>
-        <locationY>647</locationY>
+        <locationY>755</locationY>
         <connector>
             <targetReference>CHECK_AssInfoNeedsUpdateCreated</targetReference>
         </connector>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_MC_fields</name>
+        <label>Update MC fields</label>
+        <locationX>534</locationX>
+        <locationY>323</locationY>
+        <connector>
+            <targetReference>CHECK_CreatedOrUpdated</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>AssignmentPlacementText_MC__c</field>
+            <value>
+                <elementReference>$Record.AssignmentPlacementText__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status_MC__c</field>
+            <value>
+                <elementReference>$Record.Status__c</elementReference>
+            </value>
+        </inputAssignments>
         <inputReference>$Record</inputReference>
     </recordUpdates>
     <start>
         <locationX>408</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>CHECK_CreatedOrUpdated</targetReference>
+            <targetReference>Update_MC_fields</targetReference>
         </connector>
         <object>Assignment__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
@@ -267,7 +290,7 @@ Is assignment Lokalt förtroendevald or Centralt förtroendevald or Studentmarkn
         <name>SUB_SetAssignmentInfoOnAccount</name>
         <label>Sub-flow - Set Assignment Info on Account</label>
         <locationX>402</locationX>
-        <locationY>1331</locationY>
+        <locationY>1439</locationY>
         <flowName>Account_SUB_SetAssignmentInfo</flowName>
         <inputAssignments>
             <name>var_sObj_Assignment</name>

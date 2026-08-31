@@ -24,6 +24,7 @@
             </value>
         </inputParameters>
         <nameSegment>FlowAction_CallSubflowHandler</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <actionCalls>
         <description>During Dubbelansluten SRAT all invoices are sent by paper invoices. Now when no longer dubbelansluten SRAT - make sure to update deliverymethod according to process.</description>
@@ -47,6 +48,7 @@
             </value>
         </inputParameters>
         <nameSegment>BillectaInitiateSendDebtor</nameSegment>
+        <offset>0</offset>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
     <apiVersion>51.0</apiVersion>

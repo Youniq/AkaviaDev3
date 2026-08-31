@@ -182,7 +182,7 @@ Use the noreply dynamic address just as it&apos;s configured in prod.</descripti
         <schedule>
             <frequency>Daily</frequency>
             <startDate>2020-10-06</startDate>
-            <startTime>13:30:00.000Z</startTime>
+            <startTime>15:30:00.000Z</startTime>
         </schedule>
         <triggerType>Scheduled</triggerType>
     </start>

@@ -15,6 +15,7 @@
             </value>
         </inputParameters>
         <nameSegment>McDeleteContactInvocable</nameSegment>
+        <offset>0</offset>
     </actionCalls>
     <apiVersion>62.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
