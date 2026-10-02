@@ -6,7 +6,7 @@
         <name>SET_Account_Values</name>
         <label>SET Account Values</label>
         <locationX>50</locationX>
-        <locationY>755</locationY>
+        <locationY>947</locationY>
         <assignmentItems>
             <assignToReference>var_accountRecord.MC_FormulasTimestamp__c</assignToReference>
             <operator>Assign</operator>
@@ -22,7 +22,7 @@
         <name>Set_Account_Variable</name>
         <label>Set Account Variable</label>
         <locationX>182</locationX>
-        <locationY>539</locationY>
+        <locationY>731</locationY>
         <assignmentItems>
             <assignToReference>var_accountRecord.Id</assignToReference>
             <operator>Assign</operator>
@@ -35,10 +35,49 @@
         </connector>
     </assignments>
     <decisions>
+        <name>CHECK_MC_Fields_Need_Update</name>
+        <label>CHECK MC Fields Need Update</label>
+        <locationX>336</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>This_is_the_membership_Account_is_listening_to</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Update_required</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Avgiftsklass_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Avgiftsklass__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.MembershipCategory_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.MembershipCategory__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Status__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MC_fields</targetReference>
+            </connector>
+            <label>Update required</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>FeeCategory_changed</name>
         <label>FeeCategory changed?</label>
         <locationX>182</locationX>
-        <locationY>647</locationY>
+        <locationY>839</locationY>
         <defaultConnector>
             <targetReference>UpdateAccount</targetReference>
         </defaultConnector>
@@ -72,7 +111,10 @@ För ett befintligt membersship så lyssnar Account på det som finns i relation
         <name>This_is_the_membership_Account_is_listening_to</name>
         <label>This is the membership Account is listening to?</label>
         <locationX>336</locationX>
-        <locationY>431</locationY>
+        <locationY>623</locationY>
+        <defaultConnector>
+            <targetReference>END_ELEMENT_3</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_mainMembership</name>
@@ -99,6 +141,16 @@ För ett befintligt membersship så lyssnar Account på det som finns i relation
     </decisions>
     <description>2026-08-14: Update MC fields
 Checks if Medlemskategori/ Medlemsstatus might be updated and adds a timestamp on account. (Goal is to have account record resynced with MC)</description>
+    <ends>
+        <name>END_ELEMENT_3</name>
+        <locationX>490</locationX>
+        <locationY>731</locationY>
+    </ends>
+    <ends>
+        <name>END_ELEMENT_4</name>
+        <locationX>182</locationX>
+        <locationY>1247</locationY>
+    </ends>
     <environments>Default</environments>
     <interviewLabel>Membership - Track formula field updates - After Create/Update {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Membership - Track Formula Field Updates - After Create/Update</label>
@@ -124,8 +176,8 @@ Checks if Medlemskategori/ Medlemsstatus might be updated and adds a timestamp o
     <recordUpdates>
         <name>Update_MC_fields</name>
         <label>Update MC fields</label>
-        <locationX>336</locationX>
-        <locationY>323</locationY>
+        <locationX>204</locationX>
+        <locationY>431</locationY>
         <connector>
             <targetReference>This_is_the_membership_Account_is_listening_to</targetReference>
         </connector>
@@ -153,15 +205,19 @@ Checks if Medlemskategori/ Medlemsstatus might be updated and adds a timestamp o
         <name>UpdateAccount</name>
         <label>Update Account</label>
         <locationX>182</locationX>
-        <locationY>947</locationY>
+        <locationY>1139</locationY>
+        <connector>
+            <targetReference>END_ELEMENT_4</targetReference>
+        </connector>
         <inputReference>var_accountRecord</inputReference>
     </recordUpdates>
     <start>
         <locationX>210</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_MC_fields</targetReference>
+            <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
         </connector>
+        <filterFormula>{!$Setup.AdminSwitch__c.IsBypassFlow__c} = false</filterFormula>
         <object>Membership__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>

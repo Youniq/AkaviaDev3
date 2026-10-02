@@ -5,7 +5,7 @@
     <assignments>
         <name>NewMemberNumber</name>
         <label>NewMemberNumber</label>
-        <locationX>182</locationX>
+        <locationX>446</locationX>
         <locationY>539</locationY>
         <assignmentItems>
             <assignToReference>newMemberNumberRecord.Person__c</assignToReference>
@@ -19,9 +19,34 @@
         </connector>
     </assignments>
     <decisions>
+        <name>Admin_Switch_Active</name>
+        <label>Admin Switch Active</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_NewOrUpdated</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_ASA_YesActiveStopFlow</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.AdminSwitch__c.IsBypassFlow__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>END_ELEMENT_1</targetReference>
+            </connector>
+            <label>Yes, Active Stop Flow</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>CHECK_ActivatePortalUser</name>
         <label>CHECK: Activate Portal User?</label>
-        <locationX>314</locationX>
+        <locationX>578</locationX>
         <locationY>839</locationY>
         <defaultConnector>
             <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
@@ -69,39 +94,16 @@
         </rules>
     </decisions>
     <decisions>
-        <name>CHECK_NewOrUpdated</name>
-        <label>CHECK New or Updated?</label>
-        <locationX>314</locationX>
-        <locationY>431</locationY>
-        <defaultConnector>
-            <targetReference>CHECK_ActivatePortalUser</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Updated</defaultConnectorLabel>
-        <rules>
-            <name>New</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>form_IsNew</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>NewMemberNumber</targetReference>
-            </connector>
-            <label>New</label>
-        </rules>
-    </decisions>
-
-    <decisions>
         <description>2026-08-31: All Marketing Cloud mirror-field synchronization is handled in this After Save flow because Salesforce does not support the required source fields in RecordBeforeSave. Before performing DML, CHECK_MC_Fields_Need_Update compares all 24 source/target pairs. Account is updated only when at least one value differs, so the recursive After Save execution exits without another update.
 2026-08-03: Update MC Fields
 Moved process builder func here</description>
         <name>CHECK_MC_Fields_Need_Update</name>
         <label>CHECK MC Fields Need Update</label>
-        <locationX>314</locationX>
-        <locationY>947</locationY>
+        <locationX>578</locationX>
+        <locationY>1139</locationY>
+        <defaultConnector>
+            <targetReference>END_ELEMENT_3</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>No changes</defaultConnectorLabel>
         <rules>
             <name>MC_Fields_Different</name>
@@ -148,15 +150,187 @@ Moved process builder func here</description>
                     <elementReference>$Record.StartDateForCurrentFeeCategory__c</elementReference>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.EmployerFormula_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.EmployerFormula__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Age_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Age__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.FeeCategory_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.FeeCategory__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentCOAdress_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentCOAdress__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentCity_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentCity__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentCountry_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentCountry__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentMunicipalityCode_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentMunicipalityCode__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentMunicipality_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentMunicipality__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentCountyCode_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentCountyCode__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentState_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentState__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentStreetAdress_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentStreetAdress__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.CurrentZipCode_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentZipCode__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.EmployerOrgNumber_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.EmployerOrgNumber__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.PersonSection_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.PersonSection__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Section_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Section__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StartDateForCurrentFeeCategory_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.StartDateForCurrentFeeCategory__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.MemberPhase_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.MemberPhase__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.MembershipCategory_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.MembershipCategory__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.MembershipStatus_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.MembershipStatus__c</elementReference>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Update_MC_Fields</targetReference>
             </connector>
             <label>Update required</label>
         </rules>
     </decisions>
-
+    <decisions>
+        <name>CHECK_NewOrUpdated</name>
+        <label>CHECK New or Updated?</label>
+        <locationX>578</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_ActivatePortalUser</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Updated</defaultConnectorLabel>
+        <rules>
+            <name>New</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>form_IsNew</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>NewMemberNumber</targetReference>
+            </connector>
+            <label>New</label>
+        </rules>
+    </decisions>
     <description>2026-08-03: Update MC Fields
 Moved process builder func here</description>
+    <ends>
+        <name>END_ELEMENT_1</name>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+    </ends>
+    <ends>
+        <name>END_ELEMENT_3</name>
+        <locationX>710</locationX>
+        <locationY>1247</locationY>
+    </ends>
+    <ends>
+        <name>END_ELEMENT_4</name>
+        <locationX>446</locationX>
+        <locationY>1355</locationY>
+    </ends>
     <environments>Default</environments>
     <formulas>
         <description>Check if record is new or not</description>
@@ -188,7 +362,7 @@ Moved process builder func here</description>
     <recordCreates>
         <name>Create_MemberNumber</name>
         <label>Create MemberNumber</label>
-        <locationX>182</locationX>
+        <locationX>446</locationX>
         <locationY>647</locationY>
         <connector>
             <targetReference>CHECK_ActivatePortalUser</targetReference>
@@ -199,8 +373,11 @@ Moved process builder func here</description>
         <description>Synchronizes all Marketing Cloud mirror fields on the Person Account. This element executes only when CHECK_MC_Fields_Need_Update detects at least one difference, preventing unnecessary DML and recursive updates.</description>
         <name>Update_MC_Fields</name>
         <label>Update MC Fields</label>
-        <locationX>182</locationX>
-        <locationY>1055</locationY>
+        <locationX>446</locationX>
+        <locationY>1247</locationY>
+        <connector>
+            <targetReference>END_ELEMENT_4</targetReference>
+        </connector>
         <inputAssignments>
             <field>Age_MC__c</field>
             <value>
@@ -347,12 +524,11 @@ Moved process builder func here</description>
         </inputAssignments>
         <inputReference>$Record</inputReference>
     </recordUpdates>
-
     <start>
         <locationX>188</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>CHECK_NewOrUpdated</targetReference>
+            <targetReference>Admin_Switch_Active</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -370,7 +546,7 @@ Moved process builder func here</description>
     <subflows>
         <name>Run_Community_User_Subflow</name>
         <label>Run Community User Subflow</label>
-        <locationX>50</locationX>
+        <locationX>314</locationX>
         <locationY>947</locationY>
         <connector>
             <targetReference>CHECK_MC_Fields_Need_Update</targetReference>

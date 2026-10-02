@@ -2,7 +2,112 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>57.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>- Uppdaterar aktuell arbetsgivare på personkonto om arbetsgivare ändras på aktiv anställning</description>
+    <assignments>
+        <name>Update_MC_Fields</name>
+        <label>Update MC Fields</label>
+        <locationX>314</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.LocalAssociationNotExists_MC__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.LocalAssociationNotExists__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Workplace_MC__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.WorkplaceName__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Status_MC__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Status__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>END_ELEMENT_2</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>CHECK_ASA</name>
+        <label>Admin Switch Active</label>
+        <locationX>248</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Update_Current_Employer_on_Person_Account</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_ASA_YesActiveStopFlow</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.AdminSwitch__c.IsBypassFlow__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>END_ELEMENT_1</targetReference>
+            </connector>
+            <label>Yes, Active Stop Flow</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_MC_Fields_Need_Update</name>
+        <label>CHECK MC Fields Need Update</label>
+        <locationX>446</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>END_ELEMENT_2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Update_required</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LocalAssociationNotExists_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.LocalAssociationNotExists__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Workplace_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.WorkplaceName__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Status__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MC_Fields</targetReference>
+            </connector>
+            <label>Update required</label>
+        </rules>
+    </decisions>
+    <description>- Update MC values - 2026-08-14
+- Uppdaterar aktuell arbetsgivare på personkonto om arbetsgivare ändras på aktiv anställning</description>
+    <ends>
+        <name>END_ELEMENT_1</name>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+    </ends>
+    <ends>
+        <name>END_ELEMENT_2</name>
+        <locationX>446</locationX>
+        <locationY>839</locationY>
+    </ends>
     <environments>Default</environments>
     <interviewLabel>Trigger employment after update {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Employment - Trigger - After Update</label>
@@ -29,8 +134,11 @@
         <description>Plockar arbetsgivare (parent till arbetsställe) från triggat record och lägger det på current employer på personen</description>
         <name>Update_Current_Employer_on_Person_Account</name>
         <label>Update Current Employer on Person Account</label>
-        <locationX>176</locationX>
-        <locationY>323</locationY>
+        <locationX>446</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
+        </connector>
         <inputAssignments>
             <field>CurrentEmployer__c</field>
             <value>
@@ -40,10 +148,10 @@
         <inputReference>$Record.Person__r</inputReference>
     </recordUpdates>
     <start>
-        <locationX>50</locationX>
+        <locationX>122</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_Current_Employer_on_Person_Account</targetReference>
+            <targetReference>CHECK_ASA</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -64,5 +172,5 @@
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
 </Flow>

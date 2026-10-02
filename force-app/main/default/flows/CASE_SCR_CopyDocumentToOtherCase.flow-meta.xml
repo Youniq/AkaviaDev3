@@ -15,7 +15,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>LOOP_ContentDocumentLinks2</targetReference>
+            <targetReference>LOOP_SelectedContentDocumentsToCreate</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -43,7 +43,7 @@
             <assignToReference>var_sObj_ContentDocumentLinkToCreate.ContentDocumentId</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>LOOP_ContentDocumentLinks2.ContentDocumentId</elementReference>
+                <elementReference>LOOP_SelectedContentDocumentsToCreate.Id</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -57,7 +57,7 @@
             <assignToReference>var_sObj_ContentDocumentLinkToCreate.ShareType</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>LOOP_ContentDocumentLinks2.ShareType</elementReference>
+                <stringValue>V</stringValue>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -198,7 +198,7 @@
         <locationX>886</locationX>
         <locationY>2678</locationY>
         <defaultConnector>
-            <targetReference>LOOP_ContentDocumentLinks2</targetReference>
+            <targetReference>LOOP_SelectedContentDocumentsToCreate</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -283,31 +283,6 @@
         </rules>
     </decisions>
     <decisions>
-        <name>CHECK_IsContentDocumentLinkInSelection</name>
-        <label>Is Content Document link in selection?</label>
-        <locationX>1414</locationX>
-        <locationY>2894</locationY>
-        <defaultConnector>
-            <targetReference>LOOP_ContentDocumentLinks2</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>CHECK_IsContentDocumentLinkInSelection_Yes</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_T_coll_SelectedContentDocumentIds</leftValueReference>
-                <operator>Contains</operator>
-                <rightValue>
-                    <elementReference>LOOP_ContentDocumentLinks2.ContentDocumentId</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>ASSIGN_NewContentDocumentLinkValues</targetReference>
-            </connector>
-            <label>Yes</label>
-        </rules>
-    </decisions>
-    <decisions>
         <name>CHECK_ShareWithMember</name>
         <label>Share with Member?</label>
         <locationX>886</locationX>
@@ -341,14 +316,14 @@
     <interviewLabel>Screen {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Case - Screen Flow - Copy Document To Other Case</label>
     <loops>
-        <name>LOOP_ContentDocumentLinks2</name>
-        <label>Loop Content Document Links</label>
+        <name>LOOP_SelectedContentDocumentsToCreate</name>
+        <label>Loop Selected Content Documents To Create</label>
         <locationX>1194</locationX>
         <locationY>2786</locationY>
-        <collectionReference>GET_ContentDocumentLinks</collectionReference>
+        <collectionReference>SC_SCD_DataTable.selectedRows</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>CHECK_IsContentDocumentLinkInSelection</targetReference>
+            <targetReference>ASSIGN_NewContentDocumentLinkValues</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>CREATE_ContentDocumentLinks</targetReference>

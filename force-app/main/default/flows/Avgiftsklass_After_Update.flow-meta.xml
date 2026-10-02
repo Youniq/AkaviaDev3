@@ -183,6 +183,7 @@
         <connector>
             <targetReference>Update_MC_fields</targetReference>
         </connector>
+        <filterFormula>{!$Setup.AdminSwitch__c.IsBypassFlow__c} = false</filterFormula>
         <object>FeeCategory__c</object>
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>

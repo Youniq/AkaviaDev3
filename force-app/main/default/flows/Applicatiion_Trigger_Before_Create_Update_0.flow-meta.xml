@@ -65,7 +65,7 @@
         <name>Set_Application_Values</name>
         <label>Set Application Values</label>
         <locationX>1605</locationX>
-        <locationY>754</locationY>
+        <locationY>752</locationY>
         <assignmentItems>
             <assignToReference>$Record.ApplicationDate__c</assignToReference>
             <operator>Assign</operator>
@@ -109,7 +109,7 @@
     <assignments>
         <name>Set_Person_value</name>
         <label>Set Person value</label>
-        <locationX>578</locationX>
+        <locationX>576</locationX>
         <locationY>1991</locationY>
         <assignmentItems>
             <assignToReference>$Record.Person__c</assignToReference>
@@ -136,7 +136,7 @@
     <assignments>
         <name>Set_Person_value_0</name>
         <label>Set Person value</label>
-        <locationX>1018</locationX>
+        <locationX>1017</locationX>
         <locationY>2291</locationY>
         <assignmentItems>
             <assignToReference>$Record.Person__c</assignToReference>
@@ -238,8 +238,8 @@
     <assignments>
         <name>Set_Person_value_0_0_0_0</name>
         <label>Set Person value</label>
-        <locationX>1106</locationX>
-        <locationY>1991</locationY>
+        <locationX>1101</locationX>
+        <locationY>1984</locationY>
         <assignmentItems>
             <assignToReference>$Record.Decision__c</assignToReference>
             <operator>Assign</operator>
@@ -259,6 +259,26 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>Get_Matching_Person_Account.Id</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Set_Person_value_young</name>
+        <label>Set Person value</label>
+        <locationX>1366</locationX>
+        <locationY>1888</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Decision__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Inväntar</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Omyndig</stringValue>
             </value>
         </assignmentItems>
     </assignments>
@@ -292,8 +312,8 @@
     <assignments>
         <name>Set_Status_0</name>
         <label>Set Status</label>
-        <locationX>842</locationX>
-        <locationY>1991</locationY>
+        <locationX>841</locationX>
+        <locationY>1989</locationY>
         <assignmentItems>
             <assignToReference>$Record.Decision__c</assignToReference>
             <operator>Assign</operator>
@@ -358,7 +378,7 @@
         <name>Any_wished_start_dat</name>
         <label>Any requested start date</label>
         <locationX>1597</locationX>
-        <locationY>927</locationY>
+        <locationY>925</locationY>
         <defaultConnector>
             <targetReference>Utbildning_set</targetReference>
         </defaultConnector>
@@ -402,10 +422,32 @@
         </rules>
     </decisions>
     <decisions>
+        <name>CHECK_ASA</name>
+        <label>Admin Switch Active</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Is_Type_Entry_Or_Cancellation</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Not Active Run Flow</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_ASA_YesActiveStopFlow</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.AdminSwitch__c.IsBypassFlow__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Yes, Active Stop Flow</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Is_Type_Entry_Or_Cancellation</name>
         <label>Is Type Entry Or Cancellation</label>
-        <locationX>2407</locationX>
-        <locationY>497</locationY>
+        <locationX>2406</locationX>
+        <locationY>496</locationY>
         <defaultConnector>
             <targetReference>Assign_Values_To_Cancellation_Application</targetReference>
         </defaultConnector>
@@ -476,8 +518,8 @@
     <decisions>
         <name>Status</name>
         <label>Status</label>
-        <locationX>1018</locationX>
-        <locationY>1883</locationY>
+        <locationX>1015</locationX>
+        <locationY>1879</locationY>
         <defaultConnector>
             <targetReference>Set_Person_value_0</targetReference>
         </defaultConnector>
@@ -599,6 +641,21 @@
             <label>Person Saknas, Egenföretagare</label>
         </rules>
         <rules>
+            <name>PersonSaknasUnder18</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsUnder18</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Person_value_young</targetReference>
+            </connector>
+            <label>Person saknas, yngre än 18</label>
+        </rules>
+        <rules>
             <name>Person_saknas_Utbildning_ej_definierad</name>
             <conditionLogic>(3 AND (1 OR 2 OR 4 )) OR (NOT 3 AND 2)</conditionLogic>
             <conditions>
@@ -635,7 +692,7 @@
             <label>Person saknas, Utbildning ej definierad</label>
         </rules>
         <rules>
-            <name>Person_saknas</name>
+            <name>PersonSaknas</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>Get_Matching_Person_Account</leftValueReference>
@@ -722,7 +779,7 @@
     <decisions>
         <name>Webstatus</name>
         <label>Webstatus</label>
-        <locationX>1923</locationX>
+        <locationX>1920</locationX>
         <locationY>755</locationY>
         <defaultConnectorLabel>Update</defaultConnectorLabel>
         <rules>
@@ -772,7 +829,9 @@
             <label>Completed</label>
         </rules>
     </decisions>
-    <description>2024-02-07: Now using TODAY() in applicationdate Formula instead of Flow.CurrentDate as there seemed to be issue in regards to time zone
+    <description>2026-09-08: Update with new status, omyndig, for members not yet 18
+2026-09-02: Adding segment to make new members younger than 18 as Manuell Hantering
+2024-02-07: Now using TODAY() in applicationdate Formula instead of Flow.CurrentDate as there seemed to be issue in regards to time zone
 2024-02-07: Had missed fix for Cancellations. Now fixed
 2024-02-06: Fixing applicationDate = null issue
 2023-11-30: New start conditions. + Does not set deliveryMethod on entry-application. Ansökningsdatum is set to applications created date and not current date. 
@@ -793,6 +852,15 @@ Changed Avslagsorsak to new picklist value &quot;Redan medlem&quot; for applicat
         <name>formula_ApplicationDate</name>
         <dataType>Date</dataType>
         <expression>IF(ISNULL({!$Record.CreatedDate}), TODAY() , DATEVALUE({!$Record.CreatedDate}))</expression>
+    </formulas>
+    <formulas>
+        <name>IsUnder18</name>
+        <dataType>Boolean</dataType>
+        <expression>DATE(
+VALUE(LEFT({!$Record.SocialSecurityNumber__c},4)),
+VALUE(MID({!$Record.SocialSecurityNumber__c},5,2)),
+VALUE(MID({!$Record.SocialSecurityNumber__c},7,2))
+) &gt; ADDMONTHS($Flow.CurrentDate, -216)</expression>
     </formulas>
     <interviewLabel>Applicatiion - Trigger - Before Create/Update {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Applicatiion - Trigger - Before Create/Update</label>
@@ -868,7 +936,7 @@ Changed Avslagsorsak to new picklist value &quot;Redan medlem&quot; for applicat
         <locationX>2289</locationX>
         <locationY>48</locationY>
         <connector>
-            <targetReference>Is_Type_Entry_Or_Cancellation</targetReference>
+            <targetReference>CHECK_ASA</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>

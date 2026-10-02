@@ -87,14 +87,7 @@ public without sharing class BillectaBankAccountHelper {
       );
       obj.theAccount.AG_BankClearingNumber__c = accountNo.substringBefore('-');
       obj.theAccount.AG_BankAccountNumber__c = accountNo.substringAfter('-');
-      fr = Account.DistributionMethod__c.getDescribe();
-      obj.theAccount.DistributionMethod__c = returnPicklistValueByLabel(
-        'Ingen leverans',
-        fr
-      );
-      if (obj.theAccount.DistributionMethod__c == null) {
-        obj.theAccount.DistributionMethod__c = 'Ingen leverans';
-      }
+      obj.theAccount.DistributionMethod__c = null;
     } else if (obj.theAccount.PaymentMethod__c == 'BG') {
       fr = Account.DistributionMethod__c.getDescribe();
       obj.theAccount.DistributionMethod__c = returnPicklistValueByLabel(

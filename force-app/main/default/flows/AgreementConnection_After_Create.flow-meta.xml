@@ -2,88 +2,10 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>50.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <assignments>
-        <name>Add_to_collection</name>
-        <label>Add to collection</label>
-        <locationX>270</locationX>
-        <locationY>755</locationY>
-        <assignmentItems>
-            <assignToReference>newContentDocumentLinkCollection</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>newContentDocumentLink</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_Files</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
-        <name>New_Content_Document_Link</name>
-        <label>New Content Document Link</label>
-        <locationX>270</locationX>
-        <locationY>647</locationY>
-        <assignmentItems>
-            <assignToReference>newContentDocumentLink.ContentDocumentId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_Files.ContentDocumentId</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>newContentDocumentLink.LinkedEntityId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>newContentDocumentLink.Visibility</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>AllUsers</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>newContentDocumentLink.ShareType</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>V</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Add_to_collection</targetReference>
-        </connector>
-    </assignments>
-    <decisions>
-        <name>Any_files</name>
-        <label>Any files?</label>
-        <locationX>182</locationX>
-        <locationY>947</locationY>
-        <defaultConnector>
-            <targetReference>CHECK_IsActiveMainAgreementCreated</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>No</defaultConnectorLabel>
-        <rules>
-            <name>Yes</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>newContentDocumentLinkCollection</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Create_ContentDocumentLinks</targetReference>
-            </connector>
-            <label>Yes</label>
-        </rules>
-    </decisions>
     <decisions>
         <name>CHECK_AgreementEdited</name>
         <label>Agreement edited</label>
-        <locationX>1172</locationX>
+        <locationX>1162</locationX>
         <locationY>755</locationY>
         <defaultConnector>
             <targetReference>DEC_BusinessAccountEdited</targetReference>
@@ -125,7 +47,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_Files_from_Agreement</targetReference>
+                <targetReference>CHECK_IsActiveMainAgreementCreated</targetReference>
             </connector>
             <label>Created</label>
         </rules>
@@ -133,7 +55,7 @@
     <decisions>
         <name>CHECK_IsActive</name>
         <label>Is Active?</label>
-        <locationX>1447</locationX>
+        <locationX>1442</locationX>
         <locationY>647</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -157,7 +79,7 @@
         <name>CHECK_IsActiveMainAgreementCreated</name>
         <label>Is Active Main Agreement</label>
         <locationX>182</locationX>
-        <locationY>1247</locationY>
+        <locationY>431</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>CHECK_IsActiveMainAgreementCreated_Yes</name>
@@ -185,7 +107,7 @@
     <decisions>
         <name>CHECK_IsMainAgreement</name>
         <label>Is Main Agreement?</label>
-        <locationX>1499</locationX>
+        <locationX>1498</locationX>
         <locationY>431</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -233,7 +155,7 @@
         <description>&quot;Valid to&quot; is changed to a date before current date</description>
         <name>CHECK_SetToInactive</name>
         <label>Is set to inactive?</label>
-        <locationX>1012</locationX>
+        <locationX>1010</locationX>
         <locationY>539</locationY>
         <defaultConnector>
             <targetReference>CHECK_IsActive</targetReference>
@@ -265,7 +187,7 @@
     <decisions>
         <name>DEC_BusinessAccountEdited</name>
         <label>Business Account Edited?</label>
-        <locationX>1172</locationX>
+        <locationX>1162</locationX>
         <locationY>1055</locationY>
         <defaultConnectorLabel>No change</defaultConnectorLabel>
         <rules>
@@ -313,24 +235,11 @@
             <label>Changed</label>
         </rules>
     </decisions>
-    <description>Används för att kopiera dokument från avtal till avtalsanslutning och uppdatera Aktuellt huvudavtal för anställda</description>
+    <description>2026-07-16: Tagit bort funktionen att kopiera dokument från avtalet till avtalsanslutningen
+??: Används för att kopiera dokument från avtal till avtalsanslutning och uppdatera Aktuellt huvudavtal för anställda</description>
     <environments>Default</environments>
     <interviewLabel>AgreementConnection - After Create {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Agreement Connection - Trigger - After Create/Update</label>
-    <loops>
-        <name>Loop_Files</name>
-        <label>Loop Files</label>
-        <locationX>182</locationX>
-        <locationY>539</locationY>
-        <collectionReference>Get_Files_from_Agreement</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>New_Content_Document_Link</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Any_files</targetReference>
-        </noMoreValuesConnector>
-    </loops>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -350,37 +259,6 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
-    <recordCreates>
-        <name>Create_ContentDocumentLinks</name>
-        <label>Create ContentDocumentLinks</label>
-        <locationX>50</locationX>
-        <locationY>1055</locationY>
-        <connector>
-            <targetReference>CHECK_IsActiveMainAgreementCreated</targetReference>
-        </connector>
-        <inputReference>newContentDocumentLinkCollection</inputReference>
-    </recordCreates>
-    <recordLookups>
-        <name>Get_Files_from_Agreement</name>
-        <label>Get Files from Agreement</label>
-        <locationX>182</locationX>
-        <locationY>431</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_Files</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>LinkedEntityId</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Agreement__c</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>ContentDocumentLink</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
     <recordLookups>
         <name>GET_OtherActiveMainAgreementConnection</name>
         <label>Get other active Main Agreement Connection</label>
@@ -426,7 +304,7 @@
     <recordUpdates>
         <name>UPDATE_AccountCurrentMainAgreementEmployer</name>
         <label>Update Business Account: Current Main Agreement</label>
-        <locationX>1040</locationX>
+        <locationX>1030</locationX>
         <locationY>863</locationY>
         <connector>
             <targetReference>DEC_BusinessAccountEdited</targetReference>
@@ -443,7 +321,7 @@
         <name>UPDATE_AccountSetCurrentMainAgreement</name>
         <label>Set Current Main Agreement on Business Account</label>
         <locationX>50</locationX>
-        <locationY>1355</locationY>
+        <locationY>539</locationY>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -487,7 +365,7 @@
     <recordUpdates>
         <name>UPDATE_PriorAccountClearCurrentMainAgreement</name>
         <label>Clear Current Main Agreement on old Business Account</label>
-        <locationX>1012</locationX>
+        <locationX>1010</locationX>
         <locationY>1931</locationY>
         <filterLogic>and</filterLogic>
         <filters>
@@ -532,6 +410,7 @@
         <connector>
             <targetReference>CHECK_CreatedUpdated</targetReference>
         </connector>
+        <filterFormula>{!$Setup.AdminSwitch__c.IsBypassFlow__c} = false</filterFormula>
         <object>AgreementConnection__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>

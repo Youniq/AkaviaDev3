@@ -2,6 +2,50 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>CHECK_MC_Fields_Need_Update</name>
+        <label>CHECK MC Fields Need Update</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>END_ELEMENT_2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Update_required</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.LocalAssociationNotExists_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.LocalAssociationNotExists__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Workplace_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.WorkplaceName__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Status__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MC_fields</targetReference>
+            </connector>
+            <label>Update required</label>
+        </rules>
+    </decisions>
+    <ends>
+        <name>END_ELEMENT_2</name>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+    </ends>
     <environments>Default</environments>
     <interviewLabel>Trigger - Synk MC fields {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Trigger - Synk MC fields - created or updated</label>
@@ -29,6 +73,9 @@
         <label>Update MC fields</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>END_ELEMENT_2</targetReference>
+        </connector>
         <inputAssignments>
             <field>LocalAssociationNotExists_MC__c</field>
             <value>
@@ -53,7 +100,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Update_MC_fields</targetReference>
+            <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
         </connector>
         <object>Employment__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>

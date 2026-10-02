@@ -193,7 +193,8 @@
             <label>Complete</label>
         </rules>
     </decisions>
-    <description>2026-06-26: Updated Yes found with Synk to MC and Applicationdate
+    <description>2026-09-14: Ändrat ingångsvillkor, när ansökan är skapad ELLER uppdaterad
+2026-06-26: Updated Yes found with Synk to MC and Applicationdate
 2026-06-26: Updated påbörjad ansökan with synk to MC and setting of Applicationdate
 Runs when a application is &quot;påbörjad ansökan&quot; mot not finalized</description>
     <environments>Default</environments>

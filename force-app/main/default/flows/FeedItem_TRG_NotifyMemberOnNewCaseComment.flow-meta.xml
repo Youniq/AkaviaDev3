@@ -3,8 +3,8 @@
     <actionCalls>
         <name>Send_Custom_Notification_Action_1</name>
         <label>Send Custom Notification Action 1</label>
-        <locationX>50</locationX>
-        <locationY>647</locationY>
+        <locationX>446</locationX>
+        <locationY>1679</locationY>
         <actionName>customNotificationAction</actionName>
         <actionType>customNotificationAction</actionType>
         <connector>
@@ -47,11 +47,28 @@
     <apiVersion>60.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
+        <description>Adds CoOwner to notification recipients when populated and active</description>
+        <name>Add_CoOwner_To_Recipients</name>
+        <label>Add CoOwner To Recipients</label>
+        <locationX>314</locationX>
+        <locationY>1487</locationY>
+        <assignmentItems>
+            <assignToReference>var_T_coll_RecipientIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>$Record.Parent:Case.CoOwner__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Custom_Notification_Action_1</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Recipient Ids must be a collection</description>
         <name>ASSIGN_NotificationRecipientIds</name>
         <label>Assign Notification Recipient Ids to collection</label>
-        <locationX>50</locationX>
-        <locationY>539</locationY>
+        <locationX>314</locationX>
+        <locationY>1187</locationY>
         <assignmentItems>
             <assignToReference>var_T_coll_RecipientIds</assignToReference>
             <operator>Add</operator>
@@ -60,22 +77,132 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Send_Custom_Notification_Action_1</targetReference>
+            <targetReference>CHECK_Add_CoOwner_To_Recipients</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <description>Sätter datumstämpel på ärenden när inlägg skapades, eller fil lades upp på ärendet, oavsett vem som uppdaterade.</description>
+        <name>Set_Feed_Item_date</name>
+        <label>Set Feed Item date</label>
+        <locationX>798</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Case.FeedItemCreatedDate__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.CreatedDate</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Case</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>CHECK_Add_CoOwner_To_Recipients</name>
+        <label>CHECK: Add CoOwner To Recipients?</label>
+        <locationX>446</locationX>
+        <locationY>1379</locationY>
+        <defaultConnector>
+            <targetReference>Send_Custom_Notification_Action_1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_AddCoOwner</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.CoOwner__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.CoOwner__r.IsActive</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.CoOwner__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Parent:Case.OwnerId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_CoOwner_To_Recipients</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_Add_Owner_To_Recipients</name>
+        <label>CHECK: Add Owner To Recipients?</label>
+        <locationX>446</locationX>
+        <locationY>1079</locationY>
+        <defaultConnector>
+            <targetReference>CHECK_Add_CoOwner_To_Recipients</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_AddOwner</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.Owner:User.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.Owner:User.IsActive</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>ASSIGN_NotificationRecipientIds</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>CHECK_ASA</name>
+        <label>Admin Switch Active</label>
+        <locationX>424</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Get_Case</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Not Active Run Flow</defaultConnectorLabel>
+        <rules>
+            <name>CHECK_ASA_YesActiveStopFlow</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Setup.AdminSwitch__c.IsBypassFlow__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Yes, Active Stop Flow</label>
+        </rules>
+    </decisions>
     <decisions>
         <description>Send custom notification to Case owner regarding new communication from member. Only send notification if case owner is a user (not a group)</description>
         <name>CHECK_CreateCustomNotification</name>
         <label>Create custom notification?</label>
-        <locationX>182</locationX>
-        <locationY>323</locationY>
+        <locationX>600</locationX>
+        <locationY>863</locationY>
         <defaultConnector>
             <targetReference>CHECK_SendEmailToMember</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>CHECK_CreateCustomNotification_Yes</name>
-            <conditionLogic>and</conditionLogic>
+            <conditionLogic>1 AND ((2 AND 3) OR (4 AND 5))</conditionLogic>
             <conditions>
                 <leftValueReference>$Record.CreatedBy:User.Profile.Name</leftValueReference>
                 <operator>EqualTo</operator>
@@ -97,6 +224,20 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.CoOwner__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Parent:Case.CoOwner__r.IsActive</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>GET_CustomNotification</targetReference>
             </connector>
@@ -107,8 +248,8 @@
         <description>Checks if post creator has profile Akavia Förhandling or Akavia Medlemsservice and parent Case is not Arbetsgivarärende</description>
         <name>CHECK_SendEmailToMember</name>
         <label>Send Email to Member?</label>
-        <locationX>182</locationX>
-        <locationY>839</locationY>
+        <locationX>600</locationX>
+        <locationY>1871</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>CHECK_SendEmailToMember_Yes</name>
@@ -140,7 +281,31 @@
             <label>Yes</label>
         </rules>
     </decisions>
-    <description>- now checks that case owner user is active
+    <decisions>
+        <name>Decision_6</name>
+        <label>Visibility Får alla se inlägget?</label>
+        <locationX>798</locationX>
+        <locationY>755</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_VisableForAll</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Visibility</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>AllUsers</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>CHECK_CreateCustomNotification</targetReference>
+            </connector>
+            <label>Ja, alla får se inlägget</label>
+        </rules>
+    </decisions>
+    <description>2026-09-09: Created flow to trigger a &quot;last changed date&quot; on related case when a Feed Item (post or file) is added to a case.
+2026-06-12: Also notifies CoOwner on member case comments when owner is queue or CoOwner is the active recipient.
+- now checks that case owner user is active
 - now checks that case owner is a user.
 - now allows both textpost and contentpost in start criterias.
 - added custom notification when members creates feed item
@@ -173,13 +338,35 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordLookups>
-        <name>GET_CustomNotification</name>
-        <label>Get Custom Notification Type</label>
-        <locationX>50</locationX>
+        <description>Hämtar det aktuella ärenden för att uppdatera när fil eller inlägg skapades</description>
+        <name>Get_Case</name>
+        <label>Get Case</label>
+        <locationX>798</locationX>
         <locationY>431</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>ASSIGN_NotificationRecipientIds</targetReference>
+            <targetReference>Set_Feed_Item_date</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Parent:Case.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>GET_CustomNotification</name>
+        <label>Get Custom Notification Type</label>
+        <locationX>446</locationX>
+        <locationY>971</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>CHECK_Add_Owner_To_Recipients</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -193,20 +380,24 @@
         <object>CustomNotificationType</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <description>Uppdaterar ärendet med datumstämpel för när inlägg/fil lagt till i ärendet.</description>
+        <name>Update_Case</name>
+        <label>Update Case</label>
+        <locationX>798</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Decision_6</targetReference>
+        </connector>
+        <inputReference>Get_Case</inputReference>
+    </recordUpdates>
     <start>
-        <locationX>56</locationX>
+        <locationX>298</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>CHECK_CreateCustomNotification</targetReference>
+            <targetReference>CHECK_ASA</targetReference>
         </connector>
-        <filterLogic>1 AND 2 AND (3 OR 4)</filterLogic>
-        <filters>
-            <field>Visibility</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>AllUsers</stringValue>
-            </value>
-        </filters>
+        <filterLogic>1 AND (2 OR 3)</filterLogic>
         <filters>
             <field>ParentId</field>
             <operator>StartsWith</operator>
@@ -236,8 +427,8 @@
     <subflows>
         <name>SUB_NotifyMemberOnNewCaseComment</name>
         <label>Feed Item / Feed Comment - Sub Flow - Notify Member on new Case Comment</label>
-        <locationX>50</locationX>
-        <locationY>947</locationY>
+        <locationX>468</locationX>
+        <locationY>1979</locationY>
         <flowName>FeedItem_FeedComment_SUB_NotifyMemberNewCaseComment</flowName>
         <inputAssignments>
             <name>var_sObj_FeedItem</name>

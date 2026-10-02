@@ -44,11 +44,46 @@
         </rules>
     </decisions>
     <decisions>
+        <name>CHECK_MC_Fields_Need_Update</name>
+        <label>CHECK MC Fields Need Update</label>
+        <locationX>182</locationX>
+        <locationY>1247</locationY>
+        <defaultConnector>
+            <targetReference>Is_SelfEmployed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Update_required</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.CurrentFeeCategory_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.CurrentFeeCategory__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Status_MC__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.Status__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_MC_fields</targetReference>
+            </connector>
+            <label>Update required</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>Check if this Fee Category is a SelfEmployment</description>
         <name>Is_SelfEmployed</name>
         <label>Is Egenföretagare?</label>
         <locationX>182</locationX>
-        <locationY>1355</locationY>
+        <locationY>1547</locationY>
+        <defaultConnector>
+            <targetReference>END_ELEMENT_3</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>Yes_selfEmployed</name>
@@ -101,6 +136,16 @@
     <description>2026-08-14: Update MC fields
 2025-10-15: Now using a subflow for generation of Fullbetalande FeeCategory after a Reduced Fee Category
 2025-03-13: Updated with Åter student create new kommande fee category</description>
+    <ends>
+        <name>END_ELEMENT_3</name>
+        <locationX>314</locationX>
+        <locationY>1655</locationY>
+    </ends>
+    <ends>
+        <name>END_ELEMENT_4</name>
+        <locationX>50</locationX>
+        <locationY>1763</locationY>
+    </ends>
     <environments>Default</environments>
     <formulas>
         <name>StartDateMinus1</name>
@@ -166,8 +211,8 @@
     <recordUpdates>
         <name>Update_MC_fields</name>
         <label>Update MC fields</label>
-        <locationX>182</locationX>
-        <locationY>1247</locationY>
+        <locationX>50</locationX>
+        <locationY>1355</locationY>
         <connector>
             <targetReference>Is_SelfEmployed</targetReference>
         </connector>
@@ -214,7 +259,10 @@
         <name>Update_Person_Field</name>
         <label>Update Person Field</label>
         <locationX>50</locationX>
-        <locationY>1463</locationY>
+        <locationY>1655</locationY>
+        <connector>
+            <targetReference>END_ELEMENT_4</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>Id</field>
@@ -247,6 +295,7 @@
         <connector>
             <targetReference>Valid_today</targetReference>
         </connector>
+        <filterFormula>{!$Setup.AdminSwitch__c.IsBypassFlow__c} = false</filterFormula>
         <object>FeeCategory__c</object>
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
@@ -259,7 +308,7 @@
         <locationX>182</locationX>
         <locationY>1139</locationY>
         <connector>
-            <targetReference>Update_MC_fields</targetReference>
+            <targetReference>CHECK_MC_Fields_Need_Update</targetReference>
         </connector>
         <flowName>FeeCategory_Subflow_GenerateFullFeeCategoryAfterReducedFee</flowName>
         <inputAssignments>

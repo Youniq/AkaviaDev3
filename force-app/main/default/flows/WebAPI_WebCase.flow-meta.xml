@@ -45,6 +45,13 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
+            <assignToReference>caseId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_r_CaseToSubmit.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
             <assignToReference>message</assignToReference>
             <operator>Assign</operator>
             <value>
@@ -76,6 +83,60 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>ErrorMessageText</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assign_Subflow_Output</name>
+        <label>Assign Subflow Output</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>caseId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SUBFLOW_CreateServiceCase.caseId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SUBFLOW_CreateServiceCase.message</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>statusCode</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>SUBFLOW_CreateServiceCase.statusCode</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assign_Subflow_Output_LegalCase</name>
+        <label>Assign Subflow Output Legal Case</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>caseId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_SubFlow_Legal_Case.caseId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>message</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_SubFlow_Legal_Case.message</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>statusCode</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Case_SubFlow_Legal_Case.statusCode</elementReference>
             </value>
         </assignmentItems>
     </assignments>
@@ -151,21 +212,21 @@
             <assignToReference>var_r_CaseToSubmit.SendAttachments__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>sendSeparateEmail</elementReference>
+                <elementReference>var_f_SendSeparateEmailMapped</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_r_CaseToSubmit.AkaviaOrSacoMember__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>akaviaOrSacoMember</elementReference>
+                <elementReference>var_f_AkaviaOrSacoMemberMapped</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_r_CaseToSubmit.OtherParties__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>otherParties</elementReference>
+                <elementReference>var_f_OtherPartiesMapped</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -277,6 +338,139 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Check_LegalCase_Path</name>
+        <label>Check Legal Case Path</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Use_Subflow_LegalCase</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LegalCase</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ContractReview</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>UnpaidWages</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ALOtherIssue</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Case_SubFlow_Legal_Case</targetReference>
+            </connector>
+            <label>Logged-in web form</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_ServiceCase_Path</name>
+        <label>Check Service Case Path</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>CaseRecordType</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Legacy Open Web Form</defaultConnectorLabel>
+        <rules>
+            <name>Use_Legacy_ServiceCase</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_f_UseLegacyServiceCase</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <isGoTo>true</isGoTo>
+                <targetReference>CaseRecordType</targetReference>
+            </connector>
+            <label>Rollback to legacy path</label>
+        </rules>
+        <rules>
+            <name>Use_Subflow_ServiceCase</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SelfEmployed</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>CreateNewEmployer</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>FeePayment</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ReducedFee</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>MembershipCertificate</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>GDPR</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>MembershipOtherIssue</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>webCaseCategory</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>OtherIssue</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SUBFLOW_CreateServiceCase</targetReference>
+            </connector>
+            <label>Logged-in web form</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Type_of_Form</name>
         <label>Check Type of Form</label>
         <locationX>0</locationX>
@@ -287,7 +481,7 @@
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
-            <name>Open_Web_Form</name>
+            <name>ServiceCase</name>
             <conditionLogic>or</conditionLogic>
             <conditions>
                 <leftValueReference>recordType</leftValueReference>
@@ -297,9 +491,9 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>CaseRecordType</targetReference>
+                <targetReference>Check_ServiceCase_Path</targetReference>
             </connector>
-            <label>Open Web Form</label>
+            <label>Service Case</label>
         </rules>
         <rules>
             <name>NegotiationForm</name>
@@ -316,13 +510,45 @@
             </connector>
             <label>Negotiation Form</label>
         </rules>
+        <rules>
+            <name>LegalCase</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>LegalCase</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_LegalCase_Path</targetReference>
+            </connector>
+            <label>Rådgivning</label>
+        </rules>
     </decisions>
-    <description>Initially built to support incoming cases from non-members and employers.</description>
+    <description>2026-09-15: Created new path for LegalCase and added webcasecategory for ServiceCase
+2026-08-12: Creates Case records from akavia.se. ServiceCase with webCaseCategory uses Case_SubFlow_ServiceCase; blank category uses the legacy open web form. Set custom label WebAPI_WebCase_UseLegacyServiceCase to true to force the legacy path.</description>
     <environments>Default</environments>
     <formulas>
         <name>ErrorMessageText</name>
         <dataType>String</dataType>
         <expression>&apos;Bad Request: &apos; &amp;{!$Flow.FaultMessage}</expression>
+    </formulas>
+    <formulas>
+        <name>var_f_AkaviaOrSacoMemberMapped</name>
+        <dataType>String</dataType>
+        <expression>CASE(
+UPPER(TRIM({!akaviaOrSacoMember})),
+&quot;YES&quot;, &quot;Ja&quot;,
+&quot;NO&quot;, &quot;Nej&quot;,
+&quot;DON&apos;T KNOW&quot;, &quot;Vet ej&quot;,
+&quot;DONT KNOW&quot;, &quot;Vet ej&quot;,
+&quot;UNKNOWN&quot;, &quot;Vet ej&quot;,
+&quot;JA&quot;, &quot;Ja&quot;,
+&quot;NEJ&quot;, &quot;Nej&quot;,
+&quot;VET EJ&quot;, &quot;Vet ej&quot;,
+{!akaviaOrSacoMember}
+)</expression>
     </formulas>
     <formulas>
         <name>var_f_CaseSubjectOrganization</name>
@@ -345,7 +571,9 @@ IF(!ISBLANK({!organizationNumber}), BR()&amp;&apos;Organization Number: &apos; &
 IF(!ISBLANK({!sendSeparateEmail} ), BR()&amp;&apos;Send Separate Email: &apos; &amp; {!sendSeparateEmail} ,&apos;&apos;) &amp;
 IF(!ISBLANK({!otherParties}), BR()&amp;&apos;Other Parties: &apos; &amp; {!otherParties},&apos;&apos;) &amp;
 IF(!ISBLANK({!akaviaOrSacoMember}), BR()&amp;&apos;Akavia or Saco member: &apos; &amp; {!akaviaOrSacoMember},&apos;&apos;) &amp;
-IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apos;)</expression>
+IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apos;) &amp;
+IF(!ISBLANK({!accountId}), BR()&amp;&apos;accountId: &apos; &amp; {!accountId},&apos;&apos;) &amp;
+IF(!ISBLANK(TEXT({!webCaseCategory})), BR()&amp;&apos;webCaseCategory: &apos; &amp; TEXT({!webCaseCategory}),&apos;&apos;)</expression>
     </formulas>
     <formulas>
         <name>var_f_OrganizationDescription</name>
@@ -361,6 +589,39 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         <name>var_f_OrganizationNotFoundPostMessage</name>
         <dataType>String</dataType>
         <expression>&apos;Organisationsnumret &apos; &amp;{!organizationNumber} &amp; &apos; hittades inte vid skapandet. Vänligen kontrollera att rätt Arbetsgivare används, om arbetsgivare saknas i CRM lägg upp den och koppla till ärenden.&apos;</expression>
+    </formulas>
+    <formulas>
+        <name>var_f_OtherPartiesMapped</name>
+        <dataType>String</dataType>
+        <expression>CASE(
+UPPER(TRIM({!otherParties})),
+&quot;YES&quot;, &quot;Ja&quot;,
+&quot;NO&quot;, &quot;Nej&quot;,
+&quot;DON&apos;T KNOW&quot;, &quot;Vet ej&quot;,
+&quot;DONT KNOW&quot;, &quot;Vet ej&quot;,
+&quot;UNKNOWN&quot;, &quot;Vet ej&quot;,
+&quot;JA&quot;, &quot;Ja&quot;,
+&quot;NEJ&quot;, &quot;Nej&quot;,
+&quot;VET EJ&quot;, &quot;Vet ej&quot;,
+{!otherParties}
+)</expression>
+    </formulas>
+    <formulas>
+        <name>var_f_SendSeparateEmailMapped</name>
+        <dataType>String</dataType>
+        <expression>CASE(
+UPPER(TRIM({!sendSeparateEmail})),
+&quot;YES&quot;, &quot;Ja&quot;,
+&quot;NO&quot;, &quot;Nej&quot;,
+&quot;JA&quot;, &quot;Ja&quot;,
+&quot;NEJ&quot;, &quot;Nej&quot;,
+{!sendSeparateEmail}
+)</expression>
+    </formulas>
+    <formulas>
+        <name>var_f_UseLegacyServiceCase</name>
+        <dataType>Boolean</dataType>
+        <expression>UPPER({!$Label.WebAPI_WebCase_UseLegacyServiceCase}) = &quot;TRUE&quot;</expression>
     </formulas>
     <interviewLabel>WebAPI - Case From Web {!$Flow.CurrentDateTime}</interviewLabel>
     <label>WebAPI - Case From Web</label>
@@ -404,6 +665,10 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         <connector>
             <targetReference>Assign_Status_Code</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Assign_Status_Code</targetReference>
+        </faultConnector>
         <inputAssignments>
             <field>Flow_Name__c</field>
             <value>
@@ -452,6 +717,10 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         <connector>
             <targetReference>PUT_Case_Details</targetReference>
         </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Create_DebugLog</targetReference>
+        </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>DeveloperName</field>
@@ -536,17 +805,101 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         </connector>
     </start>
     <status>Active</status>
+    <subflows>
+        <name>Case_SubFlow_Legal_Case</name>
+        <label>Case -SubFlow- Legal Case</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Assign_Subflow_Output_LegalCase</targetReference>
+        </connector>
+        <flowName>Case_SubFlow_LegalCase</flowName>
+        <inputAssignments>
+            <name>var_P_WebCaseCategory</name>
+            <value>
+                <elementReference>webCaseCategory</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_CaseAccountId</name>
+            <value>
+                <elementReference>accountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_CaseDescription</name>
+            <value>
+                <elementReference>description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_CaseRecordType</name>
+            <value>
+                <elementReference>recordType</elementReference>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </subflows>
+    <subflows>
+        <name>SUBFLOW_CreateServiceCase</name>
+        <label>Create Service Case Subflow</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Assign_Subflow_Output</targetReference>
+        </connector>
+        <flowName>Case_SubFlow_ServiceCase</flowName>
+        <inputAssignments>
+            <name>var_P_WebCaseCategory</name>
+            <value>
+                <elementReference>webCaseCategory</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_CaseAccountId</name>
+            <value>
+                <elementReference>accountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_CaseDescription</name>
+            <value>
+                <elementReference>description</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_CaseRecordType</name>
+            <value>
+                <elementReference>recordType</elementReference>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </subflows>
     <textTemplates>
         <name>var_tt_OrganizationDescription</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;p&gt;&lt;b&gt;Skickar separat mejl med bifogade filer från e-postadressen ovan: &lt;/b&gt;{!otherParties}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Berörs någon som är medlem i Akavia eller annat Sacoförbund: &lt;/b&gt;{!akaviaOrSacoMember}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Finns det andra parter: &lt;/b&gt;{!otherParties}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</text>
     </textTemplates>
     <variables>
+        <name>accountId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
         <name>akaviaOrSacoMember</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>caseId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
     </variables>
     <variables>
         <description>the user selection from web form. &quot;Vad gäller din fråga?&quot;</description>
@@ -576,7 +929,7 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
-        <isOutput>false</isOutput>
+        <isOutput>true</isOutput>
     </variables>
     <variables>
         <description>First and Last name as entered in Web Form</description>
@@ -669,5 +1022,12 @@ IF(!ISBLANK({!origin}), BR()&amp;&apos;Origin: &apos; &amp; {!origin},&apos;&apo
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Case</objectType>
+    </variables>
+    <variables>
+        <name>webCaseCategory</name>
+        <dataType>Picklist</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
     </variables>
 </Flow>

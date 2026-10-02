@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>49.0</apiVersion>
+    <apiVersion>67.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Assign_Current_Workplace</name>
         <label>Assign Current Workplace</label>
-        <locationX>50</locationX>
-        <locationY>839</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>PersonRecord.CurrentEmployer__c</assignToReference>
             <operator>Assign</operator>
@@ -28,6 +28,13 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>PersonRecord.UnEmployed__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Update_PersonAccount</targetReference>
         </connector>
@@ -35,8 +42,8 @@
     <assignments>
         <name>Assign_End_Date_To_Variable</name>
         <label>Assign End Date To Variable</label>
-        <locationX>50</locationX>
-        <locationY>1355</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>EndDateToAddToEarlierEmployment</assignToReference>
             <operator>Assign</operator>
@@ -51,8 +58,8 @@
     <assignments>
         <name>SET_SyncWithMC</name>
         <label>Set Sync With MC</label>
-        <locationX>50</locationX>
-        <locationY>431</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>$Record.SyncWithMc__c</assignToReference>
             <operator>Assign</operator>
@@ -67,8 +74,8 @@
     <assignments>
         <name>Update_End_Date_On_Earlier_Employment</name>
         <label>Update End Date On Earlier Employment</label>
-        <locationX>50</locationX>
-        <locationY>1463</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>GetActiveEmployment.EndDate__c</assignToReference>
             <operator>Assign</operator>
@@ -84,8 +91,8 @@
         <description>Checks if formula checkbox MCSynkValidator__c is true</description>
         <name>CHECK_SyncWithMc</name>
         <label>Sync with MC?</label>
-        <locationX>182</locationX>
-        <locationY>323</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnector>
             <targetReference>Current_Employment</targetReference>
         </defaultConnector>
@@ -109,8 +116,8 @@
     <decisions>
         <name>Current_Employment</name>
         <label>Current Employment?</label>
-        <locationX>182</locationX>
-        <locationY>731</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <defaultConnector>
             <targetReference>GetActiveEmployment</targetReference>
         </defaultConnector>
@@ -148,8 +155,11 @@
     <decisions>
         <name>FoundCurrentEmployment</name>
         <label>FoundCurrentEmployment</label>
-        <locationX>182</locationX>
-        <locationY>1247</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>SUBFLOW_UpdateAssignmentsAfterEmployeerChange</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>No Employment Found</defaultConnectorLabel>
         <rules>
             <name>EmploymentWithoutEndDate</name>
@@ -168,6 +178,11 @@
         </rules>
     </decisions>
     <description>* Updated to set &quot;Sync With MC&quot; on create</description>
+    <ends>
+        <name>END_ELEMENT_2</name>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+    </ends>
     <environments>Default</environments>
     <formulas>
         <name>StartDateOfNewEmployentMinusOne</name>
@@ -198,8 +213,8 @@
     <recordLookups>
         <name>GetActiveEmployment</name>
         <label>GetActiveEmployment</label>
-        <locationX>182</locationX>
-        <locationY>1139</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>FoundCurrentEmployment</targetReference>
@@ -233,15 +248,18 @@
     <recordUpdates>
         <name>Update_Earlier_Employment</name>
         <label>Update Earlier Employment</label>
-        <locationX>50</locationX>
-        <locationY>1571</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>SUBFLOW_UpdateAssignmentsAfterEmployeerChange</targetReference>
+        </connector>
         <inputReference>GetActiveEmployment</inputReference>
     </recordUpdates>
     <recordUpdates>
         <name>UPDATE_Employment</name>
         <label>Update Employment</label>
-        <locationX>50</locationX>
-        <locationY>539</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>Current_Employment</targetReference>
         </connector>
@@ -250,24 +268,53 @@
     <recordUpdates>
         <name>Update_PersonAccount</name>
         <label>Update Person</label>
-        <locationX>50</locationX>
-        <locationY>947</locationY>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <connector>
             <targetReference>GetActiveEmployment</targetReference>
         </connector>
         <inputReference>PersonRecord</inputReference>
     </recordUpdates>
     <start>
-        <locationX>56</locationX>
+        <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>CHECK_SyncWithMc</targetReference>
         </connector>
+        <filterFormula>  {!$Setup.AdminSwitch__c.IsBypassFlow__c} = false</filterFormula>
         <object>Employment__c</object>
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
+    <subflows>
+        <name>SUBFLOW_UpdateAssignmentsAfterEmployeerChange</name>
+        <label>Update Assignments after Employer change</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>END_ELEMENT_2</targetReference>
+        </connector>
+        <flowName>Assignment_Subflow_UpdateAssignments</flowName>
+        <inputAssignments>
+            <name>var_D_EndDateToAddToEarlierEmployment</name>
+            <value>
+                <elementReference>StartDateOfNewEmployentMinusOne</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_sObj_CurrentEmployment</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>var_T_PersonAccountId</name>
+            <value>
+                <elementReference>$Record.Person__c</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <variables>
         <name>EndDateToAddToEarlierEmployment</name>
         <dataType>Date</dataType>

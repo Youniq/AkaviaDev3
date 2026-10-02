@@ -1809,7 +1809,7 @@ Vill inte ha en formula för bransch informationen pga spanning relationships li
 2025-05-26: Now setting date-stamp when member updates person email value
 2025-05-16: Now removes unused bank details when switching distribution method
 2025-01-27: Updated dec with Senast uppdaterat betalsätt</description>
-<environments>Default</environments>
+    <environments>Default</environments>
     <formulas>
         <name>form_D_BirthDate</name>
         <dataType>Date</dataType>
