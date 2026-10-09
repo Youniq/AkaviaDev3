@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
         <description>Makulerar fakturor i billecta och markerar dem som makulerade i SF.</description>
@@ -162,7 +162,7 @@
         </connector>
     </assignments>
     <assignments>
-        <description>Always add up amounts as if the invoice isn&apos;t paid; even if it is partially paid. 
+        <description>Always add up amounts as if the invoice isn't paid; even if it is partially paid. 
 In case of it being partially paid  - it is corrected from Billectas end, where the partially paid sum is subtracted from the next invoice amount.</description>
         <name>Add_up_Amounts</name>
         <label>Add up Amounts</label>
@@ -281,7 +281,7 @@ In case of it being partially paid  - it is corrected from Billectas end, where 
         </connector>
     </assignments>
     <decisions>
-        <description>If Membership Category is &quot;Yrkesverksam första året&quot; and NoOfPayedInvoicesAsEmployed is 0 then RestInvoiceAmount is not to be changed</description>
+        <description>Do not update rest invoice amounts for first-year employed members with zero paid invoices. SRAT exclusion is handled per invoice in Get_Invoices_to_Cancel.</description>
         <name>CHECK_AddRestInvoiceAmountToAccount</name>
         <label>Add RestInvoiceAmount to Account?</label>
         <locationX>325</locationX>
@@ -292,7 +292,7 @@ In case of it being partially paid  - it is corrected from Billectas end, where 
         <defaultConnectorLabel>Yes</defaultConnectorLabel>
         <rules>
             <name>CHECK_AddRestInvoiceAmountToAccount_No</name>
-            <conditionLogic>(1 AND 2) OR 3</conditionLogic>
+            <conditionLogic>1 AND 2</conditionLogic>
             <conditions>
                 <leftValueReference>var_R_Account.MembershipCategory__c</leftValueReference>
                 <operator>EqualTo</operator>
@@ -305,13 +305,6 @@ In case of it being partially paid  - it is corrected from Billectas end, where 
                 <operator>EqualTo</operator>
                 <rightValue>
                     <numberValue>0.0</numberValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>var_R_Account.LatestMembership__r.CurrentFeeCategory__r.FeeCategory__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <stringValue>Dubbelansluten SRAT</stringValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -586,11 +579,12 @@ In case of it being partially paid  - it is corrected from Billectas end, where 
         </rules>
     </decisions>
     <description>2025-06-23: Now not taking partially paid sums in to calculation when setting rest invoice amounts.
-2025-03-31: Now not adding unpaid invoices to restInvoiceAmount when member has feecategory &quot;Dubbelansluten SRAT&quot;
+2025-03-31: Now not adding unpaid invoices to restInvoiceAmount when member has feecategory "Dubbelansluten SRAT"
 2024-06-27: Now cancel all invoices. A rest invoice will be generated upon re-entrance to Akavia by other logic at middleware
-2024-04-19: Temp solution to only cancel invoices for members making cancelling the membership during Yrk1 and before any invoices has been payed. Don&apos;t cancel invoices for already paying members.
+2024-04-19: Temp solution to only cancel invoices for members making cancelling the membership during Yrk1 and before any invoices has been payed. Don't cancel invoices for already paying members.
 Edit: RestInvoiceAmount is not set if Membership Category is Yrk1 and NoOfPayedInvoicesAsEmployed is 0
-NOTE: In MasterDev version 5 contains changes that are not present in this version.</description>
+NOTE: In MasterDev version 5 contains changes that are not present in this version.
+2026-10-09: Exclude invoices with FeeCategory__c = Dubbelansluten SRAT from both RestAmount and RestAmountAkassa. SRAT member-level exclusion removed.</description>
     <environments>Default</environments>
     <formulas>
         <name>DifferenceAmountAmountAkassa</name>
@@ -798,7 +792,7 @@ NOTE: In MasterDev version 5 contains changes that are not present in this versi
         <connector>
             <targetReference>Is_there_Invoices_to_cancel</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
+        <filterLogic>1 AND 2 AND 3 AND (4 OR 5)</filterLogic>
         <filters>
             <field>Person__c</field>
             <operator>EqualTo</operator>
@@ -820,7 +814,7 @@ NOTE: In MasterDev version 5 contains changes that are not present in this versi
                 <stringValue>Betald</stringValue>
             </value>
         </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <filters><field>FeeCategory__c</field><operator>IsNull</operator><value><booleanValue>true</booleanValue></value></filters><filters><field>FeeCategory__c</field><operator>NotEqualTo</operator><value><stringValue>Dubbelansluten SRAT</stringValue></value></filters><getFirstRecordOnly>false</getFirstRecordOnly>
         <object>Invoice__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>

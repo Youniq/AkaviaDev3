@@ -5,7 +5,11 @@
  * @last modified on  : 2025-01-24
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
 **/
-@IsTest
+/**
+ * isParallel=false: TestDataFactory.createTestMemberUsers uppdaterar orgens
+ * adminanvändare, vilket ger UNABLE_TO_LOCK_ROW om flera klasser kör samtidigt.
+ */
+@IsTest(isParallel=false)
 private class UserUpdateHandlerInvocableTest {
     @IsTest
     static void testUserUpdateAsync() {

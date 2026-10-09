@@ -5,7 +5,11 @@
  * @last modified on  : 2025-01-14
  * @last modified by  : Malin Nilsson (Stretch Customer AB)
 **/
-@isTest
+/**
+ * isParallel=false: TestDataFactory.createTestMemberUsers uppdaterar orgens
+ * adminanvändare, vilket ger UNABLE_TO_LOCK_ROW om flera klasser kör samtidigt.
+ */
+@isTest(isParallel=false)
 public with sharing class SetAccountIsCustomerPortalInvoableTest {
     @TestSetup
     static void makeData(){

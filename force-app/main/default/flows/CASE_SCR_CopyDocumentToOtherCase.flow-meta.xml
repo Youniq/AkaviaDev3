@@ -316,20 +316,6 @@
     <interviewLabel>Screen {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Case - Screen Flow - Copy Document To Other Case</label>
     <loops>
-        <name>LOOP_SelectedContentDocumentsToCreate</name>
-        <label>Loop Selected Content Documents To Create</label>
-        <locationX>1194</locationX>
-        <locationY>2786</locationY>
-        <collectionReference>SC_SCD_DataTable.selectedRows</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>ASSIGN_NewContentDocumentLinkValues</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>CREATE_ContentDocumentLinks</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-    <loops>
         <name>LOOP_SelectedContentDocuments</name>
         <label>Loop Selected Content Documents</label>
         <locationX>886</locationX>
@@ -341,6 +327,20 @@
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>GET_DuplicateContentDocuments</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>LOOP_SelectedContentDocumentsToCreate</name>
+        <label>Loop Selected Content Documents To Create</label>
+        <locationX>1194</locationX>
+        <locationY>2786</locationY>
+        <collectionReference>SC_SCD_DataTable.selectedRows</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>ASSIGN_NewContentDocumentLinkValues</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>CREATE_ContentDocumentLinks</targetReference>
         </noMoreValuesConnector>
     </loops>
     <processMetadataValues>

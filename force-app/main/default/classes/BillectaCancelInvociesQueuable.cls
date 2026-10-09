@@ -15,25 +15,60 @@ public class BillectaCancelInvociesQueuable implements Queueable, Database.Allow
     this.invoicesToCancel = invoices;
   }
 
+  
   public void execute(QueueableContext context) {
-    Id jobId = context.getJobId();
-    Callout__c callout = [
-      SELECT
-        Id,
-        Status__c,
-        Request__c,
-        Response__c,
-        Path__c,
-        Type__c,
-        Code__c,
-        Invoice__c,
-        errorLog__c
-      FROM Callout__c
-      WHERE jobId__c = :jobId
-      LIMIT 1
-    ];
-    cancelInvoices(this.invoicesToCancel, callout);
+      Id jobId = context.getJobId();
+
+      Callout__c callout = [
+          SELECT Id, Status__c, Request__c, Response__c,
+                Path__c, Type__c, Code__c, Invoice__c, errorLog__c
+          FROM Callout__c
+          WHERE jobId__c = :jobId
+          LIMIT 1
+      ];
+
+      Set<Id> invoiceIds = new Set<Id>();
+
+      if (this.invoicesToCancel != null) {
+          for (Invoice__c invoice : this.invoicesToCancel) {
+              if (invoice.Id != null) {
+                  invoiceIds.add(invoice.Id);
+              }
+          }
+      }
+
+      if (invoiceIds.isEmpty()) {
+          callout.Status__c = 'OK';
+          callout.Response__c = 'No invoices to cancel';
+          update callout;
+          return;
+      }
+
+      // Kontrollera fakturorna mot aktuella databasvärden.
+      List<Invoice__c> safeInvoices = [
+          SELECT Id, BillectaID__c, FeeCategory__c,
+                PaymentStatus__c, Person__c
+          FROM Invoice__c
+          WHERE Id IN :invoiceIds
+          AND BillectaID__c != NULL
+          AND PaymentStatus__c NOT IN ('Betald', 'Makulerad')
+          AND (
+              FeeCategory__c = NULL
+              OR FeeCategory__c != 'Dubbelansluten SRAT'
+          )
+      ];
+
+      if (safeInvoices.isEmpty()) {
+          callout.Status__c = 'OK';
+          callout.Response__c =
+              'No eligible invoices to cancel';
+          update callout;
+          return;
+      }
+
+      cancelInvoices(safeInvoices, callout);
   }
+
 
   private void cancelInvoices(
     List<Invoice__c> invoiceList,

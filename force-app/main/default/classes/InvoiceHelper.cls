@@ -28,4 +28,32 @@ public with sharing class InvoiceHelper {
     ];
     return unpaid;
   }
+
+  public static List<Invoice__c> invoicesForAccounts(
+        Set<Id> accountIds
+    ) {
+        if (accountIds == null || accountIds.isEmpty()) {
+            return new List<Invoice__c>();
+        }
+
+        return [
+            SELECT
+                Id,
+                BillectaID__c,
+                Amount__c,
+                AmountAkassa__c,
+                Person__c,
+                RemainingAmount__c,
+                FeeCategory__c
+            FROM Invoice__c
+            WHERE BillectaID__c != NULL
+                AND PaymentStatus__c != 'Makulerad'
+                AND PaymentStatus__c != 'Betald'
+                AND (
+                    FeeCategory__c = NULL
+                    OR FeeCategory__c != 'Dubbelansluten SRAT'
+                )
+                AND Person__c IN :accountIds
+        ];
+    }
 }

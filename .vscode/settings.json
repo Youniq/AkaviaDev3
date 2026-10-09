@@ -42,5 +42,6 @@
   "eslint.options": {
     "overrideConfigFile": "c:\\Users\\StefanTrieton\\OneDrive\\Work\\Stretch\\AkaviaDev3\\.eslintrc.json"
   },
-  "xml.preferences.showSchemaDocumentationType": "none"
+  "xml.preferences.showSchemaDocumentationType": "none",
+  "salesforcedx-vscode-apex-testing.restore-previous-results": false
 }

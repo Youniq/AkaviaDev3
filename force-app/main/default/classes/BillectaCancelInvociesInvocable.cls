@@ -46,25 +46,63 @@ public class BillectaCancelInvociesInvocable {
     }
   }
 
-  public BillectaCancelInvociesInvocable(List<Invoice__c> invoices) {
-    this.Result = null;
-    Set<Id> accIdSet = new Set<Id>();
-    for (invoice__c i : invoices) {
-      accIdSet.add(i.person__c);
-    }
-    List<Id> accountIds = new List<Id>(accIdSet);
 
-    if(invoices.size() > 0){
-      // Running the callout of cancelling invoices in a queuable to have private transaction with more room before hitting limitation errors.
-      BillectaCancelInvociesQueuable q = new BillectaCancelInvociesQueuable(
-        invoices
-      );
+  public BillectaCancelInvociesInvocable(List<Invoice__c> invoices) {
+      this.Result = null;
+
+      if (invoices == null || invoices.isEmpty()) {
+          System.debug('No invoices to cancel');
+          return;
+      }
+
+      Set<Id> invoiceIds = new Set<Id>();
+
+      for (Invoice__c invoice : invoices) {
+          if (invoice.Id != null) {
+              invoiceIds.add(invoice.Id);
+          }
+      }
+
+      if (invoiceIds.isEmpty()) {
+          System.debug('No persisted invoices to cancel');
+          return;
+      }
+
+      // Hämta avgiftsklass från databasen, inte från inkommande objekt.
+      List<Invoice__c> safeInvoices = [
+          SELECT Id, BillectaID__c, Person__c,
+                FeeCategory__c, PaymentStatus__c
+          FROM Invoice__c
+          WHERE Id IN :invoiceIds
+          AND BillectaID__c != NULL
+          AND PaymentStatus__c NOT IN ('Betald', 'Makulerad')
+          AND (
+              FeeCategory__c = NULL
+              OR FeeCategory__c != 'Dubbelansluten SRAT'
+          )
+      ];
+
+      if (safeInvoices.isEmpty()) {
+          System.debug('No eligible invoices to cancel');
+          return;
+      }
+
+      Set<Id> accountIds = new Set<Id>();
+
+      for (Invoice__c invoice : safeInvoices) {
+          if (invoice.Person__c != null) {
+              accountIds.add(invoice.Person__c);
+          }
+      }
+
+      BillectaCancelInvociesQueuable q =
+          new BillectaCancelInvociesQueuable(safeInvoices);
+
       Id jobId = System.enqueueJob(q);
-      createCalloutLog(jobId, accountIds);
-    } else{
-      System.debug('No invoices to cancel');
-    }
+
+      createCalloutLog(jobId, new List<Id>(accountIds));
   }
+
 
   @invocableMethod(callout=true)
   public static void BillectaCancelInvociesInvocable(
@@ -79,23 +117,13 @@ public class BillectaCancelInvociesInvocable {
     );
   }
 
+
   public List<Invoice__c> invoicesForAccounts(List<Id> accountIds) {
-    return [
-      SELECT
-        Id,
-        BillectaID__c,
-        Amount__c,
-        AmountAkassa__c,
-        Person__c,
-        RemainingAmount__c
-      FROM Invoice__c
-      WHERE
-        BillectaID__c != NULL
-        AND PaymentStatus__c != 'Makulerad'
-        AND PaymentStatus__c != 'Betald'
-        AND Person__c IN :accountIds
-    ];
+      return InvoiceHelper.invoicesForAccounts(
+          new Set<Id>(accountIds)
+      );
   }
+
 
   private static void createCalloutLog(Id jobId, List<Id> accIds) {
     String accId;
