@@ -1,175 +1,181 @@
+
 /**
- * @description       :
- * @author            :
- * @group             :
- * @last modified on  : 2025-07-03
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
- **/
-public class BillectaUpdateDebtorsBatch implements Database.Batchable<sObject>, Database.Stateful {
-  public String query;
-  public Set<Id> recordsLeftToProcess;
-  public boolean updatePM;
-  public String action; // action to perform in Billecta create / update / createOrUpdate
-  public String calloutExtraMsg; // extra message to add to the callout record. In order to be able to identify the callout in the logs. Used for special cases.
+ * @description       : Creates or updates Billecta debtors asynchronously.
+ *                      Validates Accounts, schedules Queueable jobs and
+ *                      creates corresponding Callout__c records.
+ * @last modified on  : 2026-10-19
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
+ */
+public class BillectaUpdateDebtorsBatch
+    implements Database.Batchable<sObject>, Database.Stateful {
 
-  // Normal constructor.
-  public BillectaUpdateDebtorsBatch(
-    Set<Id> accountIds,
-    String billectaAction,
-    Boolean updatePaymentMethod
-  ) {
-    updatePM = updatePaymentMethod;
-    action = billectaAction;
-    recordsLeftToProcess = accountIds;
-    initRun();
-  }
+    private Set<Id> accountIds;
+    private Boolean updatePM;
+    private String action;
+    private String calloutExtraMsg;
 
-  // Special constructor for special cases, adds the extra message to the callout record.
-  public BillectaUpdateDebtorsBatch(
-    Set<Id> accountIds,
-    String billectaAction,
-    Boolean updatePaymentMethod,
-    String extraMessage
-  ) {
-    updatePM = updatePaymentMethod;
-    action = billectaAction;
-    recordsLeftToProcess = accountIds;
-    calloutExtraMsg = extraMessage
-;
-    initRun();
-  }
-
-  private void initRun() {
-    try {
-      BillectaValidationHelper.validateBillectaActionInput(action);
-    } catch (BillectaException e) {
-      System.debug(
-        LoggingLevel.ERROR,
-        'Validation error in BillectaUpdateDebtorsBatch: ' + e.getMessage()
-      );
-      ApexLog.Error errLog = new ApexLog.Error(
-        'BillectaUpdateDebtorsBatch',
-        'BillectaUpdateDebtorsBatch()',
-        true,
-        e
-      );
-      ApexLog.createLogDebug(errLog);
-
-      throw e;
-      // cancel run immediately.
+    public BillectaUpdateDebtorsBatch(
+        Set<Id> accountIds,
+        String billectaAction,
+        Boolean updatePaymentMethod
+    ) {
+        this(
+            accountIds,
+            billectaAction,
+            updatePaymentMethod,
+            null
+        );
     }
 
-    system.debug('recordsLeftToProcess : ' + recordsLeftToProcess.size());
-    query =
-      'SELECT Id,' +
-      'BillectaID__c,' +
-      'SocialSecurityNumber__c,' +
-      'FirstName,' +
-      'LastName,' +
-      'CurrentCOAdress__c,' +
-      'CurrentStreetAdress__c,' +
-      'CurrentZipCode__c,' +
-      'CurrentCity__c,' +
-      'CurrentCountry__c,' +
-      'CurrentCountryCode__c,' +
-      'PersonMobilePhone,' +
-      'PersonEmail,' +
-      'MemberNumber__c,' +
-      'FeeCategory__c,' +
-      'ProtectedIdentity__c,' +
-      'AutogiroBank__c,' +
-      'AG_BankClearingNumber__c,' +
-      'AG_BankAccountNumber__c,' +
-      'AG_BankIDSignToken__c,' +
-      'PaymentMethod__c,' +
-      'DistributionMethod__c,' +
-      'IsDistributionPostalPaperOnly__c,' +
-      'BillectaMarkedForUpdate__c,' +
-      'EinvoiceBank__c ' +
-      'FROM Account WHERE Id IN: recordsLeftToProcess AND CancellationDateGDPR__c = NULL LIMIT 99';
-  }
+    public BillectaUpdateDebtorsBatch(
+        Set<Id> accountIds,
+        String billectaAction,
+        Boolean updatePaymentMethod,
+        String extraMessage
+    ) {
+        this.accountIds = accountIds == null
+            ? new Set<Id>()
+            : new Set<Id>(accountIds);
 
-  public Database.QueryLocator start(Database.BatchableContext bc) {
-    return Database.getQueryLocator(query);
-  }
-  
-  public void execute(Database.BatchableContext bc, List<Account> scope) {
-    // process each batch of records
-    List<Callout__c> calloutsScheduled = new List<Callout__c>();
+        this.action = billectaAction;
+        this.updatePM = updatePaymentMethod;
+        this.calloutExtraMsg = extraMessage;
 
-    for (Account acc : scope) {
-      try {
-        BillectaValidationHelper.validateAccountForAction(acc, action);
-
-        Id jobId = System.enqueueJob(
-          new BillectaSendDebtorAsync(acc, updatePM)
+        BillectaValidationHelper.validateBillectaActionInput(
+            this.action
         );
+    }
 
-        calloutsScheduled.add(
-          new Callout__c(
-              jobId__c = jobId,
-              Type__c = acc.BillectaID__c == null ? 'Billecta - Create Debtor' : 'Billecta - Update Debtor',
-              Account__c = acc.ID,
-              Status__c = 'Queued',
-              ExtraMessage__c = calloutExtraMsg
-            )
-          );
+    public Database.QueryLocator start(
+        Database.BatchableContext bc
+    ) {
+        return Database.getQueryLocator([
+            SELECT
+                Id,
+                BillectaID__c,
+                SocialSecurityNumber__c,
+                FirstName,
+                LastName,
+                CurrentCOAdress__c,
+                CurrentStreetAdress__c,
+                CurrentZipCode__c,
+                CurrentCity__c,
+                CurrentCountry__c,
+                CurrentCountryCode__c,
+                PersonMobilePhone,
+                PersonEmail,
+                MemberNumber__c,
+                FeeCategory__c,
+                ProtectedIdentity__c,
+                AutogiroBank__c,
+                AG_BankClearingNumber__c,
+                AG_BankAccountNumber__c,
+                AG_BankIDSignToken__c,
+                AutogiroApprovalStatus__c,
+                PaymentMethod__c,
+                DistributionMethod__c,
+                IsDistributionPostalPaperOnly__c,
+                BillectaMarkedForUpdate__c,
+                EinvoiceBank__c
+            FROM Account
+            WHERE Id IN :accountIds
+              AND CancellationDateGDPR__c = NULL
+        ]);
+    }
 
-        System.debug('-----------JOB ID-------------' + jobId);
-        recordsLeftToProcess.remove(acc.Id);
-      } 
-      catch (BillectaException e) {
-        recordsLeftToProcess.remove(acc.Id);
+    public void execute(
+        Database.BatchableContext bc,
+        List<sObject> scope
+    ) {
+        List<Callout__c> calloutsScheduled =
+            new List<Callout__c>();
+
+        for (sObject record : scope) {
+          
+            Account acc = (Account) record;
+
+            try {
+                BillectaValidationHelper.validateAccountForAction(
+                    acc,
+                    action
+                );
+
+            } catch (BillectaException e) {
+                System.debug(
+                    LoggingLevel.ERROR,
+                    'Billecta validation failed for Account ' +
+                    acc.Id + ': ' + e.getMessage()
+                );
+
+                ApexLog.Error errLog = new ApexLog.Error(
+                    'BillectaUpdateDebtorsBatch',
+                    'execute',
+                    true,
+                    e
+                );
+
+                ApexLog.createLogDebug(errLog);
+                continue;
+            }
+
+            Id jobId = System.enqueueJob(
+                new BillectaSendDebtorAsync(
+                    acc,
+                    updatePM
+                )
+            );
+
+            calloutsScheduled.add(
+                new Callout__c(
+                    JobId__c = jobId,
+                    Type__c = acc.BillectaID__c == null
+                        ? 'Billecta - Create Debtor'
+                        : 'Billecta - Update Debtor',
+                    Account__c = acc.Id,
+                    Status__c = 'Queued',
+                    ExtraMessage__c = calloutExtraMsg
+                )
+            );
+
+            System.debug(
+                'Billecta Queueable scheduled: ' +
+                jobId + ' / Account: ' + acc.Id
+            );
+        }
+
+        if (calloutsScheduled.isEmpty()) {
+            return;
+        }
+
+        // All-or-none:
+        // If Callout__c records cannot be created, the transaction
+        // must fail so that the Queueable jobs are not committed
+        // without their corresponding tracking records.
+        insert calloutsScheduled;
 
         System.debug(
-          LoggingLevel.ERROR,
-          'BillectaUpdateDebtorsBatch.execute() ' + e.getMessage()
+            'Billecta Callout records created: ' +
+            calloutsScheduled.size()
         );
-
-        // Malin, Remove debug log creation later?
-        ApexLog.Error errLog = new ApexLog.Error(
-          'BillectaUpdateDebtorsBatch',
-          'execute()',
-          true,
-          e
-        );
-        ApexLog.createLogDebug(errLog);
-      }
     }
 
-    //Insert Callout__c records
-    if (calloutsScheduled.size() > 0) {
-      System.debug('--- Create Callouts ---');
-      try {
-        insert calloutsScheduled;
-      } catch (exception e) {
-        System.debug('--- Error inserting Callouts --- ' + calloutsScheduled);
-        ApexLog.Error logError = new ApexLog.Error(
-          'BillectaUpdateDebtorBatch',
-          'Execute',
-          true,
-          e
-        );
-        ApexLog.createLogDebug(logError);
-      }
-      System.debug('--- Created Callouts ---' + calloutsScheduled);
-    }
-  }
-  public void finish(Database.BatchableContext bc) {
-    // execute any post-processing operations
-    system.debug(
-      'FINISH recordsLeftToProcess : ' + recordsLeftToProcess.size()
-    );
-    if (recordsLeftToProcess.size() > 0) {
+    public void finish(
+        Database.BatchableContext bc
+    ) {
+        AsyncApexJob job = [
+            SELECT Id, Status, NumberOfErrors,
+                   JobItemsProcessed, TotalJobItems
+            FROM AsyncApexJob
+            WHERE Id = :bc.getJobId()
+            LIMIT 1
+        ];
 
-      
-      BillectaUpdateDebtorsBatch nextBatch = new BillectaUpdateDebtorsBatch(
-        recordsLeftToProcess,
-        action,
-        updatePM,
-        calloutExtraMsg
-      );
-      Id batchId = Database.executeBatch(nextBatch, 1);
+        System.debug(
+            'BillectaUpdateDebtorsBatch finished. ' +
+            'Status: ' + job.Status +
+            ', Errors: ' + job.NumberOfErrors +
+            ', Processed: ' + job.JobItemsProcessed +
+            '/' + job.TotalJobItems
+        );
     }
-  }
 }

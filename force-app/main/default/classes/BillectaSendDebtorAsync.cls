@@ -2,8 +2,8 @@
  * @description       : 
  * @author            : Malin Nilsson (Stretch Customer AB)
  * @group             : 
- * @last modified on  : 2025-07-03
- * @last modified by  : Malin Nilsson (Stretch Customer AB)
+ * @last modified on  : 2026-10-19
+ * @last modified by  : Stefan Trieton (Stretch Customer AB)
 **/
 public class BillectaSendDebtorAsync implements Queueable, Database.AllowsCallouts {
 	private 	Account 	acc				        {get;set;}
@@ -17,6 +17,12 @@ public class BillectaSendDebtorAsync implements Queueable, Database.AllowsCallou
     
    	
     public void execute(QueueableContext context) {
+
+            // Register Finalizer to handle unhandled Queueable exceptions
+            System.attachFinalizer(
+                new BillectaSendDebtorFinalizer()
+            );
+
             Callout__c currentCallout = [Select Id, Status__c, sentOn__c, Duration__c, Response__c, Account__c,
                                          jobId__c, errorLog__c, extraMessage__c From Callout__c Where jobId__c=:context.getJobId()];
 
