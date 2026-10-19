@@ -23,8 +23,31 @@ public class BillectaSendDebtorAsync implements Queueable, Database.AllowsCallou
                 new BillectaSendDebtorFinalizer()
             );
 
-            Callout__c currentCallout = [Select Id, Status__c, sentOn__c, Duration__c, Response__c, Account__c,
-                                         jobId__c, errorLog__c, extraMessage__c From Callout__c Where jobId__c=:context.getJobId()];
+            String jobId = String.valueOf(context.getJobId());
+
+            System.debug(
+                LoggingLevel.ERROR,
+                'BILLECTA DEBUG - Queueable JobId: ' + jobId
+            );
+
+            List<Callout__c> callouts = [
+                SELECT Id, Status__c, SentOn__c, Duration__c,
+                    Response__c, Account__c, JobId__c,
+                    ErrorLog__c, ExtraMessage__c
+                FROM Callout__c
+                WHERE JobId__c = :jobId
+                LIMIT 1
+            ];
+
+            if (callouts.isEmpty()) {
+                System.debug(
+                    LoggingLevel.ERROR,
+                    'BillectaSendDebtorAsync: Missing Callout__c for JobId ' + jobId
+                );
+                return;
+            }
+
+            Callout__c currentCallout = callouts[0];
 
             if(currentCallout.extraMessage__c == null){
                 currentCallout.extraMessage__c = updatePaymentMethod ? 'Update Contact and Payment Method' : 'Update Contact Details Only';

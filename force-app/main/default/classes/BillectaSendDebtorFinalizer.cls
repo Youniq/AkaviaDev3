@@ -1,13 +1,5 @@
 
-/**
- * @description       : Finalizer for BillectaSendDebtorAsync.
- *                      Marks Callout__c as Failed when the Queueable
- *                      terminates with an unhandled exception.
- * @last modified on  : 2026-10-19
- * @last modified by  : Stefan Trieton (Stretch Customer AB)
- */
-public class BillectaSendDebtorFinalizer
-    implements Finalizer {
+public class BillectaSendDebtorFinalizer implements Finalizer {
 
     public void execute(FinalizerContext context) {
 
@@ -18,12 +10,32 @@ public class BillectaSendDebtorFinalizer
             return;
         }
 
-        Id jobId = context.getAsyncApexJobId();
+        String jobId = String.valueOf(
+            context.getAsyncApexJobId()
+        );
+
+        Exception jobException = context.getException();
+
+        String errorMessage =
+            jobException == null
+                ? 'Unhandled Queueable exception.'
+                : jobException.getMessage() +
+                  ' / ' +
+                  jobException.getStackTraceString();
+
+        markCalloutFailed(jobId, errorMessage);
+    }
+
+    @TestVisible
+    private static void markCalloutFailed(
+        String jobId,
+        String errorMessage
+    ) {
 
         List<Callout__c> callouts = [
             SELECT Id, Status__c, ErrorLog__c, SentOn__c
             FROM Callout__c
-            WHERE JobId__c = :String.valueOf(jobId)
+            WHERE JobId__c = :jobId
             LIMIT 1
         ];
 
@@ -41,15 +53,6 @@ public class BillectaSendDebtorFinalizer
         co.Status__c = 'Failed';
         co.SentOn__c = System.now();
 
-        Exception jobException = context.getException();
-
-        String errorMessage =
-            jobException == null
-                ? 'Unhandled Queueable exception.'
-                : jobException.getMessage() +
-                ' / ' +
-                jobException.getStackTraceString();
-
         co.ErrorLog__c =
             (String.isBlank(co.ErrorLog__c)
                 ? ''
@@ -58,7 +61,6 @@ public class BillectaSendDebtorFinalizer
 
         try {
             update co;
-
         } catch (Exception e) {
             System.debug(
                 LoggingLevel.ERROR,
