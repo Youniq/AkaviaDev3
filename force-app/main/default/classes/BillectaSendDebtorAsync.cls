@@ -156,11 +156,24 @@ public class BillectaSendDebtorAsync
 
         Blob jsonPayload;
 
-        Billecta__c credentials = [
+        List<Billecta__c> credentials = [
             SELECT Id, Creditor__c
             FROM Billecta__c
             LIMIT 1
         ];
+
+        if (
+            credentials.isEmpty() ||
+            String.isBlank(credentials[0].Creditor__c)
+        ) {
+            co.Status__c = 'Failed';
+            co.ErrorLog__c =
+                'Billecta configuration missing: Creditor__c';
+
+            return co;
+        }
+
+        String creditorId = credentials[0].Creditor__c;
 
         Http http = new Http();
         HttpRequest request = new HttpRequest();
@@ -170,10 +183,9 @@ public class BillectaSendDebtorAsync
 
         if (acc.BillectaID__c == null) {
 
-            jsonPayload =
-                BillectaEncodeJSON.encodeCreateDebtor(
+            jsonPayload = BillectaEncodeJSON.encodeCreateDebtor(
                     acc,
-                    credentials.Creditor__c
+                    creditorId
                 );
 
             request = BillectaUtils.CreateDebtor(

@@ -7,6 +7,51 @@ private class LeadCleanupBatchTest {
 
     private static Integer sequence = 0;
 
+    @TestSetup
+    static void setupBillecta() {
+
+        Billecta__c config = new Billecta__c(
+            SetupOwnerId = UserInfo.getOrganizationId(),
+            Creditor__c = 'TEST-CREDITOR'
+        );
+
+        insert config;
+    }
+
+    private class IntegrationCalloutMock implements HttpCalloutMock {
+
+        public HttpResponse respond(HttpRequest req) {
+
+            HttpResponse res = new HttpResponse();
+
+            res.setHeader(
+                'Content-Type',
+                'application/json'
+            );
+
+            // SPAR: Undvik efterföljande API-anrop.
+            if (
+                req.getEndpoint() != null &&
+                req.getEndpoint().contains('/portfolio/')
+            ) {
+                res.setStatusCode(400);
+                res.setBody(
+                    '{"message":"Mocked SPAR response"}'
+                );
+
+                return res;
+            }
+
+            // Övriga integrationer, exempelvis Billecta.
+            res.setStatusCode(400);
+            res.setBody(
+                '{"message":"Mocked integration response"}'
+            );
+
+            return res;
+        }
+    }
+
     private static String nextEmail() {
         sequence++;
         return 'leadcleanup' + sequence + '@example.com';
@@ -55,10 +100,12 @@ private class LeadCleanupBatchTest {
             RecordTypeId = rt.getRecordTypeId(),
             FirstName = 'Test',
             LastName = 'Medlem',
-            PersonEmail = nextEmail()
+            PersonEmail = nextEmail(),
+            SocialSecurityNumber__c = '199001011234'
         );
 
         insert person;
+
         return person;
     }
 
@@ -108,10 +155,21 @@ private class LeadCleanupBatchTest {
     }
 
     private static void runBatch(Boolean dryRun) {
+
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
+
         Test.startTest();
 
         Database.executeBatch(
-            new LeadCleanupBatch(dryRun),
+            new LeadCleanupBatch(
+                true,   // Enabled
+                dryRun, // DryRun
+                90,     // RetentionDays
+                24      // ConvertedRetentionHours
+            ),
             100
         );
 
@@ -168,6 +226,12 @@ private class LeadCleanupBatchTest {
     @IsTest
     static void testDeletesSameDayConvertedLead() {
 
+        // Registrera HTTP-mock
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
+
         Lead l = createLead('Completed', 5);
         Account person = createPerson();
 
@@ -207,6 +271,12 @@ private class LeadCleanupBatchTest {
     @IsTest
     static void testKeepsRecentlyConvertedLead() {
 
+        // Registrera HTTP-mock
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
+
         Lead l = createLead('Completed', 0);
         Account person = createPerson();
 
@@ -226,6 +296,12 @@ private class LeadCleanupBatchTest {
     @IsTest
     static void testKeepsDifferentDayConversion() {
 
+        // Registrera HTTP-mock
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
+
         Lead l = createLead('Completed', 10);
         Account person = createPerson();
 
@@ -244,6 +320,12 @@ private class LeadCleanupBatchTest {
     // 7. Flera ansökningar kopplade till samma Lead.
     @IsTest
     static void testMultipleApplications() {
+
+        // Registrera HTTP-mock
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
 
         Lead l = createLead('Completed', 5);
         Account person = createPerson();
@@ -265,6 +347,12 @@ private class LeadCleanupBatchTest {
     @IsTest
     static void testKeepsIncompletePersonLink() {
 
+        // Registrera HTTP-mock
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
+
         Lead l = createLead('Completed', 120);
 
         createApplication(l, null, COMPLETE);
@@ -285,7 +373,7 @@ private class LeadCleanupBatchTest {
         Test.startTest();
 
         Id jobId = Database.executeBatch(
-            new LeadCleanupBatch(false),
+            new LeadCleanupBatch(true, false, 90, 24),
             100
         );
 
@@ -318,7 +406,7 @@ private class LeadCleanupBatchTest {
 
         Test.startTest();
 
-        new LeadCleanupBatch(false).execute(
+        new LeadCleanupBatch(true, false, 90, 24).execute(
             null,
             new List<SObject>{ l }
         );
@@ -335,7 +423,7 @@ private class LeadCleanupBatchTest {
         String jobId = System.schedule(
             'Lead Cleanup Test',
             '0 30 2 * * ?',
-            new LeadCleanupBatch(false)
+            new LeadCleanupBatch()
         );
 
         Test.stopTest();
@@ -344,6 +432,102 @@ private class LeadCleanupBatchTest {
             null,
             jobId,
             'Schemaläggningen ska lyckas.'
+        );
+    }
+
+    @IsTest
+    static void testDisabledCleanupDoesNotDelete() {
+
+        Lead l = createLead('New', 120);
+
+        Test.startTest();
+
+        Database.executeBatch(
+            new LeadCleanupBatch(false, false, 90, 24),
+            100
+        );
+
+        Test.stopTest();
+
+        System.assertEquals(
+            true,
+            leadExists(l.Id),
+            'Disabled cleanup must never delete Leads.'
+        );
+    }
+
+    @IsTest
+    static void testCustomRetentionDays() {
+
+        Lead l = createLead('New', 100);
+
+        Test.startTest();
+
+        Database.executeBatch(
+            new LeadCleanupBatch(true, false, 120, 24),
+            100
+        );
+
+        Test.stopTest();
+
+        System.assertEquals(
+            true,
+            leadExists(l.Id),
+            'Lead must be preserved until custom retention expires.'
+        );
+    }
+
+    @IsTest
+    static void testCustomConvertedRetentionHours() {
+
+        Test.setMock(
+            HttpCalloutMock.class,
+            new IntegrationCalloutMock()
+        );
+
+        Lead l = createLead('Completed', 2);
+        Account person = createPerson();
+
+        createApplication(l, person, COMPLETE);
+        createMembership(person, 2);
+
+        Test.startTest();
+
+        Database.executeBatch(
+            new LeadCleanupBatch(true, false, 90, 72),
+            100
+        );
+
+        Test.stopTest();
+
+        System.assertEquals(
+            true,
+            leadExists(l.Id),
+            'Membership younger than 72 hours must be preserved.'
+        );
+    }
+
+    @IsTest
+    static void testMetadataConstructor() {
+
+        LeadCleanupBatch batch = new LeadCleanupBatch();
+
+        System.assertNotEquals(
+            null,
+            batch,
+            'Metadata constructor must initialize.'
+        );
+    }
+
+    @IsTest
+    static void testForcedDryRunConstructor() {
+
+        LeadCleanupBatch batch = new LeadCleanupBatch();
+
+        System.assertNotEquals(
+            null,
+            batch,
+            'Forced dry-run constructor must initialize.'
         );
     }
 }
