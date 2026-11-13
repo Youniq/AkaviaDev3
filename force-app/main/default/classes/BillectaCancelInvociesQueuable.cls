@@ -69,7 +69,6 @@ public class BillectaCancelInvociesQueuable implements Queueable, Database.Allow
       cancelInvoices(safeInvoices, callout);
   }
 
-
   private void cancelInvoices(
     List<Invoice__c> invoiceList,
     Callout__c callout

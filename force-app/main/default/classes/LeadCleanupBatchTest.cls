@@ -2,48 +2,27 @@
 @IsTest
 private class LeadCleanupBatchTest {
 
-    private static final String STARTED = 'Påbörjad ansökan';
-    private static final String COMPLETE = 'Komplett ansökan';
-
     private static Integer sequence = 0;
 
     @TestSetup
     static void setupBillecta() {
-
-        Billecta__c config = new Billecta__c(
+        insert new Billecta__c(
             SetupOwnerId = UserInfo.getOrganizationId(),
             Creditor__c = 'TEST-CREDITOR'
         );
-
-        insert config;
     }
 
-    private class IntegrationCalloutMock implements HttpCalloutMock {
+    private class IntegrationCalloutMock
+        implements HttpCalloutMock {
 
         public HttpResponse respond(HttpRequest req) {
-
             HttpResponse res = new HttpResponse();
 
+            res.setStatusCode(400);
             res.setHeader(
                 'Content-Type',
                 'application/json'
             );
-
-            // SPAR: Undvik efterföljande API-anrop.
-            if (
-                req.getEndpoint() != null &&
-                req.getEndpoint().contains('/portfolio/')
-            ) {
-                res.setStatusCode(400);
-                res.setBody(
-                    '{"message":"Mocked SPAR response"}'
-                );
-
-                return res;
-            }
-
-            // Övriga integrationer, exempelvis Billecta.
-            res.setStatusCode(400);
             res.setBody(
                 '{"message":"Mocked integration response"}'
             );
@@ -52,21 +31,16 @@ private class LeadCleanupBatchTest {
         }
     }
 
-    private static String nextEmail() {
-        sequence++;
-        return 'leadcleanup' + sequence + '@example.com';
-    }
+    private static Lead createLead(Integer ageDays) {
 
-    private static Lead createLead(
-        String status,
-        Integer ageDays
-    ) {
+        sequence++;
+
         Lead l = new Lead(
             FirstName = 'Test',
             LastName = 'Cleanup',
             Company = 'Test Company',
-            Email = nextEmail(),
-            Status = status
+            Email = 'leadcleanup' + sequence + '@example.com',
+            Status = 'New'
         );
 
         insert l;
@@ -77,73 +51,29 @@ private class LeadCleanupBatchTest {
         );
 
         return [
-            SELECT Id, CreatedDate, Status, Email
+            SELECT Id, Email, CreatedDate
             FROM Lead
             WHERE Id = :l.Id
         ];
     }
 
-    private static Account createPerson() {
-
-        Schema.RecordTypeInfo rt =
-            Schema.SObjectType.Account
-                .getRecordTypeInfosByDeveloperName()
-                .get('PersonAccount');
-
-        System.assertNotEquals(
-            null,
-            rt,
-            'PersonAccount Record Type saknas.'
-        );
-
-        Account person = new Account(
-            RecordTypeId = rt.getRecordTypeId(),
-            FirstName = 'Test',
-            LastName = 'Medlem',
-            PersonEmail = nextEmail(),
-            SocialSecurityNumber__c = '199001011234'
-        );
-
-        insert person;
-
-        return person;
-    }
-
     private static Application__c createApplication(
-        Lead l,
-        Account person,
-        String status
+        Lead leadRecord,
+        String decision,
+        Date decisionDate
     ) {
         Application__c app = new Application__c(
-            Lead__c = l.Id,
-            Person__c = person == null ? null : person.Id,
+            Lead__c = leadRecord.Id,
             PersonFirstName__c = 'Test',
-            PersonLastName__c = 'Medlem',
-            Email__c = l.Email,
-            Webstatus__c = status
+            PersonLastName__c = 'Cleanup',
+            Email__c = leadRecord.Email,
+            Webstatus__c = 'Komplett ansökan',
+            Decision__c = decision,
+            DecisionDate__c = decisionDate
         );
 
         insert app;
         return app;
-    }
-
-    private static Membership__c createMembership(
-        Account person,
-        Integer ageDays
-    ) {
-        Membership__c membership = new Membership__c(
-            Person__c = person.Id,
-            StartDate__c = Date.today().addDays(-ageDays)
-        );
-
-        insert membership;
-
-        Test.setCreatedDate(
-            membership.Id,
-            System.now().addDays(-ageDays)
-        );
-
-        return membership;
     }
 
     private static Boolean leadExists(Id leadId) {
@@ -154,8 +84,36 @@ private class LeadCleanupBatchTest {
         ] == 1;
     }
 
-    private static void runBatch(Boolean dryRun) {
+    private static GDPR_Deletion_Queue__c getQueue(Id leadId) {
 
+        List<GDPR_Deletion_Queue__c> records = [
+            SELECT
+                Id,
+                ExternalKey__c,
+                LeadId__c,
+                Email__c,
+                LeadCreatedDate__c,
+                DecisionDate__c,
+                DeletionReason__c,
+                DeleteFromSalesforce__c,
+                DeleteFromMarketingCloud__c,
+                SalesforceStatus__c,
+                MarketingCloudStatus__c,
+                ProcessedDate__c,
+                ErrorMessage__c
+            FROM GDPR_Deletion_Queue__c
+            WHERE ExternalKey__c = :String.valueOf(leadId)
+            LIMIT 1
+        ];
+
+        return records.isEmpty() ? null : records[0];
+    }
+
+    private static void runBatch(
+        Boolean enabled,
+        Boolean dryRun,
+        Integer retentionDays
+    ) {
         Test.setMock(
             HttpCalloutMock.class,
             new IntegrationCalloutMock()
@@ -165,10 +123,9 @@ private class LeadCleanupBatchTest {
 
         Database.executeBatch(
             new LeadCleanupBatch(
-                true,   // Enabled
-                dryRun, // DryRun
-                90,     // RetentionDays
-                24      // ConvertedRetentionHours
+                enabled,
+                dryRun,
+                retentionDays
             ),
             100
         );
@@ -176,245 +133,397 @@ private class LeadCleanupBatchTest {
         Test.stopTest();
     }
 
-    // 1. Okonverterat Lead äldre än 90 dagar.
+    // ============================================
+    // 1. Unapproved Lead older than 90 days
+    // ============================================
+
     @IsTest
-    static void testDeletesOldUnconvertedLead() {
+    static void testDeletesOldUnapprovedLead() {
 
-        Lead l = createLead('New', 120);
+        Lead l = createLead(120);
 
-        runBatch(false);
+        runBatch(true, false, 90);
 
+        System.assertEquals(false, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertNotEquals(null, q);
         System.assertEquals(
-            false,
-            leadExists(l.Id),
-            'Lead äldre än 90 dagar ska raderas.'
+            'Retention90Days',
+            q.DeletionReason__c
         );
+        System.assertEquals(true, q.DeleteFromSalesforce__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+        System.assertEquals('Deleted', q.SalesforceStatus__c);
+        System.assertEquals('Pending', q.MarketingCloudStatus__c);
+        System.assertNotEquals(null, q.ProcessedDate__c);
     }
 
-    // 2. Okonverterat Lead yngre än 90 dagar.
+    // ============================================
+    // 2. Unapproved Lead younger than 90 days
+    // ============================================
+
     @IsTest
-    static void testKeepsRecentUnconvertedLead() {
+    static void testKeepsRecentUnapprovedLead() {
 
-        Lead l = createLead('New', 30);
+        Lead l = createLead(30);
 
-        runBatch(false);
+        runBatch(true, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // ============================================
+    // 3. Dry-run writes queue, does not delete
+    // ============================================
+
+    @IsTest
+    static void testDryRunCreatesQueueWithoutDeleting() {
+
+        Lead l = createLead(120);
+
+        runBatch(true, true, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertNotEquals(null, q);
+        System.assertEquals('DryRun', q.SalesforceStatus__c);
+        System.assertEquals('DryRun', q.MarketingCloudStatus__c);
+        System.assertEquals(true, q.DeleteFromSalesforce__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+        System.assertEquals(null, q.ProcessedDate__c);
+    }
+
+    // ============================================
+    // 4. Approved on same calendar date
+    // ============================================
+
+    @IsTest
+    static void testDeletesSameDayApprovedLead() {
+
+        Lead l = createLead(5);
+
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date()
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(false, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertNotEquals(null, q);
+        System.assertEquals(
+            'ApprovedWithin1Day',
+            q.DeletionReason__c
+        );
+        System.assertEquals(true, q.DeleteFromSalesforce__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+        System.assertEquals('Deleted', q.SalesforceStatus__c);
+    }
+
+    // ============================================
+    // 5. Approved following calendar date
+    // ============================================
+
+    @IsTest
+    static void testDeletesNextDayApprovedLead() {
+
+        Lead l = createLead(5);
+
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date().addDays(1)
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(false, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertNotEquals(null, q);
+        System.assertEquals(
+            'ApprovedWithin1Day',
+            q.DeletionReason__c
+        );
+        System.assertEquals('Deleted', q.SalesforceStatus__c);
+        System.assertEquals('Pending', q.MarketingCloudStatus__c);
+    }
+
+    // ============================================
+    // 6. Approved two days later
+    // ============================================
+
+    @IsTest
+    static void testRetainsLateApprovedLead() {
+
+        Lead l = createLead(10);
+
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date().addDays(2)
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertNotEquals(null, q);
+        System.assertEquals(
+            'ApprovedAfter1Day',
+            q.DeletionReason__c
+        );
+        System.assertEquals(false, q.DeleteFromSalesforce__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+        System.assertEquals('Retained', q.SalesforceStatus__c);
+        System.assertEquals('Pending', q.MarketingCloudStatus__c);
+    }
+
+    // ============================================
+    // 7. Late approval older than 90 days
+    // ============================================
+
+    @IsTest
+    static void testRetainsOldLateApprovedLead() {
+
+        Lead l = createLead(120);
+
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date().addDays(30)
+        );
+
+        runBatch(true, false, 90);
 
         System.assertEquals(
             true,
             leadExists(l.Id),
-            'Lead yngre än 90 dagar ska behållas.'
+            'Late-approved Lead must survive 90-day cleanup.'
+        );
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertEquals('Retained', q.SalesforceStatus__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+    }
+
+    // ============================================
+    // 8. Missing approval date
+    // ============================================
+
+    @IsTest
+    static void testMissingDecisionDatePreservesLead() {
+
+        Lead l = createLead(120);
+
+        createApplication(l, 'Godkänd', null);
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // ============================================
+    // 9. Multiple approved applications
+    // ============================================
+
+    @IsTest
+    static void testLateApprovalTakesPrecedence() {
+
+        Lead l = createLead(10);
+
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date()
+        );
+
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date().addDays(5)
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertEquals(
+            'ApprovedAfter1Day',
+            q.DeletionReason__c
+        );
+        System.assertEquals(false, q.DeleteFromSalesforce__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+    }
+
+    // ============================================
+    // 10. Non-approved application
+    // ============================================
+
+    @IsTest
+    static void testNonApprovedApplicationUsesRetention() {
+
+        Lead l = createLead(120);
+
+        createApplication(
+            l,
+            'Avslag',
+            null
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(false, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertEquals(
+            'Retention90Days',
+            q.DeletionReason__c
         );
     }
 
-    // 3. Dry-run får inte radera.
+    // ============================================
+    // 11. Dry-run late approval
+    // ============================================
+
     @IsTest
-    static void testDryRunDoesNotDelete() {
+    static void testDryRunLateApproval() {
 
-        Lead l = createLead('New', 120);
+        Lead l = createLead(10);
 
-        runBatch(true);
-
-        System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Dry-run får inte radera Lead.'
+        createApplication(
+            l,
+            'Godkänd',
+            l.CreatedDate.date().addDays(3)
         );
+
+        runBatch(true, true, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+
+        System.assertNotEquals(null, q);
+        System.assertEquals(false, q.DeleteFromSalesforce__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+        System.assertEquals('DryRun', q.MarketingCloudStatus__c);
     }
 
-    // 4. Medlem skapad samma dag som Lead,
-    // och mer än 24 timmar har passerat.
+    // ============================================
+    // 12. Disabled cleanup
+    // ============================================
+
     @IsTest
-    static void testDeletesSameDayConvertedLead() {
+    static void testDisabledCleanup() {
 
-        // Registrera HTTP-mock
-        Test.setMock(
-            HttpCalloutMock.class,
-            new IntegrationCalloutMock()
+        Lead l = createLead(120);
+
+        runBatch(false, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // ============================================
+    // 13. Custom retention period
+    // ============================================
+
+    @IsTest
+    static void testCustomRetentionDays() {
+
+        Lead l = createLead(100);
+
+        runBatch(true, false, 120);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // ============================================
+    // 14. Existing queue is updated, not duplicated
+    // ============================================
+
+    @IsTest
+    static void testExistingQueueUpsert() {
+
+        Lead l = createLead(120);
+
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'DryRun',
+            MarketingCloudStatus__c = 'DryRun'
         );
 
-        Lead l = createLead('Completed', 5);
-        Account person = createPerson();
-
-        createApplication(l, person, COMPLETE);
-        createMembership(person, 5);
-
-        runBatch(false);
-
-        System.assertEquals(
-            false,
-            leadExists(l.Id),
-            'Lead ska raderas efter medlemsregistrering.'
-        );
+        runBatch(true, true, 90);
 
         System.assertEquals(
             1,
             [
                 SELECT COUNT()
-                FROM Membership__c
-                WHERE Person__c = :person.Id
-            ],
-            'Medlemskapet får inte raderas.'
+                FROM GDPR_Deletion_Queue__c
+                WHERE ExternalKey__c = :String.valueOf(l.Id)
+            ]
         );
+
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
 
         System.assertEquals(
-            1,
-            [
-                SELECT COUNT()
-                FROM Account
-                WHERE Id = :person.Id
-            ],
-            'Person Account får inte raderas.'
+            'Retention90Days',
+            q.DeletionReason__c
         );
+        System.assertEquals('DryRun', q.SalesforceStatus__c);
     }
 
-    // 5. Medlemskapet är yngre än 24 timmar.
+    // ============================================
+    // 15. Existing MC Deleted must not be reset
+    // ============================================
+
     @IsTest
-    static void testKeepsRecentlyConvertedLead() {
+    static void testCompletedMarketingCloudQueuePreserved() {
 
-        // Registrera HTTP-mock
-        Test.setMock(
-            HttpCalloutMock.class,
-            new IntegrationCalloutMock()
+        Lead l = createLead(120);
+
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'Retained',
+            MarketingCloudStatus__c = 'Deleted'
         );
 
-        Lead l = createLead('Completed', 0);
-        Account person = createPerson();
+        runBatch(true, true, 90);
 
-        createApplication(l, person, COMPLETE);
-        createMembership(person, 0);
-
-        runBatch(false);
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
 
         System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Lead får inte raderas före 24 timmar.'
+            'Deleted',
+            q.MarketingCloudStatus__c
         );
     }
 
-    // 6. Medlemskapet skapades en annan dag.
-    @IsTest
-    static void testKeepsDifferentDayConversion() {
+    // ============================================
+    // 16. Scheduled execution
+    // ============================================
 
-        // Registrera HTTP-mock
-        Test.setMock(
-            HttpCalloutMock.class,
-            new IntegrationCalloutMock()
-        );
-
-        Lead l = createLead('Completed', 10);
-        Account person = createPerson();
-
-        createApplication(l, person, COMPLETE);
-        createMembership(person, 5);
-
-        runBatch(false);
-
-        System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Konvertering annan dag ska behållas.'
-        );
-    }
-
-    // 7. Flera ansökningar kopplade till samma Lead.
-    @IsTest
-    static void testMultipleApplications() {
-
-        // Registrera HTTP-mock
-        Test.setMock(
-            HttpCalloutMock.class,
-            new IntegrationCalloutMock()
-        );
-
-        Lead l = createLead('Completed', 5);
-        Account person = createPerson();
-
-        createApplication(l, null, STARTED);
-        createApplication(l, person, COMPLETE);
-        createMembership(person, 5);
-
-        runBatch(false);
-
-        System.assertEquals(
-            false,
-            leadExists(l.Id),
-            'Samtliga ansökningar ska kontrolleras.'
-        );
-    }
-
-    // 8. Komplett ansökan utan Person-koppling.
-    @IsTest
-    static void testKeepsIncompletePersonLink() {
-
-        // Registrera HTTP-mock
-        Test.setMock(
-            HttpCalloutMock.class,
-            new IntegrationCalloutMock()
-        );
-
-        Lead l = createLead('Completed', 120);
-
-        createApplication(l, null, COMPLETE);
-
-        runBatch(false);
-
-        System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Lead med oklar personkoppling ska behållas.'
-        );
-    }
-
-    // 9. Inga matchande Leads.
-    @IsTest
-    static void testNoMatchingRecords() {
-
-        Test.startTest();
-
-        Id jobId = Database.executeBatch(
-            new LeadCleanupBatch(true, false, 90, 24),
-            100
-        );
-
-        Test.stopTest();
-
-        AsyncApexJob job = [
-            SELECT Status, NumberOfErrors
-            FROM AsyncApexJob
-            WHERE Id = :jobId
-        ];
-
-        System.assertEquals(
-            'Completed',
-            job.Status
-        );
-
-        System.assertEquals(
-            0,
-            job.NumberOfErrors
-        );
-    }
-
-    // 10. Felhantering vid radering.
-    @IsTest
-    static void testDeleteFailureHandling() {
-
-        Lead l = createLead('New', 120);
-
-        delete l;
-
-        Test.startTest();
-
-        new LeadCleanupBatch(true, false, 90, 24).execute(
-            null,
-            new List<SObject>{ l }
-        );
-
-        Test.stopTest();
-    }
-
-    // 11. Schemaläggning.
     @IsTest
     static void testScheduledExecution() {
 
@@ -428,106 +537,161 @@ private class LeadCleanupBatchTest {
 
         Test.stopTest();
 
-        System.assertNotEquals(
-            null,
-            jobId,
-            'Schemaläggningen ska lyckas.'
-        );
+        System.assertNotEquals(null, jobId);
     }
 
-    @IsTest
-    static void testDisabledCleanupDoesNotDelete() {
-
-        Lead l = createLead('New', 120);
-
-        Test.startTest();
-
-        Database.executeBatch(
-            new LeadCleanupBatch(false, false, 90, 24),
-            100
-        );
-
-        Test.stopTest();
-
-        System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Disabled cleanup must never delete Leads.'
-        );
-    }
-
-    @IsTest
-    static void testCustomRetentionDays() {
-
-        Lead l = createLead('New', 100);
-
-        Test.startTest();
-
-        Database.executeBatch(
-            new LeadCleanupBatch(true, false, 120, 24),
-            100
-        );
-
-        Test.stopTest();
-
-        System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Lead must be preserved until custom retention expires.'
-        );
-    }
-
-    @IsTest
-    static void testCustomConvertedRetentionHours() {
-
-        Test.setMock(
-            HttpCalloutMock.class,
-            new IntegrationCalloutMock()
-        );
-
-        Lead l = createLead('Completed', 2);
-        Account person = createPerson();
-
-        createApplication(l, person, COMPLETE);
-        createMembership(person, 2);
-
-        Test.startTest();
-
-        Database.executeBatch(
-            new LeadCleanupBatch(true, false, 90, 72),
-            100
-        );
-
-        Test.stopTest();
-
-        System.assertEquals(
-            true,
-            leadExists(l.Id),
-            'Membership younger than 72 hours must be preserved.'
-        );
-    }
+    // ============================================
+    // 17. Metadata constructor
+    // ============================================
 
     @IsTest
     static void testMetadataConstructor() {
 
         LeadCleanupBatch batch = new LeadCleanupBatch();
 
-        System.assertNotEquals(
-            null,
-            batch,
-            'Metadata constructor must initialize.'
-        );
+        System.assertNotEquals(null, batch);
     }
+
+    // ============================================
+    // 18. Forced dry-run constructor
+    // ============================================
 
     @IsTest
     static void testForcedDryRunConstructor() {
 
-        LeadCleanupBatch batch = new LeadCleanupBatch();
+        LeadCleanupBatch batch = new LeadCleanupBatch(true);
 
-        System.assertNotEquals(
-            null,
-            batch,
-            'Forced dry-run constructor must initialize.'
-        );
+        System.assertNotEquals(null, batch);
     }
+
+    // ============================================
+    // 19. Invalid retention disables cleanup
+    // ============================================
+
+    @IsTest
+    static void testInvalidRetention() {
+
+        Lead l = createLead(120);
+
+        runBatch(true, false, 0);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // 20. Future approval must not authorize deletion.
+    @IsTest
+    static void testFutureApprovalIsSkipped() {
+        Lead l = createLead(0);
+        createApplication(l, 'Godkänd', Date.today().addDays(3));
+        runBatch(true, false, 90);
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // 21. An approval before the Lead creation date is invalid.
+    @IsTest
+    static void testApprovalBeforeLeadCreationIsSkipped() {
+        Lead l = createLead(5);
+        createApplication(l, 'Godkänd', l.CreatedDate.date().addDays(-1));
+        runBatch(true, false, 90);
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals(null, getQueue(l.Id));
+    }
+
+    // 22. A completed MC deletion must not prevent SF deletion.
+    @IsTest
+    static void testCompletedMarketingCloudDoesNotBlockSalesforce() {
+        Lead l = createLead(120);
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'Retained',
+            MarketingCloudStatus__c = 'Deleted'
+        );
+
+        runBatch(true, false, 90);
+        System.assertEquals(false, leadExists(l.Id));
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+        System.assertNotEquals(null, q);
+        System.assertEquals('Deleted', q.SalesforceStatus__c);
+        System.assertEquals('Deleted', q.MarketingCloudStatus__c);
+    }
+
+    // 23. An existing DryRun queue transitions to production statuses.
+    @IsTest
+    static void testExistingDryRunTransitionsToProduction() {
+        Lead l = createLead(120);
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'DryRun',
+            MarketingCloudStatus__c = 'DryRun'
+        );
+
+        runBatch(true, false, 90);
+        System.assertEquals(false, leadExists(l.Id));
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+        System.assertEquals('Deleted', q.SalesforceStatus__c);
+        System.assertEquals('Pending', q.MarketingCloudStatus__c);
+        System.assertEquals(1, [
+            SELECT COUNT() FROM GDPR_Deletion_Queue__c
+            WHERE ExternalKey__c = :String.valueOf(l.Id)
+        ]);
+    }
+
+    // 24. A later DryRun must preserve a completed MC deletion.
+    @IsTest
+    static void testDryRunPreservesCompletedMarketingCloud() {
+        Lead l = createLead(120);
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'Retained',
+            MarketingCloudStatus__c = 'Deleted'
+        );
+
+        runBatch(true, true, 90);
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals('Retained', q.SalesforceStatus__c);
+        System.assertEquals('Deleted', q.MarketingCloudStatus__c);
+    }
+
+    // 25. Only the hardcoded GDPR-TEST- filter is accepted.
+    @IsTest
+    static void testRejectsUnsafeTestFilter() {
+        Boolean rejected = false;
+        try {
+            new LeadCleanupBatch(true, 'OtherPrefix');
+        } catch (LeadCleanupBatch.CleanupException e) {
+            rejected = true;
+        }
+        System.assertEquals(true, rejected);
+    }
+
+    // 26. The explicit filtered constructor can be instantiated.
+    @IsTest
+    static void testFilteredConstructor() {
+        LeadCleanupBatch batch = new LeadCleanupBatch(true, 'GDPR-TEST-');
+        System.assertNotEquals(null, batch);
+    }
+
+    // 27. A pending application is currently subject to the 90-day rule.
+    // Review this business rule before enabling production deletion.
+    @IsTest
+    static void testPendingApplicationUsesRetention() {
+        Lead l = createLead(120);
+        createApplication(l, 'Inväntar', null);
+        runBatch(true, true, 90);
+        System.assertEquals(true, leadExists(l.Id));
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+        System.assertNotEquals(null, q);
+        System.assertEquals('Retention90Days', q.DeletionReason__c);
+        System.assertEquals('DryRun', q.SalesforceStatus__c);
+    }
+
 }
