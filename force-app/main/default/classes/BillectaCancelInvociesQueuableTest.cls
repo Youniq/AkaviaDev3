@@ -1,3 +1,4 @@
+
 @IsTest
 private class BillectaCancelInvociesQueuableTest {
 
@@ -24,7 +25,9 @@ private class BillectaCancelInvociesQueuableTest {
             );
 
             HttpResponse response = new HttpResponse();
+
             response.setStatusCode(statusCode);
+
             response.setBody(
                 statusCode == 200
                     ? '{"success":true}'
@@ -37,7 +40,8 @@ private class BillectaCancelInvociesQueuableTest {
 
     private static Account createAccount() {
 
-        TestDataFactorySetupParams params = new TestDataFactorySetupParams();
+        TestDataFactorySetupParams params =
+            new TestDataFactorySetupParams();
 
         params.numberOfAccounts = 1;
 
@@ -72,6 +76,15 @@ private class BillectaCancelInvociesQueuableTest {
         return invoice;
     }
 
+    // Callout__c.jobId__c lagrar endast 15 tecken.
+    // Salesforce Queueable Job ID returneras med 18 tecken.
+    // Använd samma format vid lagring och uppslag.
+    // TODO: Utöka jobId__c till 18 tecken och använd hela ID:t.
+    private static String getJobId15(Id jobId) {
+
+        return String.valueOf(jobId).substring(0, 15);
+    }
+
     private static Id enqueueWithLog(
         List<Invoice__c> invoices
     ) {
@@ -80,13 +93,58 @@ private class BillectaCancelInvociesQueuableTest {
             new BillectaCancelInvociesQueuable(invoices)
         );
 
+        String jobId15 = getJobId15(jobId);
+
         insert new Callout__c(
-            jobId__c = String.valueOf(jobId),
+            jobId__c = jobId15,
             Type__c = 'Billecta - Cancel Invoices',
             Status__c = 'Queued'
         );
 
+        List<Callout__c> savedLogs = [
+            SELECT Id, jobId__c, Status__c
+            FROM Callout__c
+            WHERE jobId__c = :jobId15
+        ];
+
+        System.assertEquals(
+            1,
+            savedLogs.size(),
+            'Callout__c måste finnas innan Queueable-jobbet körs.'
+        );
+
+        System.assertEquals(
+            'Queued',
+            savedLogs[0].Status__c
+        );
+
         return jobId;
+    }
+
+    private static Callout__c getCalloutLog(Id jobId) {
+
+        String jobId15 = getJobId15(jobId);
+
+        List<Callout__c> logs = [
+            SELECT Id,
+                   jobId__c,
+                   Status__c,
+                   Code__c,
+                   Response__c,
+                   errorLog__c
+            FROM Callout__c
+            WHERE jobId__c = :jobId15
+            LIMIT 1
+        ];
+
+        System.assertEquals(
+            1,
+            logs.size(),
+            'Callout__c saknas för Queueable Job ID: ' +
+            jobId15
+        );
+
+        return logs[0];
     }
 
     @IsTest
@@ -118,7 +176,10 @@ private class BillectaCancelInvociesQueuableTest {
         Test.startTest();
 
         Id jobId = enqueueWithLog(
-            new List<Invoice__c>{ normal, srat }
+            new List<Invoice__c>{
+                normal,
+                srat
+            }
         );
 
         Test.stopTest();
@@ -135,23 +196,34 @@ private class BillectaCancelInvociesQueuableTest {
 
         System.assertEquals(
             'Makulerad',
-            invoices.get(normal.Id).PaymentStatus__c
+            invoices.get(normal.Id).PaymentStatus__c,
+            'Vanlig faktura ska makuleras.'
         );
 
         System.assertEquals(
             'Ej betald',
-            invoices.get(srat.Id).PaymentStatus__c
+            invoices.get(srat.Id).PaymentStatus__c,
+            'SRAT-faktura får inte makuleras.'
         );
 
-        Callout__c log = [
-            SELECT Status__c, Code__c
-            FROM Callout__c
-            WHERE jobId__c = :jobId
-            LIMIT 1
-        ];
+        Callout__c log = getCalloutLog(jobId);
 
-        System.assertEquals('OK', log.Status__c);
-        System.assertEquals('200', log.Code__c);
+        System.assertEquals(
+            'OK',
+            log.Status__c,
+            'Callout ska ha status OK.'
+        );
+
+        System.assertEquals(
+            '200',
+            log.Code__c,
+            'Billecta ska returnera HTTP 200.'
+        );
+
+        System.assert(
+            log.Response__c.contains('"success":true'),
+            'Billecta ska returnera success=true.'
+        );
     }
 
     @IsTest
@@ -182,24 +254,30 @@ private class BillectaCancelInvociesQueuableTest {
         Test.stopTest();
 
         Invoice__c result = [
-            SELECT PaymentStatus__c
+            SELECT Id, PaymentStatus__c
             FROM Invoice__c
             WHERE Id = :invoice.Id
         ];
 
         System.assertEquals(
             'Ej betald',
-            result.PaymentStatus__c
+            result.PaymentStatus__c,
+            'Fakturan får inte makuleras vid HTTP 500.'
         );
 
-        Callout__c log = [
-            SELECT Status__c
-            FROM Callout__c
-            WHERE jobId__c = :jobId
-            LIMIT 1
-        ];
+        Callout__c log = getCalloutLog(jobId);
 
-        System.assertEquals('Failed', log.Status__c);
+        System.assertEquals(
+            'Failed',
+            log.Status__c,
+            'Callout ska ha status Failed.'
+        );
+
+        System.assertEquals(
+            '500',
+            log.Code__c,
+            'Billecta ska returnera HTTP 500.'
+        );
     }
 
     @IsTest
@@ -213,14 +291,14 @@ private class BillectaCancelInvociesQueuableTest {
 
         Test.stopTest();
 
-        Callout__c log = [
-            SELECT Status__c, Response__c
-            FROM Callout__c
-            WHERE jobId__c = :jobId
-            LIMIT 1
-        ];
+        Callout__c log = getCalloutLog(jobId);
 
-        System.assertEquals('OK', log.Status__c);
+        System.assertEquals(
+            'OK',
+            log.Status__c,
+            'Tom fakturalista ska hanteras utan fel.'
+        );
+
         System.assertEquals(
             'No invoices to cancel',
             log.Response__c
@@ -247,14 +325,26 @@ private class BillectaCancelInvociesQueuableTest {
 
         Test.stopTest();
 
-        Callout__c log = [
-            SELECT Status__c, Response__c
-            FROM Callout__c
-            WHERE jobId__c = :jobId
-            LIMIT 1
+        Invoice__c result = [
+            SELECT Id, PaymentStatus__c
+            FROM Invoice__c
+            WHERE Id = :srat.Id
         ];
 
-        System.assertEquals('OK', log.Status__c);
+        System.assertEquals(
+            'Ej betald',
+            result.PaymentStatus__c,
+            'SRAT-faktura får inte makuleras.'
+        );
+
+        Callout__c log = getCalloutLog(jobId);
+
+        System.assertEquals(
+            'OK',
+            log.Status__c,
+            'Exkluderade fakturor ska hanteras utan fel.'
+        );
+
         System.assertEquals(
             'No eligible invoices to cancel',
             log.Response__c

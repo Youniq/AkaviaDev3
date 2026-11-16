@@ -15,23 +15,41 @@ public class BillectaCancelInvociesQueuable implements Queueable, Database.Allow
     this.invoicesToCancel = invoices;
   }
 
-  
   public void execute(QueueableContext context) {
-      Id jobId = context.getJobId();
 
-      Callout__c callout = [
+      // Callout__c.jobId__c är begränsat till 15 tecken och lagrar därför
+      // endast de första 15 tecknen av Salesforce Queueable Job ID (18 tecken).
+      // Använd samma format vid uppslag för att hitta rätt Callout-post.
+      // TODO: Utöka jobId__c till 18 tecken och använd hela Job ID:t.
+      String jobId = String.valueOf(
+          context.getJobId()
+      ).substring(0, 15);
+
+      List<Callout__c> calloutLogs = [
           SELECT Id, Status__c, Request__c, Response__c,
-                Path__c, Type__c, Code__c, Invoice__c, errorLog__c
+                Path__c, Type__c, Code__c, Invoice__c,
+                errorLog__c
           FROM Callout__c
           WHERE jobId__c = :jobId
           LIMIT 1
       ];
 
+      if (calloutLogs.isEmpty()) {
+          System.debug(
+              LoggingLevel.ERROR,
+              'BillectaCancelInvociesQueuable: ' +
+              'No Callout__c found for job ' + jobId
+          );
+          return;
+      }
+
+      Callout__c callout = calloutLogs[0];
+
       Set<Id> invoiceIds = new Set<Id>();
 
       if (this.invoicesToCancel != null) {
           for (Invoice__c invoice : this.invoicesToCancel) {
-              if (invoice.Id != null) {
+              if (invoice != null && invoice.Id != null) {
                   invoiceIds.add(invoice.Id);
               }
           }
@@ -44,7 +62,6 @@ public class BillectaCancelInvociesQueuable implements Queueable, Database.Allow
           return;
       }
 
-      // Kontrollera fakturorna mot aktuella databasvärden.
       List<Invoice__c> safeInvoices = [
           SELECT Id, BillectaID__c, FeeCategory__c,
                 PaymentStatus__c, Person__c
