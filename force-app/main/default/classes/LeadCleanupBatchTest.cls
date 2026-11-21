@@ -694,4 +694,83 @@ private class LeadCleanupBatchTest {
         System.assertEquals('DryRun', q.SalesforceStatus__c);
     }
 
+
+    // 28. A submitted MC deletion must not be queued again.
+    @IsTest
+    static void testSubmittedMarketingCloudStatusPreserved() {
+        Lead l = createLead(10);
+        createApplication(l, 'Godkänd', l.CreatedDate.date().addDays(3));
+
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'Retained',
+            MarketingCloudStatus__c = 'Submitted'
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+        GDPR_Deletion_Queue__c q = getQueue(l.Id);
+        System.assertEquals('Retained', q.SalesforceStatus__c);
+        System.assertEquals('Submitted', q.MarketingCloudStatus__c);
+        System.assertEquals(true, q.DeleteFromMarketingCloud__c);
+    }
+
+    // 29. A failed MC request must remain Failed until explicitly retried.
+    @IsTest
+    static void testFailedMarketingCloudStatusPreserved() {
+        Lead l = createLead(10);
+        createApplication(l, 'Godkänd', l.CreatedDate.date().addDays(3));
+
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'Retained',
+            MarketingCloudStatus__c = 'Failed'
+        );
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals('Failed', getQueue(l.Id).MarketingCloudStatus__c);
+    }
+
+    // 30. A dry-run cannot reset an already submitted MC deletion.
+    @IsTest
+    static void testDryRunPreservesSubmittedMarketingCloud() {
+        Lead l = createLead(120);
+
+        insert new GDPR_Deletion_Queue__c(
+            ExternalKey__c = String.valueOf(l.Id),
+            LeadId__c = String.valueOf(l.Id),
+            Email__c = l.Email,
+            SalesforceStatus__c = 'Retained',
+            MarketingCloudStatus__c = 'Submitted'
+        );
+
+        runBatch(true, true, 90);
+
+        System.assertEquals(true, leadExists(l.Id));
+        System.assertEquals('Submitted', getQueue(l.Id).MarketingCloudStatus__c);
+    }
+
+    // 31. A live batch in a Salesforce sandbox must not enqueue MC deletion.
+    @IsTest
+    static void testSandboxDoesNotStartMarketingCloudDeletion() {
+        Lead l = createLead(120);
+
+        runBatch(true, false, 90);
+
+        System.assertEquals(false, leadExists(l.Id));
+        System.assertEquals('Pending', getQueue(l.Id).MarketingCloudStatus__c);
+        System.assertEquals(0, [
+            SELECT COUNT()
+            FROM Callout__c
+            WHERE Type__c = 'Marketing Cloud - Delete contacts'
+        ]);
+    }
+
 }

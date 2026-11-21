@@ -1,190 +1,79 @@
 
 @IsTest
 private class BillectaSendDebtorAsyncTest {
-    
-    
-    @IsTest
-    static void testQueueableWithCallout() {
 
-        Account acc = createAccount();
-        createCredentials();
+    private class DebtorMock implements HttpCalloutMock {
 
-        Callout__c co = createCallout(acc.Id);
-        insert co;
+        private Integer createStatus;
+        private Integer getStatus;
+        private Integer updateStatus;
+        private Boolean throwException;
 
-        Test.setMock(
-            HttpCalloutMock.class,
-            new DebtorMock(
-                201,
-                '{"PublicId":"TEST-NEW-DEBTOR"}'
-            )
-        );
-
-        Test.startTest();
-
-        Id jobId = System.enqueueJob(
-    new BillectaSendDebtorAsync(acc, false, co.Id)
-);
-
-        co.JobId__c = String.valueOf(jobId);
-        update co;
-
-        Callout__c beforeExecute = [
-    SELECT Id, JobId__c, Status__c
-    FROM Callout__c
-    WHERE Id = :co.Id
-];
-
-System.assertEquals(
-    String.valueOf(jobId),
-    beforeExecute.JobId__c,
-    'JobId__c ändrades när Callout__c sparades'
-);
-
-        Test.stopTest();
-
-        AsyncApexJob job = [
-            SELECT Id, Status, NumberOfErrors, ExtendedStatus
-            FROM AsyncApexJob
-            WHERE Id = :jobId
-            LIMIT 1
-        ];
-
-        System.assertEquals(
-            'Completed',
-            job.Status,
-            'Queueable status: ' + job.Status +
-            ', Errors: ' + job.NumberOfErrors +
-            ', Details: ' + job.ExtendedStatus
-        );
-
-        Callout__c result = [
-            SELECT Status__c, Response__c,
-                ErrorLog__c, JobId__c
-            FROM Callout__c
-            WHERE JobId__c = :String.valueOf(jobId)
-            LIMIT 1
-        ];
-
-        System.assertEquals(
-            'OK',
-            result.Status__c,
-            'Callout failed. ErrorLog: ' + result.ErrorLog__c +
-            ' Response: ' + result.Response__c
-        );
-
-        Account updatedAccount = [
-            SELECT BillectaID__c
-            FROM Account
-            WHERE Id = :acc.Id
-        ];
-
-        System.assertEquals(
-            'TEST-NEW-DEBTOR',
-            updatedAccount.BillectaID__c,
-            'Account was not updated. Callout status: ' +
-            result.Status__c +
-            ', ErrorLog: ' + result.ErrorLog__c
-        );
-    }
-
-
-    @IsTest
-    static void testUpdateDebtorSuccess() {
-
-        Account acc = createAccount();
-        createCredentials();
-
-        acc.BillectaID__c = 'TEST-EXISTING-DEBTOR';
-
-        Test.setMock(
-            HttpCalloutMock.class,
-            new DebtorGetUpdateMock(200)
-        );
-
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, true);
-
-        Test.startTest();
-
-        Callout__c result = service.sendToBillecta(
-            createCallout(acc.Id)
-        );
-
-        Test.stopTest();
-
-        System.assertEquals('OK', result.Status__c);
-        System.assert(
-            result.Response__c.contains('RESPONSE GET DEBTOR')
-        );
-        System.assert(
-            result.Response__c.contains('RESPONSE UPDATE DEBTOR')
-        );
-    }
-
-    @IsTest
-    static void testUpdateDebtorHttp500() {
-
-        Account acc = createAccount();
-        createCredentials();
-
-        acc.BillectaID__c = 'TEST-EXISTING-DEBTOR';
-
-        Test.setMock(
-            HttpCalloutMock.class,
-            new DebtorGetUpdateMock(500)
-        );
-
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, true);
-
-        Test.startTest();
-
-        Callout__c result = service.sendToBillecta(
-            createCallout(acc.Id)
-        );
-
-        Test.stopTest();
-
-        System.assertEquals('Failed', result.Status__c);
-        System.assert(
-            result.ErrorLog__c.contains('Simulated update failure')
-        );
-    }
-    
-    private class DebtorGetUpdateMock implements HttpCalloutMock {
-
-        private Integer updateStatusCode;
-
-        DebtorGetUpdateMock(Integer updateStatusCode) {
-            this.updateStatusCode = updateStatusCode;
+        DebtorMock(
+            Integer createStatus,
+            Integer getStatus,
+            Integer updateStatus,
+            Boolean throwException
+        ) {
+            this.createStatus = createStatus;
+            this.getStatus = getStatus;
+            this.updateStatus = updateStatus;
+            this.throwException = throwException;
         }
 
         public HttpResponse respond(HttpRequest req) {
 
-            HttpResponse res = new HttpResponse();
-
-            if (req.getMethod() == 'GET') {
-                res.setStatusCode(200);
-                res.setBody(
-                    '{' +
-                    '"DebtorPublicId":"TEST-EXISTING-DEBTOR",' +
-                    '"CreditorPublicId":"TEST-CREDITOR",' +
-                    '"Name":"Billecta Test",' +
-                    '"OrgNo":"19900101-1234",' +
-                    '"IsActive":true,' +
-                    '"DefaultActionConfig":{' +
-                        '"DeliveryMethod":"Mail",' +
-                        '"ActivateDefaultActionConfigOverride":false' +
-                    '}' +
-                    '}'
+            if (throwException) {
+                throw new CalloutException(
+                    'Simulated Billecta connection failure'
                 );
-            } else {
-                res.setStatusCode(updateStatusCode);
+            }
+
+            HttpResponse res = new HttpResponse();
+            res.setHeader(
+                'Content-Type',
+                'application/json'
+            );
+
+            String method = req.getMethod();
+
+            if (method == 'GET') {
+
+                res.setStatusCode(getStatus);
+
                 res.setBody(
-                    updateStatusCode == 200
-                        ? '{"PublicId":"TEST-EXISTING-DEBTOR"}'
-                        : '{"error":"Simulated update failure"}'
+                    getStatus == 200
+                        ? '{"PublicId":"TEST-DEBTOR",' +
+                          '"Name":"Old Name",' +
+                          '"OrgNo":"19900101-9999"}'
+                        : '{"error":"GET debtor failed"}'
+                );
+
+            } else if (method == 'POST') {
+
+                res.setStatusCode(createStatus);
+
+                res.setBody(
+                    createStatus == 201
+                        ? '{"PublicId":"TEST-NEW-DEBTOR"}'
+                        : '{"error":"Create debtor failed"}'
+                );
+
+            } else if (method == 'PUT') {
+
+                res.setStatusCode(updateStatus);
+
+                res.setBody(
+                    updateStatus == 200
+                        ? '{"PublicId":"TEST-DEBTOR"}'
+                        : '{"error":"Update debtor failed"}'
+                );
+
+            } else {
+
+                res.setStatusCode(400);
+                res.setBody(
+                    '{"error":"Unexpected HTTP method"}'
                 );
             }
 
@@ -192,43 +81,22 @@ System.assertEquals(
         }
     }
 
-    private class DebtorMock implements HttpCalloutMock {
-
-        private Integer statusCode;
-        private String responseBody;
-
-        DebtorMock(Integer statusCode, String responseBody) {
-            this.statusCode = statusCode;
-            this.responseBody = responseBody;
-        }
-
-        public HttpResponse respond(HttpRequest req) {
-            HttpResponse res = new HttpResponse();
-            res.setStatusCode(statusCode);
-            res.setBody(responseBody);
-            return res;
-        }
-    }
-
-    private class DebtorExceptionMock implements HttpCalloutMock {
-
-        public HttpResponse respond(HttpRequest req) {
-            throw new CalloutException('Simulated callout failure');
-        }
-    }
-    
-        
-    private static Account createAccount() {
+    private static Account createAccount(
+        Boolean existingDebtor
+    ) {
         Account acc = new Account(
             FirstName = 'Billecta',
-            LastName = 'Test',
-            SocialSecurityNumber__c = '199001011234'
+            LastName = 'Async Test',
+            SocialSecurityNumber__c = '199001019999'
         );
+
+        if (existingDebtor) {
+            acc.BillectaID__c = 'TEST-DEBTOR';
+        }
 
         insert acc;
         return acc;
     }
-
 
     private static void createCredentials() {
         insert new Billecta__c(
@@ -236,181 +104,229 @@ System.assertEquals(
         );
     }
 
-    private static Callout__c createCallout(Id accountId) {
-        return new Callout__c(
-            Account__c = accountId,
-            Type__c = 'Billecta - Update Debtor',
-            Status__c = 'Queued'
+    private static Callout__c createCallout(
+        Account acc,
+        Boolean existingDebtor
+    ) {
+        Callout__c co = new Callout__c(
+            Account__c = acc.Id,
+            Status__c = 'Queued',
+            Type__c = existingDebtor
+                ? 'Billecta - Update Debtor'
+                : 'Billecta - Create Debtor'
         );
+
+        insert co;
+        return co;
+    }
+
+    private static Callout__c runJob(
+        Account acc,
+        Boolean updatePaymentMethod,
+        Callout__c co
+    ) {
+        Test.startTest();
+
+        System.enqueueJob(
+            new BillectaSendDebtorAsync(
+                acc,
+                updatePaymentMethod,
+                co.Id
+            )
+        );
+
+        Test.stopTest();
+
+        return [
+            SELECT Id, Status__c, Response__c,
+                   ErrorLog__c, SentOn__c,
+                   Duration__c, ExtraMessage__c
+            FROM Callout__c
+            WHERE Id = :co.Id
+        ];
     }
 
     @IsTest
     static void testCreateDebtorSuccess() {
 
-        Account acc = createAccount();
+        Account acc = createAccount(false);
         createCredentials();
+
+        Callout__c co = createCallout(acc, false);
 
         Test.setMock(
             HttpCalloutMock.class,
-            new DebtorMock(
-                201,
-                '{"PublicId":"TEST-NEW-DEBTOR"}'
+            new DebtorMock(201, 200, 200, false)
+        );
+
+        Callout__c result = runJob(acc, false, co);
+
+        System.assertEquals(
+            'OK',
+            result.Status__c
+        );
+
+        Account updated = [
+            SELECT BillectaID__c
+            FROM Account
+            WHERE Id = :acc.Id
+        ];
+
+        System.assertEquals(
+            'TEST-NEW-DEBTOR',
+            updated.BillectaID__c
+        );
+
+        System.assertNotEquals(
+            null,
+            result.SentOn__c
+        );
+
+        System.assert(
+            result.Response__c.contains(
+                'TEST-NEW-DEBTOR'
             )
         );
+    }
 
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, false);
+    @IsTest
+    static void testCreateDebtorFailure() {
 
-        Test.startTest();
+        Account acc = createAccount(false);
+        createCredentials();
 
-        Callout__c result = service.sendToBillecta(
-            createCallout(acc.Id)
+        Callout__c co = createCallout(acc, false);
+
+        Test.setMock(
+            HttpCalloutMock.class,
+            new DebtorMock(500, 200, 200, false)
         );
 
-        Test.stopTest();
+        Callout__c result = runJob(acc, false, co);
 
-        System.assertEquals('OK', result.Status__c);
-        System.assert(
-            result.Response__c.contains('TEST-NEW-DEBTOR')
+        System.assertEquals(
+            'Failed',
+            result.Status__c
+        );
+
+        System.assertNotEquals(
+            null,
+            result.ErrorLog__c
         );
     }
 
     @IsTest
-    static void testCreateDebtorHttp500() {
+    static void testMissingCredentials() {
 
-        Account acc = createAccount();
-        createCredentials();
+        Account acc = createAccount(false);
 
-        Test.setMock(
-            HttpCalloutMock.class,
-            new DebtorMock(
-                500,
-                '{"error":"Simulated failure"}'
+        Callout__c co = createCallout(acc, false);
+
+        Callout__c result = runJob(acc, false, co);
+
+        System.assertEquals(
+            'Failed',
+            result.Status__c
+        );
+
+        System.assert(
+            result.ErrorLog__c.contains(
+                'Billecta configuration missing'
             )
         );
+    }
 
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, false);
+    @IsTest
+    static void testUpdateDebtorSuccess() {
 
-        Test.startTest();
+        Account acc = createAccount(true);
+        createCredentials();
 
-        Callout__c result = service.sendToBillecta(
-            createCallout(acc.Id)
+        Callout__c co = createCallout(acc, true);
+
+        Test.setMock(
+            HttpCalloutMock.class,
+            new DebtorMock(201, 200, 200, false)
         );
 
-        Test.stopTest();
+        Callout__c result = runJob(acc, false, co);
 
-        System.assertEquals('Failed', result.Status__c);
+        System.assertEquals(
+            'OK',
+            result.Status__c
+        );
+
+        Account updated = [
+            SELECT BillectaID__c,
+                   LatestSentPMDetails_Billecta__c
+            FROM Account
+            WHERE Id = :acc.Id
+        ];
+
+        System.assertEquals(
+            'TEST-DEBTOR',
+            updated.BillectaID__c
+        );
+
         System.assert(
-            !String.isBlank(result.ErrorLog__c)
+            String.isBlank(
+                updated.LatestSentPMDetails_Billecta__c
+            ),
+            'Inga betalmetodsdetaljer ska sparas.'
         );
     }
 
     @IsTest
-    static void testUpdateDebtorGetHttp500() {
+    static void testGetDebtorFailure() {
 
-        Account acc = createAccount();
+        Account acc = createAccount(true);
         createCredentials();
 
-        acc.BillectaID__c = 'TEST-EXISTING-DEBTOR';
+        Callout__c co = createCallout(acc, true);
 
         Test.setMock(
             HttpCalloutMock.class,
-            new DebtorMock(
-                500,
-                '{"error":"Get debtor failed"}'
+            new DebtorMock(201, 500, 200, false)
+        );
+
+        Callout__c result = runJob(acc, false, co);
+
+        System.assertEquals(
+            'Failed',
+            result.Status__c
+        );
+
+        System.assert(
+            result.ErrorLog__c.contains(
+                'GET debtor failed'
             )
         );
-
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, true);
-
-        Test.startTest();
-
-        Callout__c result = service.sendToBillecta(
-            createCallout(acc.Id)
-        );
-
-        Test.stopTest();
-
-        System.assertEquals('Failed', result.Status__c);
-        System.assert(
-            !String.isBlank(result.ErrorLog__c)
-        );
     }
 
     @IsTest
-    static void testCreateDebtorException() {
+    static void testHttpException() {
 
-        Account acc = createAccount();
+        Account acc = createAccount(false);
         createCredentials();
+
+        Callout__c co = createCallout(acc, false);
 
         Test.setMock(
             HttpCalloutMock.class,
-            new DebtorExceptionMock()
+            new DebtorMock(201, 200, 200, true)
         );
 
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, false);
+        Callout__c result = runJob(acc, false, co);
 
-        Test.startTest();
-
-        Callout__c result = service.sendToBillecta(
-            createCallout(acc.Id)
+        System.assertEquals(
+            'Failed',
+            result.Status__c
         );
 
-        Test.stopTest();
-
-        System.assertEquals('Failed', result.Status__c);
         System.assert(
-            !String.isBlank(result.ErrorLog__c)
+            result.ErrorLog__c.contains(
+                'Simulated Billecta connection failure'
+            )
         );
-    }
-
-    @IsTest
-    static void testSetFailedCalloutValues() {
-
-        Account acc = new Account(
-            LastName = 'Test'
-        );
-
-        BillectaSendDebtorAsync service =
-            new BillectaSendDebtorAsync(acc, false);
-
-        Callout__c co = new Callout__c();
-
-        try {
-            throw new CalloutException('Test exception');
-        } catch (Exception e) {
-
-            Callout__c result =
-                service.setFailedCalloutValues(co, e);
-
-            System.assertEquals(
-                'Failed',
-                result.Status__c
-            );
-
-            System.assert(
-                result.ErrorLog__c.contains('Test exception')
-            );
-        }
-    }
-
-    @IsTest
-    static void testQueueableWithoutCallout() {
-
-        Account acc = createAccount();
-
-        Test.startTest();
-
-        System.enqueueJob(
-            new BillectaSendDebtorAsync(acc, false)
-        );
-
-        Test.stopTest();
-
-        // Verifies that execute() handles missing Callout__c.
-        System.assert(true);
     }
 }

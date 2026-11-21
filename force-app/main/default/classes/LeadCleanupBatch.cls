@@ -349,17 +349,19 @@ public without sharing class LeadCleanupBatch
 
             if (existing != null) {
                 queueRecord.Id = existing.Id;
-                if (!dryRun && existing.MarketingCloudStatus__c == 'Deleted') {
-                    queueRecord.MarketingCloudStatus__c = 'Deleted';
+
+                // Never requeue a previously submitted or completed MC deletion.
+                // Failed requests require an explicit retry decision.
+                if (existing.MarketingCloudStatus__c == 'Submitted' ||
+                    existing.MarketingCloudStatus__c == 'Deleted' ||
+                    existing.MarketingCloudStatus__c == 'Failed') {
+                    queueRecord.MarketingCloudStatus__c =
+                        existing.MarketingCloudStatus__c;
                 }
-                if (dryRun) {
-                    // Review must not undo an already completed operation.
-                    if (existing.MarketingCloudStatus__c == 'Deleted') {
-                        queueRecord.MarketingCloudStatus__c = 'Deleted';
-                    }
-                    if (existing.SalesforceStatus__c == 'Retained') {
-                        queueRecord.SalesforceStatus__c = 'Retained';
-                    }
+
+                if (dryRun &&
+                    existing.SalesforceStatus__c == 'Retained') {
+                    queueRecord.SalesforceStatus__c = 'Retained';
                 }
             }
 
@@ -550,6 +552,53 @@ public without sharing class LeadCleanupBatch
         for (String message : errors) {
             System.debug(LoggingLevel.ERROR, message);
         }
+
+        // Never invoke the single production MC environment from a sandbox,
+        // an operational GDPR-TEST- run, or a DryRun.
+        if (!enabled || dryRun || testPattern != null || failed > 0) {
+            return;
+        }
+
+        Organization orgInfo = [
+            SELECT IsSandbox FROM Organization LIMIT 1
+        ];
+        if (orgInfo.IsSandbox) {
+            System.debug(LoggingLevel.INFO,
+                'LEAD CLEANUP: MC submission skipped in Salesforce sandbox.');
+            return;
+        }
+
+        // Do not launch MC deletion if any batch scope failed.
+        AsyncApexJob batchJob = [
+            SELECT NumberOfErrors
+            FROM AsyncApexJob
+            WHERE Id = :bc.getJobId()
+            LIMIT 1
+        ];
+        if (batchJob.NumberOfErrors > 0) {
+            System.debug(LoggingLevel.ERROR,
+                'LEAD CLEANUP: MC submission skipped due to batch errors.');
+            return;
+        }
+
+        Integer pendingCount = [
+            SELECT COUNT()
+            FROM GDPR_Deletion_Queue__c
+            WHERE DeleteFromMarketingCloud__c = true
+            AND MarketingCloudStatus__c = 'Pending'
+            AND LeadId__c != null
+        ];
+
+        if (pendingCount == 0) {
+            return;
+        }
+
+        // Reuse the existing Queueable + Callout__c logging integration.
+        // Each invocation processes up to McSetting__c.ContactDeleteLimit__c.
+        Id mcJobId = ScheduleDeleteMcContacts.initDeleteGdprContacts();
+        System.debug(LoggingLevel.INFO,
+            'LEAD CLEANUP: MC GDPR job queued. JobId=' + mcJobId +
+            ' | Pending=' + pendingCount);
     }
 
     public void execute(SchedulableContext sc) {

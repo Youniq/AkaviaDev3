@@ -2,7 +2,6 @@
 @IsTest
 private class BillectaInitiateSendDebtorTest {
 
-    
     private static Integer accountCounter = 0;
 
     private static Account createAccount() {
@@ -22,7 +21,6 @@ private class BillectaInitiateSendDebtorTest {
         return acc;
     }
 
-
     private static void createCredentials() {
         insert new Billecta__c(
             Creditor__c = 'TEST-CREDITOR'
@@ -30,10 +28,41 @@ private class BillectaInitiateSendDebtorTest {
     }
 
     private class DebtorMock implements HttpCalloutMock {
+
         public HttpResponse respond(HttpRequest req) {
+
             HttpResponse res = new HttpResponse();
-            res.setStatusCode(201);
-            res.setBody('{"PublicId":"TEST-NEW-DEBTOR"}');
+            res.setHeader(
+                'Content-Type',
+                'application/json'
+            );
+
+            String method = req.getMethod();
+
+            if (method == 'POST') {
+                res.setStatusCode(201);
+                res.setBody(
+                    '{"PublicId":"TEST-NEW-DEBTOR"}'
+                );
+            } else if (method == 'GET') {
+                res.setStatusCode(200);
+                res.setBody(
+                    '{"PublicId":"TEST-DEBTOR",' +
+                    '"Name":"Old Name",' +
+                    '"OrgNo":"19900101-9999"}'
+                );
+            } else if (method == 'PUT') {
+                res.setStatusCode(200);
+                res.setBody(
+                    '{"PublicId":"TEST-DEBTOR"}'
+                );
+            } else {
+                res.setStatusCode(400);
+                res.setBody(
+                    '{"error":"Unexpected HTTP method"}'
+                );
+            }
+
             return res;
         }
     }
@@ -62,8 +91,9 @@ private class BillectaInitiateSendDebtorTest {
         System.assertEquals(
             0,
             BillectaInitiateSendDebtor.sendDebtorWithPaymentMethod(
-                new List<BillectaInitiateSendDebtor.Request>()
-            ).size()
+                    new List<BillectaInitiateSendDebtor.Request>()
+                )
+                .size()
         );
 
         System.assertEquals(
@@ -74,9 +104,10 @@ private class BillectaInitiateSendDebtorTest {
         System.assertEquals(
             0,
             BillectaInitiateSendDebtor.sendDebtor(
-                new Map<Id, String>(),
-                false
-            ).size()
+                    new Map<Id, String>(),
+                    false
+                )
+                .size()
         );
     }
 
@@ -112,7 +143,9 @@ private class BillectaInitiateSendDebtorTest {
         );
 
         System.assert(
-            responses[3].errorMsg.contains('Ogiltigt Account Id')
+            responses[3].errorMsg.contains(
+                'Ogiltigt Account Id'
+            )
         );
     }
 
@@ -123,14 +156,20 @@ private class BillectaInitiateSendDebtorTest {
 
         List<BillectaInitiateSendDebtor.Response> responses =
             BillectaInitiateSendDebtor.sendDebtorWithPaymentMethod(
-                new List<BillectaInitiateSendDebtor.Request>{
-                    createRequest(String.valueOf(acc.Id), 'update')
-                }
-            );
+                    new List<BillectaInitiateSendDebtor.Request>{
+                        createRequest(
+                            String.valueOf(acc.Id),
+                            'update'
+                        )
+                    }
+                );
 
         System.assertEquals(1, responses.size());
+
         System.assert(
-            responses[0].errorMsg.contains('Billecta Id missing')
+            responses[0].errorMsg.contains(
+                'Billecta Id missing'
+            )
         );
 
         System.assertEquals(
@@ -204,6 +243,8 @@ private class BillectaInitiateSendDebtorTest {
             new DebtorMock()
         );
 
+        Test.startTest();
+
         List<String> results =
             BillectaInitiateSendDebtor.sendDebtor(
                 new Map<Id, String>{
@@ -212,22 +253,34 @@ private class BillectaInitiateSendDebtorTest {
                 false
             );
 
+        Test.stopTest();
+
         System.assertEquals(1, results.size());
         System.assertEquals(null, results[0]);
 
         List<Callout__c> callouts = [
-            SELECT Id, JobId__c, Status__c, Type__c
+            SELECT Id, JobId__c, Status__c,
+                   Type__c, Response__c
             FROM Callout__c
             WHERE Account__c = :acc.Id
         ];
 
         System.assertEquals(1, callouts.size());
-        System.assertEquals('Queued', callouts[0].Status__c);
+
         System.assertEquals(
             'Billecta - Create Debtor',
             callouts[0].Type__c
         );
-        System.assertNotEquals(null, callouts[0].JobId__c);
+
+        System.assertNotEquals(
+            null,
+            callouts[0].JobId__c
+        );
+
+        System.assertEquals(
+            'OK',
+            callouts[0].Status__c
+        );
     }
 
     @IsTest
@@ -241,23 +294,38 @@ private class BillectaInitiateSendDebtorTest {
             new DebtorMock()
         );
 
+        Test.startTest();
+
         List<BillectaInitiateSendDebtor.Response> responses =
             BillectaInitiateSendDebtor.sendDebtorWithPaymentMethod(
-                new List<BillectaInitiateSendDebtor.Request>{
-                    createRequest(String.valueOf(acc.Id), 'create')
-                }
-            );
+                    new List<BillectaInitiateSendDebtor.Request>{
+                        createRequest(
+                            String.valueOf(acc.Id),
+                            'create'
+                        )
+                    }
+                );
+
+        Test.stopTest();
 
         System.assertEquals(1, responses.size());
-        System.assertEquals(null, responses[0].errorMsg);
 
         System.assertEquals(
-            1,
-            [
-                SELECT COUNT()
-                FROM Callout__c
-                WHERE Account__c = :acc.Id
-            ]
+            null,
+            responses[0].errorMsg
+        );
+
+        List<Callout__c> callouts = [
+            SELECT Id, Status__c
+            FROM Callout__c
+            WHERE Account__c = :acc.Id
+        ];
+
+        System.assertEquals(1, callouts.size());
+
+        System.assertEquals(
+            'OK',
+            callouts[0].Status__c
         );
     }
 
@@ -287,8 +355,12 @@ private class BillectaInitiateSendDebtorTest {
                 )
             };
 
+        Test.startTest();
+
         List<BillectaInitiateSendDebtor.Response> responses =
             BillectaInitiateSendDebtor.sendDebtorWithPaymentMethod(requests);
+
+        Test.stopTest();
 
         System.assertEquals(3, responses.size());
 
@@ -297,14 +369,35 @@ private class BillectaInitiateSendDebtorTest {
             responses[0].errorMsg
         );
 
-        System.assertNotEquals(null, responses[1].errorMsg);
-        System.assertEquals(null, responses[2].errorMsg);
+        System.assertNotEquals(
+            null,
+            responses[1].errorMsg
+        );
+
+        System.assertEquals(
+            null,
+            responses[2].errorMsg
+        );
+
+        List<Callout__c> callouts = [
+            SELECT Id, Status__c
+            FROM Callout__c
+            WHERE Account__c = :validAcc.Id
+        ];
+
+        System.assertEquals(1, callouts.size());
+
+        System.assertEquals(
+            'OK',
+            callouts[0].Status__c
+        );
     }
 
     @IsTest
     static void testBatchMixedActionsRejected() {
 
-        List<Account> accountsToInsert = new List<Account>();
+        List<Account> accountsToInsert =
+            new List<Account>();
 
         for (Integer i = 0; i < 50; i++) {
             accountsToInsert.add(
@@ -316,7 +409,8 @@ private class BillectaInitiateSendDebtorTest {
 
         insert accountsToInsert;
 
-        Map<Id, String> accountActions = new Map<Id, String>();
+        Map<Id, String> accountActions =
+            new Map<Id, String>();
 
         for (Integer i = 0; i < accountsToInsert.size(); i++) {
             accountActions.put(
@@ -336,10 +430,15 @@ private class BillectaInitiateSendDebtorTest {
             exceptionThrown = true;
 
             System.assert(
-                e.getMessage().contains('samma Billecta-åtgärd')
+                e.getMessage().contains(
+                    'samma Billecta-åtgärd'
+                )
             );
         }
 
-        System.assertEquals(true, exceptionThrown);
+        System.assertEquals(
+            true,
+            exceptionThrown
+        );
     }
 }
